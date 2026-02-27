@@ -1,7 +1,11 @@
-{self, ...}: {
-  # Factory function that creates a base user config modules
-  # This custom factory option was defined in flake-parts config module
-  # Creates nixos, darwin, and homeManager flake-parts modules named after user
+{
+  self,
+  inputs,
+  ...
+}: {
+  # Factory function;
+  # Creates flake-parts flake.modules entries for home-manager as nixos/darwin module
+  # Takes is attrset with at least username, and optional flags for user roles
   flake.factory.user = {
     username,
     isNormalUser ? true,
@@ -9,12 +13,16 @@
     isNix ? false,
     ...
   }: {
-    # Nixos config for the user
+    # Nixos config for the user, this uses home-manager as nixos module
     nixos."${username}" = {
       lib,
       pkgs,
       ...
     }: {
+      # Import home-manager module for nixos
+      imports = [
+        inputs.home-manager.nixosModules.home-manager
+      ];
       users.users."${username}" = {
         isNormalUser = isNormalUser;
         home = "/home/${username}";
@@ -36,12 +44,17 @@
       ];
     };
 
-    # Nix-darwin config for the given user
+    # Nix-darwin config for the given user, uses home-manager as darwin module
     darwin."${username}" = {
       lib,
       pkgs,
       ...
     }: {
+      # Import home-manager module for darwin
+      imports = [
+        inputs.home-manager.darwinModules.home-manager
+      ];
+      # Configure user
       users.users."${username}" = {
         home = "/Users/${username}";
         shell = pkgs.zsh;

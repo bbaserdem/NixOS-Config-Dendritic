@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  # Manage a user environment using Nix
+  # Managing user environments using nix
   # https://github.com/nix-community/home-manager
 
   flake-file.inputs = {
