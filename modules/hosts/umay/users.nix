@@ -1,0 +1,12 @@
+{inputs, ...}: {
+  flake.modules.nixos.umay = {...}: {
+    # Enable our main user
+    imports = with inputs.self.modules.nixos; [
+      batuhan
+    ];
+
+    home-manager.users.batuhan = {
+      # Modules to add to this users' home-manager config in this context
+    };
+  };
+}
