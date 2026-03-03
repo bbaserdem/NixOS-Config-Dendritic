@@ -1,3 +1,5 @@
+# Umay user
+# Imports user definition for the umay host
 {inputs, ...}: {
   flake.modules.nixos.umay = {...}: {
     # Enable our main user
