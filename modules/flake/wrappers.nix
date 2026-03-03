@@ -10,4 +10,14 @@
   };
 
   imports = [inputs.wrappers.flakeModules.wrappers];
+
+  perSystem = {pkgs, ...}: {
+    wrappers = {
+      pkgs = pkgs.unstable;
+      control_type = "exclude";
+      packages = {
+        # hello = true; # Disables the package hello from being built
+      };
+    };
+  };
 }
