@@ -19,6 +19,10 @@
       url = "github:nix-community/home-manager/release-25.11";
     };
     import-tree.url = "github:vic/import-tree";
+    neovim-plugin-e-ink-nvim = {
+      flake = false;
+      url = "github:alexxGmZ/e-ink.nvim";
+    };
     nix-darwin = {
       inputs.nixpkgs.follows = "nixpkgs-darwin";
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";

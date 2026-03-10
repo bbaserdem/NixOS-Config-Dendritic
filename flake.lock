@@ -112,6 +112,22 @@
         "type": "github"
       }
     },
+    "neovim-plugin-e-ink-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1761905235,
+        "narHash": "sha256-+AguHiALJNm48WUa654Gmrt3WJsyA90zG/7Me6aoVHs=",
+        "owner": "alexxGmZ",
+        "repo": "e-ink.nvim",
+        "rev": "a0f003a0c6e2952abd9b73ef89d56c65e6c46f00",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alexxGmZ",
+        "repo": "e-ink.nvim",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -270,6 +286,7 @@
         "flake-parts": "flake-parts",
         "home-manager": "home-manager",
         "import-tree": "import-tree",
+        "neovim-plugin-e-ink-nvim": "neovim-plugin-e-ink-nvim",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs",
