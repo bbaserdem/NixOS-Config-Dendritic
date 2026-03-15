@@ -3,15 +3,6 @@
   flake = {
     # Flake-Parts configuration for neovim wrapper
 
-    # The neovim nightly flake
-    flake-file = {
-      # Nightly build
-      neovim-nightly-overlay = {
-        url = "githubh:nix-community/neovim-nightly-overlay";
-        inputs.nixpkgs.follows = "nixpkgs-unstable";
-      };
-    };
-
     # Auto-pull neovim plugins from flake inputs with the prefix
     wrappers.neovim = {
       wlib,
