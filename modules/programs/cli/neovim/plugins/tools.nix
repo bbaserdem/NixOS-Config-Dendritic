@@ -17,7 +17,7 @@
       # Spects for tool plugins
 
       # AI tools
-      tools-ai = {
+      ai = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           claudecode-nvim
@@ -32,7 +32,7 @@
       };
 
       # Auto completion
-      tools-completion = {
+      completion = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           # Completion
@@ -62,7 +62,7 @@
       };
 
       # Debugger Adapter Protocol
-      tools-dap = {
+      dap = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           nvim-dap # Debug adapter protocol for nvim
@@ -72,7 +72,7 @@
       };
 
       # File browsers
-      tools-files = {
+      files = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           yazi-nvim # File browser
@@ -94,7 +94,7 @@
       };
 
       # Formatting
-      tools-formatting = {
+      formatting = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           conform-nvim # Code formatter
@@ -103,7 +103,7 @@
       };
 
       # Version control
-      tools-vcs = {
+      vcs = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           gitsigns-nvim
@@ -117,7 +117,7 @@
       };
 
       # Supplementary vim motions
-      tools-motions = {
+      motions = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           mini-ai
@@ -131,7 +131,7 @@
       };
 
       # Treesitter
-      tools-treesitter = {
+      treesitter = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           nvim-treesitter.withAllGrammars
@@ -140,7 +140,7 @@
       };
 
       # Utilities
-      tools-utilities = {
+      utilities = {
         lazy = true;
         data = with pkgs.vimPlugins; [
           mkdir-nvim # Automatically make directories when saving files

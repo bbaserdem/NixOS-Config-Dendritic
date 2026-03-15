@@ -1,65 +1,28 @@
-# Package definitions
-{inputs, ...}: {
-  # The neovim nightly flake
-  flake-file.inputs = {
-    # Nightly build
-    neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-  };
-
-  # Custom neovim packages
+# Custom package definitions
+# Mainly so that we can test the minimal config with nix run .#neovim-bare
+{...}: {
+  # Custom neovim package with the minimal config
   perSystem = {
     config,
     pkgs,
+    lib,
     ...
   }: {
-    packages = let
-      neovim-nightly = inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.neovim;
-      neovim-stable = pkgs.neovim-unwrapped;
-    in {
-      # The full neovim package
-      neovim-full = config.packages.neovim.wrap {
-        # Use nightly neovim
-        package = neovim-nightly;
-        # Replace system nvim command
-        settings = {
-          dont_link = true;
-          aliases = [
-            "nx"
-            "nx-full"
-          ];
-        };
-        binName = "nvim";
-      };
-
+    packages = {
       # The bare neovim package
       neovim-bare = config.packages.neovim.wrap {
-        # Use neovim from nixpkgs
-        package = neovim-stable;
+        # Use neovim from regular nixpkgs
+        package = lib.mkOverride 1400 pkgs.neovim-unwrapped;
         # Replace system nvim command
         settings = {
           dont_link = true;
           aliases = [
-            "nx-none"
+            "nvim-none"
           ];
+          # Disable specs
+          minimal = true;
         };
         binName = "vim";
-        # Disable all specs; tbd
-      };
-
-      # The classic neovim package
-      neovim-native = config.packages.neovim.wrap {
-        # Use neovim nightly
-        package = neovim-nightly;
-        # Replace system nvim command
-        settings = {
-          dont_link = true;
-        };
-        binName = "neovim";
-        # Disable all specs; tbd
-        # Default to system config, disable our config; tbd
       };
     };
   };

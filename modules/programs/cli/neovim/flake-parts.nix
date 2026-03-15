@@ -2,42 +2,57 @@
 {inputs, ...}: {
   flake = {
     # Flake-Parts configuration for neovim wrapper
+    # The general wrappers config is set in the flake config
+    # In general, the module does
+    # - the wrapper module is available as outputs.wrapper.neovim
+    # - package from wrapper is available as outputs.packages.<system>.neovim
+    # - the importable module is available in outputs.wrapperModules.neovim
 
-    # Auto-pull neovim plugins from flake inputs with the prefix
-    wrappers.neovim = {
-      wlib,
-      lib,
-      config,
-      ...
-    }: {
-      options = {
-        # Helper function to scrawl all neovim-plugin- prefixed flake inputs
-        nvim-lib.pluginsFromPrefix = lib.mkOption {
-          type = lib.types.raw;
-          readOnly = true;
-          default = prefix: inputs:
-            lib.pipe inputs [
-              builtins.attrNames
-              (builtins.filter (s: lib.hasPrefix prefix s))
-              (map (
-                input: let
-                  name = lib.removePrefix prefix input;
-                in {
-                  inherit name;
-                  value = config.nvim-lib.mkPlugin name inputs.${input};
-                }
-              ))
-              builtins.listToAttrs
-            ];
-        };
+    # The flake modules for each system
+    modules = {
+      # Config is available from config.wrappers.neovim in each context after this
 
-        # Makes plugins autobuilt from flake inputs available with
-        # `config.nvim-lib.neovimPlugins.<name_without_prefix>`
-        nvim-lib.neovimPlugins = lib.mkOption {
-          readOnly = true;
-          type = lib.types.attrsOf wlib.types.stringable;
-          default = config.nvim-lib.pluginsFromPrefix "neovim-plugin-" inputs;
-        };
+      # Nixos module
+      nixos.neovim = {...}: {
+        # Import the module from the wrapper
+        imports = [
+          # The modules are exported in outputs.wrapperModules
+          (inputs.wrappers.lib.mkInstallModule {
+            # Location to install
+            loc = ["environment" "systemPackages"];
+            name = "neovim";
+            value = inputs.self.wrapperModules.neovim;
+          })
+        ];
+      };
+
+      # Nixos darwin
+      darwin.neovim = {...}: {
+        # Import the module from the wrapper
+        # Config is available from config.wrappers.neovim in nixos after this
+        imports = [
+          # The modules are exported in outputs.wrapperModules
+          (inputs.wrappers.lib.mkInstallModule {
+            # Location to install
+            loc = ["environment" "systemPackages"];
+            name = "neovim";
+            value = inputs.self.wrapperModules.neovim;
+          })
+        ];
+      };
+
+      # Home-manager module
+      home-manager.neovim = {...}: {
+        # Import the module from the wrapper
+        imports = [
+          # The modules are exported in outputs.wrapperModules
+          (inputs.wrappers.lib.mkInstallModule {
+            # Location to install
+            loc = ["home" "packages"];
+            name = "neovim";
+            value = inputs.self.wrapperModules.neovim;
+          })
+        ];
       };
     };
   };

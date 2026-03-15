@@ -86,28 +86,6 @@
           dwt1-shell-color-scripts
         ];
       };
-
-      # File browsers
-      tools-files = {
-        lazy = true;
-        data = with pkgs.vimPlugins; [
-          yazi-nvim # File browser
-          neo-tree-nvim # Sidebar file browser
-          nvim-lsp-file-operations
-          image-nvim
-          {
-            lazy = false;
-            data = oil-nvim;
-          }
-          {
-            lazy = false;
-            data = oil-git-status-nvim;
-          }
-        ];
-        extraPackages = with pkgs; [
-          imagemagick
-        ];
-      };
     };
   };
 }
