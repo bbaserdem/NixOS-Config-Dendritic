@@ -63,17 +63,30 @@
 
           # Colorscheme settings
           colorscheme = {
+            # Dark scheme
             dark = lib.mkOption {
               type = lib.types.str;
               default = "terafox";
             };
+            # Light scheme
             light = lib.mkOption {
               type = lib.types.str;
               default = "dawnfox";
             };
+            # Whether to enable tranparent background
             translucent = lib.mkOption {
               type = lib.types.bool;
               default = false;
+            };
+            # Default polarity
+            default = lib.mkOption {
+              type = lib.types.nullOr (lib.types.enum ["light" "dark"]);
+              default = null;
+            };
+            # Provide base16 colors to the stylix theme
+            base16 = lib.mkOption {
+              type = lib.types.nullOr lib.types.attrs;
+              default = null;
             };
           };
 

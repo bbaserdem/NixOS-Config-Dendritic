@@ -14,7 +14,7 @@
         # If the minimal option is used, make sure we are still enabled
         enable = lib.mkIf config.settings.minimal (lib.mkDefault true);
 
-        # System plugins will default to no lazy loading
+        # System plugins can be lazy loaded besides package management
         lazy = true;
         data = with pkgs.vimPlugins; [
           {

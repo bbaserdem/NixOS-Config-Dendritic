@@ -20,14 +20,8 @@
       ai = {
         lazy = true;
         data = with pkgs.vimPlugins; [
-          claudecode-nvim
-          claude-fzf-nvim
-          fzf-lua
           sidekick-nvim
-          #agentic-nvim
-        ];
-        extraPackages = with pkgs; [
-          copilot-cli
+          codecompanion-nvim
         ];
       };
 
@@ -36,28 +30,18 @@
         lazy = true;
         data = with pkgs.vimPlugins; [
           # Completion
-          nvim-lspconfig # LSP default configuration
-          nvim-cmp # Completion engine
-          # Completion engines; general
-          cmp_luasnip # Snippet suggestions
-          cmp-nvim-lsp # LSP suggestions
-          cmp-nvim-lsp-signature-help # LSP signature help
-          cmp-async-path # Autocomplete from filesystem (no-block)
-          cmp-rg # Ripgrep
-          cmp-buffer # Buffer completion
-          cmp-spell # Autocomplete from spelllang
-          # Completion engines; commandline
-          cmp-cmdline # Commandline completion
-          cmp-cmdline-history # Commandline history completion
-          # Completion engines; language
-          cmp-vimtex # Vimtex source for cmp
-          # Completion engines, other
-          cmp-dap # DAP buffer completion
+          blink-cmp
+          blink-compat
+          colorful-menu-nvim
+          blink-cmp-tmux
+          cmp-cmdline
+          cmp-dap # We use this, not native cause native not in nixpkgs
+          cmp-vimtex
           # Snippets
           luasnip
           friendly-snippets
           # Other
-          lspkind-nvim # Add pictograms to built-in lsp
+          lspkind-nvim # Add pictograms to built-in lsp for completion
         ];
       };
 

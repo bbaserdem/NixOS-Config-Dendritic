@@ -4,10 +4,17 @@
 
 -- NOTE: Welcome to your neovim configuration!
 vim.loader.enable() -- <- bytecode caching
+
+-- NIX: Configuration for nix-wrapper-modules context
+-- In general, we expect this neovim config to use nix-wrapper-modules for package management
+-- TODO: We will setup catPaq and mason as fallback.
+
+-- Set up a global in a way that also handles non-nix compat
 do
-  -- Set up a global in a way that also handles non-nix compat
   local ok
   ok, _G.nixInfo = pcall(require, vim.g.nix_info_plugin_name)
+
+  -- nixInfo calls will just default to the fallback value, even if we are not nix
   if not ok then
     package.loaded[vim.g.nix_info_plugin_name] = setmetatable({}, {
       __call = function(_, default)
@@ -20,17 +27,23 @@ do
     -- it will use the value you specified as the default
     -- TODO: for non-nix compat, vim.pack.add in another file and require here.
   end
+
+  -- check if we are nix
   nixInfo.isNix = vim.g.nix_info_plugin_name ~= nil
+
+  -- load lze
   ---@module 'lzextras'
   ---@type lzextras | lze
   nixInfo.lze = setmetatable(require("lze"), getmetatable(require("lzextras")))
+
+  -- function to get the plugin path from nix
   function nixInfo.get_nix_plugin_path(name)
     return nixInfo(nil, "plugins", "lazy", name) or nixInfo(nil, "plugins", "start", name)
   end
 end
 
 -- Register handlers for lze
--- The auto_enable field is convenient to have the plugin only register when spec is enabled
+-- The auto_enable field is convenient to have the plugin only register when it's spec is enabled
 -- Default to not doing anything when not in nix
 -- The for_cat field is convenient to have lsp's only register when spec is enabled
 -- It's useful for configuring lsp's using lzextras spec
@@ -101,3 +114,6 @@ nixInfo.lze.h.lsp.set_ft_fallback(function(name)
     return (vim.lsp.config[name] or {}).filetypes or {}
   end
 end)
+
+-- We move on to the main entry point for configuration
+require("mainConf")
