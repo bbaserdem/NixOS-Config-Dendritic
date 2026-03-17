@@ -6,6 +6,7 @@ local M = {
     auto_enable = true,
     dep_of = {
       "urlview.nvim",
+      "neogit",
     },
     on_require = {
       "telescope",
@@ -48,22 +49,31 @@ local M = {
   {
     "telescope-ui-select.nvim",
     auto_enable = true,
-    dep_of = "telescope.nvim",
+    dep_of = {
+      "telescope.nvim",
+    },
   },
   {
     "telescope-fzf-native.nvim",
+    dep_of = {
+      "telescope.nvim",
+      "neogit",
+    },
     auto_enable = true,
-    dep_of = "telescope.nvim",
   },
   {
     "telescope-dap.nvim",
+    dep_of = {
+      "telescope.nvim",
+    },
     auto_enable = true,
-    dep_of = "telescope.nvim",
   },
   {
     "telescope-manix",
+    dep_of = {
+      "telescope.nvim",
+    },
     auto_enable = true,
-    dep_of = "telescope.nvim",
   },
 }
 

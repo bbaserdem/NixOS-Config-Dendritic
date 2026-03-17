@@ -7,6 +7,7 @@
       extraPackages = with pkgs; [
         go
         gotools
+        gopls
       ];
     };
   };

@@ -23,6 +23,7 @@ local M = {
       "oil.nvim",
       "neo-tree.nvim",
       "fzf-lua",
+      "hunk.nvim",
     },
     after = function(plugin)
       require("nvim-web-devicons").setup({

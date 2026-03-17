@@ -6,6 +6,7 @@
       data = null;
       extraPackages = with pkgs; [
         rustfmt
+        rust-analyzer
       ];
     };
   };

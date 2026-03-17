@@ -1,10 +1,13 @@
 -- Nvim configuration entry
 
--- Do our global settings
+-- Load our global settings
 require("mainConf.myOptions")
 
 -- Load plugin configurations
 require("pluginConf")
+
+-- Load LSP configurations
+require("lspConf")
 
 -- Apply colorscheme after plugins are registered with lze
 require("mainConf.myColorscheme")

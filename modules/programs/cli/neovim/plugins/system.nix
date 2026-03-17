@@ -25,14 +25,11 @@
             data = lzextras;
             lazy = false;
           }
-          {
-            data = nvim-lspconfig;
-            lazy = false;
-          }
           plenary-nvim
           nui-nvim
           nvim-nio
           mini-base16
+          nvim-lspconfig
         ];
       };
     };

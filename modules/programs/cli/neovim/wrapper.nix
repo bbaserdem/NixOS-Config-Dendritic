@@ -90,6 +90,18 @@
             };
           };
 
+          # Latex settings
+          latex = {
+            editor = lib.mkOption {
+              type = lib.types.nullOr (lib.types.enum [
+                "zathura"
+                "okular"
+                "skim"
+              ]);
+              default = "zathura";
+            };
+          };
+
           # A minimal flag to disable almost all plugins
           minimal = lib.mkOption {
             type = lib.types.bool;

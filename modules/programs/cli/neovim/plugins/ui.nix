@@ -80,7 +80,6 @@
           twilight-nvim # Dims inactive code
           mini-map # Code visual overview
           nvim-highlight-colors # Render colors with highlights
-          codediff-nvim # Diff rendere like vscode
         ];
         extraPackages = with pkgs; [
           dwt1-shell-color-scripts

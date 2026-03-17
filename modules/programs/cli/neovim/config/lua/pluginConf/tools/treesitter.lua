@@ -3,6 +3,7 @@
 local M = {
   {
     "nvim-treesitter",
+    lazy = false,
     auto_enable = true,
     dep_of = {
       "aerial.nvim",
@@ -13,17 +14,20 @@ local M = {
       "nvim-cmp",
       "sidekick.nvim",
     },
-    lazy = false,
     after = function(plugin)
       ---@param buf integer
       ---@param language string
       local function treesitter_try_attach(buf, language)
-        -- check if parser exists and load it
+        -- check if parser exists, quit early if not
         if not vim.treesitter.language.add(language) then
           return false
         end
-        -- enables syntax highlighting and other treesitter features
-        vim.treesitter.start(buf, language)
+
+        -- enables syntax highlighting and other treesitter features,
+        -- disable on latex, don't conflict with vimtex
+        if not language == "latex" then
+          vim.treesitter.start(buf, language)
+        end
 
         -- enables treesitter based folds
         vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
@@ -32,7 +36,10 @@ local M = {
         vim.o.foldlevel = 99
 
         -- enables treesitter based indentation
-        -- vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        -- disable on nix files, weird issues here with alejandra formatter
+        if not language == "nix" then
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end
 
         return true
       end
@@ -59,36 +66,6 @@ local M = {
       })
     end,
   },
-  -- Old config for treesitter
-  -- after = function(plugin)
-  --   -- Configure treesitter
-  --   require("nvim-treesitter.configs").setup({
-  --     -- Highlight module
-  --     highlight = {
-  --       enable = true,
-  --       disable = { "latex" },
-  --       additional_vim_regex_highlighting = { "latex", "markdown" },
-  --     },
-  --     -- Indent module
-  --     indent = {
-  --       enable = false,
-  --     },
-  --     -- Incremental selection
-  --     incremental_selection = {
-  --       enable = true,
-  --       keymaps = {
-  --         init_selection = "<C-Space>",
-  --         node_incremental = "<C-Space",
-  --         node_decremental = "<C-S-Space",
-  --         scope_incremental = "<C-s>",
-  --       },
-  --     },
-  --     -- Text objects
-  --     -- textobjects = require("pluginConf.tools.treesitter.textobjects"),
-  --     -- Refactor module
-  --     -- refactor = require("pluginConf.tools.treesitter.refactor"),
-  --   })
-  -- end,
   {
     "nvim-treesitter-textobjects",
     auto_enable = true,

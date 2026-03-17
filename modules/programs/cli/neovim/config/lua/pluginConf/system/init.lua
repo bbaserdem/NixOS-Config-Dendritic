@@ -19,6 +19,7 @@ local M = {
       "neo-tree.nvim",
       "telescope.nvim",
       "codediff.nvim",
+      "hunk.nvim",
     },
   },
   {
@@ -27,11 +28,6 @@ local M = {
     dep_of = {
       "nvim-dap-ui",
     },
-  },
-  {
-    "nvim-lspconfig",
-    auto_enable = true,
-    lazy = false,
   },
   {
     "mini.base16",

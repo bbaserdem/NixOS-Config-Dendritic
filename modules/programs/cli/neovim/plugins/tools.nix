@@ -84,6 +84,9 @@
           conform-nvim # Code formatter
           nvim-lint # Linter without LSP
         ];
+        extraPackages = with pkgs; [
+          harper # Grammar checking lsp, for all not just tex
+        ];
       };
 
       # Version control
@@ -91,12 +94,14 @@
         lazy = true;
         data = with pkgs.vimPlugins; [
           gitsigns-nvim
-          vim-fugitive
-        ];
-        extraPackages = with pkgs; [
-          git
-          lazygit
-          gh
+          neogit
+          codediff-nvim # Diff rendere like vscode
+          hunk-nvim # Render jj diffs
+          jj-nvim # jj integration
+          {
+            lazy = false;
+            data = vim-jjdescription; # Syntax highlighting for jj descriptions
+          }
         ];
       };
 

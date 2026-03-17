@@ -2,7 +2,6 @@
 
 local M = {
   { import = "pluginConf.ui.views.aerial" },
-  { import = "pluginConf.ui.views.codediff" },
   { import = "pluginConf.ui.views.fidget" },
   { import = "pluginConf.ui.views.highlight-colors" },
   { import = "pluginConf.ui.views.minimap" },

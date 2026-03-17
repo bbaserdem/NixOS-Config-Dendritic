@@ -49,19 +49,22 @@ local M = {
           repeat_linebreak = true,
         },
         latex = {
-          enabled = false, -- TODO: Deprecate nabla here
+          enabled = true,
+          converter = { "latex2text" },
         },
         heading = {
-          sign = false,
+          enabled = true,
+          sign = true,
           position = "inline",
           width = "block",
-          left_margin = 0.5,
-          left_pad = 0.2,
-          right_pad = 0.2,
+          left_pad = 2,
+          right_pad = 42,
+          min_width = 30,
         },
         max_file_size = 10.0,
         pipe_table = {
-          border = { "╔", "╤", "╗", "╟", "┼", "╢", "╚", "╧", "╝", "│", "─" },
+          preset = "double",
+          cell = "trimmed",
         },
       })
     end,

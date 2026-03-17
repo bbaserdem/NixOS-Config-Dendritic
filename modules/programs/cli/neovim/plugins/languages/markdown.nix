@@ -12,8 +12,7 @@
       extraPackages = with pkgs; [
         vale # Linter
         glow # Markdown typesetter for terminal
-        ltex-ls-plus
-        languagetool
+        python3Packages.pylatexenc # Render latex eqns
       ];
     };
   };

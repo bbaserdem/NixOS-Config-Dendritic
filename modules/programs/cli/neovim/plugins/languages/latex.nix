@@ -14,13 +14,9 @@
       extraPackages = with pkgs; [
         # Latex environment should be provided on a project basis
         pplatex # Latex log parsing tool
-        texlivePackages.chktex # Linter, only
-        neovim-remote # Client server for vimtex to run latexmk
-        pstree
-        bibtex-tidy # Latex cleaner
-        tex-fmt
-        ltex-ls-plus
-        languagetool
+        texlivePackages.chktex # Linter, for nvim-lint
+        bibtex-tidy # Bibtex cleaner, for conform
+        tex-fmt # Latex cleaner, for conform
       ];
     };
   };
