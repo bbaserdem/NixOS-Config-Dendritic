@@ -20,8 +20,9 @@
       ai = {
         lazy = true;
         data = with pkgs.vimPlugins; [
-          sidekick-nvim
           codecompanion-nvim
+          claudecode-nvim
+          claude-fzf-nvim
         ];
       };
 
@@ -63,6 +64,7 @@
           neo-tree-nvim # Sidebar file browser
           nvim-lsp-file-operations
           image-nvim
+          fzf-lua
           {
             lazy = false;
             data = oil-nvim;
@@ -73,6 +75,7 @@
           }
         ];
         extraPackages = with pkgs; [
+          chafa
           imagemagick
         ];
       };

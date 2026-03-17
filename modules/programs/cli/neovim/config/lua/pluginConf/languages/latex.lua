@@ -19,7 +19,10 @@ local M = {
         vim.g.vimtex_view_method = "zathura"
       end
 
-      -- Other settings
+      -- Keep default keymaps, but add descriptions later using which-key
+      vim.g.vimtex_mappings_enabled = true
+
+      -- Settings
       vim.g.vimtex_compiler_method = "latexmk"
       vim.g.vimtex_compiler_latexmk = {
         aux_dir = "LatexAux",

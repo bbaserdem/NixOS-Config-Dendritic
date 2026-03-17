@@ -13,6 +13,7 @@ local M = {
       "nvim-dap.nvim",
       "nvim-cmp",
       "sidekick.nvim",
+      "codecompanion.nvim",
     },
     after = function(plugin)
       ---@param buf integer

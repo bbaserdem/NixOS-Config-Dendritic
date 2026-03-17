@@ -61,7 +61,6 @@
         extraPackages = with pkgs; [
           ripgrep
           fd
-          findutils
         ];
       };
 

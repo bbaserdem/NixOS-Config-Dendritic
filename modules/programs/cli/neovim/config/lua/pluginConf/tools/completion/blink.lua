@@ -110,6 +110,7 @@ local M = {
             ["dap-repl"] = { "dap" },
             ["dapui_watches"] = { "dap" },
             ["dapui_hover"] = { "dap" },
+            codecompanion = { "codecompanion" },
           },
           providers = {
             path = {

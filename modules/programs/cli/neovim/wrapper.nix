@@ -113,6 +113,9 @@
       config = {
         # Configuring the wrapper settings
 
+        # Enable python host
+        hosts.python3.nvim-host.enable = lib.mkIf (!config.settings.minimal) true;
+
         # Use neovim nightly as package
         package = inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.neovim;
 
@@ -122,6 +125,15 @@
 
           # Name the internal info plugin
           info_plugin_name = "nix-info";
+
+          # Lua environment
+          nvim_lua_env = lib.mkIf (!config.settings.minimal) (lua_package:
+            with lua_package; [
+              magick # Imagemagick bindings
+              image-nvim # Image library
+              jsregexp # JavaScript regex
+              luacheck # Lua linter
+            ]);
         };
 
         # Collect the list of enabled categories in a table
@@ -144,6 +156,10 @@
         # We want to actually collect these from the (enabled) specs themselves
         # So we have each spec define both plugin-dependencies, and runtime dependencies
         extraPackages = config.specCollect (acc: v: acc ++ (v.extraPackages or [])) [];
+
+        hosts = {
+          # Provide extra packages to the python environment
+        };
       };
     };
   };

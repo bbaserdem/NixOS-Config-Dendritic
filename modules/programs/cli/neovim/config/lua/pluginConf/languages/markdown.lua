@@ -38,6 +38,11 @@ local M = {
     auto_enable = true,
     ft = {
       "markdown",
+      "codecompanion",
+    },
+    dep_of = {
+      "blink.cmp",
+      "fzf-lua",
     },
     cmd = { "RenderMarkdown" },
     on_require = "render-markdown",

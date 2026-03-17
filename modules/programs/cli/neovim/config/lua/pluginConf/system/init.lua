@@ -10,6 +10,8 @@ local M = {
       "yazi.nvim",
       "neo-tree.nvim",
       "telescope.nvim",
+      "codecompanion.nvim",
+      "neogit",
     },
   },
   {

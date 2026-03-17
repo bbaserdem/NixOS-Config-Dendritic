@@ -7,8 +7,10 @@
         nvim-dap-python
       ];
       extraPackages = with pkgs; [
-        ruff
-        ty
+        ruff # Formatter/linter
+        ty # LSP & type checker
+        yq # yaml parser
+        # uv and debugpy should be provided by the environment
       ];
     };
   };
