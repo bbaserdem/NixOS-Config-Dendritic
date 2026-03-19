@@ -15,14 +15,12 @@
       modifications = final: prev: {
         # Modifications to existing packages
 
-        # Make NNN use nerdfont symbols
-        nnn = prev.nnn.override {withNerdIcons = true;};
-
-        # Add turkish to libreoffice
-        libreoffice = prev.libreoffice.override {
-          variant = "fresh";
-          langs = ["en-US" "tr"];
-        };
+        # Hunspell dictionaries, pre-configured
+        # Provide this on system level so that it's available to all apps
+        myHunspell = prev.hunspellWithDicts (with prev.hunspellDicts; [
+          en_US
+          tr_TR
+        ]);
       };
     };
   };
