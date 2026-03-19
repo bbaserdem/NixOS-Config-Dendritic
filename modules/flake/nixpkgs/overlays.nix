@@ -15,9 +15,6 @@
       modifications = final: prev: {
         # Modifications to existing packages
 
-        # Create yt-dlp aliases for overrides
-        yt-dlp = prev.yt-dlp.override {withAlias = true;};
-
         # Make NNN use nerdfont symbols
         nnn = prev.nnn.override {withNerdIcons = true;};
 
