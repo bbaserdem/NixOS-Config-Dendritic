@@ -11,16 +11,8 @@
 
   imports = [inputs.wrappers.flakeModules.wrappers];
 
-  perSystem = {
-    pkgs,
-    system,
-    ...
-  }: {
+  perSystem = {...}: {
     wrappers = {
-      pkgs = import inputs.nixpkgs-unstable {
-        inherit system;
-        inherit (pkgs) config;
-      };
       control_type = "exclude";
       packages = {
         # hello = true; # Disables the package hello from being built

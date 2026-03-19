@@ -33,10 +33,14 @@
       };
       programs.zsh.enable = true;
 
-      home-manager.users."${username}" = {
-        imports = [
-          self.modules.homeManager."${username}"
-        ];
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPkgs = true;
+        users."${username}" = {
+          imports = [
+            self.modules.homeManager."${username}"
+          ];
+        };
       };
 
       nix.settings.trusted-users = lib.optionals isNix [
@@ -61,10 +65,14 @@
         isHidden = false;
       };
 
-      home-manager.users."${username}" = {
-        imports = [
-          self.modules.homeManager."${username}"
-        ];
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPkgs = true;
+        users."${username}" = {
+          imports = [
+            self.modules.homeManager."${username}"
+          ];
+        };
       };
 
       system.primaryUser = lib.mkIf isAdmin "${username}";

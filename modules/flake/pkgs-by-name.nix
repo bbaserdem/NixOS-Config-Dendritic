@@ -20,13 +20,9 @@
   };
 
   flake = {
-    overlays.default = _final: prev: {
+    overlays.additions = _final: prev: {
+      # Overlay with a namespace to pull in our exported packages
       local = withSystem prev.stdenv.hostPlatform.system ({config, ...}: config.packages);
-    };
-    modules.generic.pkgs-by-name = {...}: {
-      nixpkgs.overlays = [
-        inputs.self.overlays.default
-      ];
     };
   };
 }

@@ -31,12 +31,4 @@
     "x86_64-darwin"
     "x86_64-linux"
   ];
-
-  # Enable proprietary packages in perSystem
-  perSystem = {system, ...}: {
-    _module.args.pkgs = import inputs.nixpkgs {
-      inherit system;
-      config = {allowUnfree = true;};
-    };
-  };
 }
