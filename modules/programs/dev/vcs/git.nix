@@ -1,17 +1,12 @@
-# Configuring vcs for users
-# Provide settings for;
-# - git
-# - jj
+# Configuring git
 {...}: {
-  flake.modules.home-manager.vcs = {
+  flake.modules.home-manager.git = {
     config,
     pkgs,
     ...
   }: {
     programs = {
-      # Configuring vcs tooling here
-
-      # Main git tool
+      # Main git config
       git = {
         enable = true;
         lfs.enable = true;
@@ -36,18 +31,6 @@
         };
       };
 
-      # Main jujutsu tool
-      jujutsu = {
-        enable = true;
-      };
-
-      # Diff pager
-      delta = {
-        enable = true;
-        enableGitIntegration = true;
-        enableJujutsuIntegration = true;
-      };
-
       # TUI for git
       lazygit = {
         enable = true;
@@ -66,15 +49,20 @@
         };
       };
 
-      # TUI for jujutsu
-      jjui = {
-        enable = true;
-      };
-
-      # Also add lazyjj
-      home.packages = with pkgs; [
-        lazyjj
-      ];
+      # Also add userspace packages
+      home.packages = with pkgs; (
+        [
+        ]
+        ++ (
+          if pkgs.stdenv.hostPlatform.isLinux
+          then [
+            gitg
+          ]
+          else if pkgs.stdenv.hostPlatform.isDarwin
+          then []
+          else []
+        )
+      );
     };
   };
 }
