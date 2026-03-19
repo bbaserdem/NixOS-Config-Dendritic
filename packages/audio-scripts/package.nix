@@ -28,8 +28,8 @@ pkgs.stdenv.mkDerivation (
       mkdir -p $out/bin
 
       for script in *.sh; do
-        # Remove .sh extension for the executable name
-        targetName="''${script%.sh}"
+        # Append audio- and remove .sh extension for the executable name
+        targetName="audio-''${script%.sh}"
         cp "$script" "$out/bin/$targetName"
         chmod +x "$out/bin/$targetName"
       done

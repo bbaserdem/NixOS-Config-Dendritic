@@ -3,7 +3,11 @@
 # - git
 # - jj
 {...}: {
-  flake.modules.home-manager.vcs = {config, ...}: {
+  flake.modules.home-manager.vcs = {
+    config,
+    pkgs,
+    ...
+  }: {
     programs = {
       # Configuring vcs tooling here
 
@@ -66,6 +70,11 @@
       jjui = {
         enable = true;
       };
+
+      # Also add lazyjj
+      home.packages = with pkgs; [
+        lazyjj
+      ];
     };
   };
 }

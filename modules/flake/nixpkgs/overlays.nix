@@ -21,14 +21,6 @@
         # Make NNN use nerdfont symbols
         nnn = prev.nnn.override {withNerdIcons = true;};
 
-        # Add features to ncmpcpp that are not compiled in in nixpkgs
-        ncmpcpp = prev.ncmpcpp.override {
-          outputsSupport = true;
-          visualizerSupport = true;
-          clockSupport = true;
-          taglibSupport = true;
-        };
-
         # Add turkish to libreoffice
         libreoffice = prev.libreoffice.override {
           variant = "fresh";
