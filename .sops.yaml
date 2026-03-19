@@ -1,0 +1,45 @@
+# SOPS key for secrets
+keys:
+  - &user_batuhan   age1045taew2vlflmcqs0dv5jyym82l4h9d5pq6m2lfcynp69dlxge9q802tde
+  - &hosts          age1vw50adxhacck5784gjtklrevqmpkr6e6rjl6r2ntuv8ur8w853ns2w3u5n
+  - &host_umay      age129y4f7rtwv65j2jwydyjf67dt6vj58fvfrq39gezwkcpkj7cnsqq9lgm87
+  - &host_erlik     age19f4a8jyv8qa53t862gp03yyusdx73h932re5gvr6u6q3ejnduv7q7te5pn
+  - &host_yel-ana   age16jcedwfyapurnach0uqhe0sxk7c7nt5nkaeh6xnjyz6lur6snutqef2l0r
+  - &host_yertengri age1zmcdylr608puzyt0yq43vedfhemhfxy4pmaxge82qfzmpt66d5jqeepj3m
+  - &host_su-ana    age1w7hp5jwl8pzz3vk42d24vth6ady3r9gtq76svhqj5c47fd7paceszxyq9p
+  - &host_su-ata    age1hhgs3fkm6s8q845djuyud8je20q0fgu9tdd8hcuzj7y6jrthsfqqzj0qjs
+  - &host_od-ata    age1a03rv9szhgfemufat0qeaw08gcgcfhg6ds85evs78jeyc6fxmams2hut0c
+creation_rules:
+  - path_regex: ^secrets/user/batuhan/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *user_batuhan
+  - path_regex: ^secrets/host/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *hosts
+  - path_regex: ^secrets/host/yel-ana/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *hosts
+      - *host_yel-ana
+  - path_regex: ^secrets/host/yertengri/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *hosts
+      - *host_yertengri
+  - path_regex: ^secrets/host/su-ana/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *hosts
+      - *host_su-ana
+  - path_regex: ^secrets/host/su-ata/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *hosts
+      - *host_su-ata
+  - path_regex: ^secrets/host/od-ata/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *hosts
+      - *host_od-ata
