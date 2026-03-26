@@ -12,11 +12,12 @@ in {
       isAdmin = true;
       isNix = true;
     })
+
     # Additional modules to load with this user
     {
       nixos."${username}" = {...}: {
         imports = with self.modules.nixos; [
-          # Additional nixos modules to load with this user enabled
+          # Nixos modules to load with this user enabled
         ];
         users.users."${username}" = {
           # Add this user to additional groups
@@ -31,13 +32,13 @@ in {
 
       darwin."${username}" = {...}: {
         imports = with self.modules.darwin; [
-          # Additional darwin modules to load
+          # Darwin modules to load
         ];
       };
 
       homeManager."${username}" = {pkgs, ...}: {
         imports = with self.modules.homeManager; [
-          # Additional home-manager modules to load with this user enabled
+          # Home-manager modules to load with this user enabled
         ];
         home.stateVersion = "25.05";
         home.packages = with pkgs; [
