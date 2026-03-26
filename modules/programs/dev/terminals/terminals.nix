@@ -1,9 +1,10 @@
 # Enabling terminals in the user-space
-{self, ...}: {
+{inputs, ...}: {
   flake.modules.home-manager.terminal = {...}: {
     # We are a collection of various terminals; have them all available to the system
-    imports = [
-      self.modules.home-manager.kitty
+    imports = with inputs.self.modules.home-manager; [
+      kitty
+      ghostty
     ];
   };
 }
