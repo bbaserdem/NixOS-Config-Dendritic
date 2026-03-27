@@ -1,6 +1,6 @@
 # Configuring ghostty
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Enable stylix theming for ghostty
     stylix = {...}: {
       stylix.targets.ghostty = {
@@ -19,14 +19,11 @@
           enable = true;
 
           # Integrations
-          enableBashIntegration = true;
-          enableZshIntegration = true;
           installVimSyntax = true;
           installBatSyntax = true;
 
           # Settings
           settings = {
-            theme = "light:Belafonte Day,dark:Belafonte Night";
           };
         }
         (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
@@ -42,7 +39,6 @@
           # MacOS only settings
           settings = {
             macos-option-as-alt = true;
-            macos-icon = "microchip";
           };
         })
       ];

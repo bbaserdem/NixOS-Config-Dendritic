@@ -1,6 +1,6 @@
 # Configuring blender
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Enable stylix theming with blender
     stylix = {...}: {
       stylix.targets.blender.enable = true;

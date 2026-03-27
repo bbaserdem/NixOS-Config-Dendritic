@@ -1,6 +1,6 @@
 # SSH common config
 {...}: {
-  flake.modules.home-manager.pass = {
+  flake.modules.homeManager.pass = {
     config,
     pkgs,
     ...

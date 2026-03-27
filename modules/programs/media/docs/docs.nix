@@ -1,10 +1,10 @@
 # Document related software suite
-{self, ...}: {
-  flake.modules.home-manager.docs = {pkgs, ...}: {
+{inputs, ...}: {
+  flake.modules.homeManager.docs = {pkgs, ...}: {
     # Documents related software
 
     # Document related modules
-    imports = with self.modules.home-manager; (
+    imports = with inputs.self.modules.homeManager; (
       [
         zathura
         foliate

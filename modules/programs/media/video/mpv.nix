@@ -1,6 +1,6 @@
 # Configuring mpv
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Enable stylix theming
     stylix = {...}: {
       stylix.targets.mpv.enable = true;

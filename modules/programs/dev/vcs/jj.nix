@@ -1,25 +1,33 @@
 # Configuring jj
 {...}: {
-  flake.modules.home-manager.vcs = {
-    config,
-    pkgs,
-    ...
-  }: {
-    programs = {
-      # Main jujutsu tool
-      jujutsu = {
+  flake.modules.homeManager = {
+    # Stylix theming for jjui
+    stylix = {...}: {
+      stylix.targets.jjui = {
         enable = true;
+        colors.enable = true;
+        polarity.enable = true;
       };
+    };
 
-      # TUI for jujutsu
-      jjui = {
-        enable = true;
+    # JJ module
+    jj = {pkgs, ...}: {
+      programs = {
+        # Main jujutsu tool
+        jujutsu = {
+          enable = true;
+        };
+
+        # TUI for jujutsu
+        jjui = {
+          enable = true;
+        };
+
+        # Also add userspace packages
+        home.packages = with pkgs; [
+          lazyjj # Lazygit like util for jj
+        ];
       };
-
-      # Also add userspace packages
-      home.packages = with pkgs; [
-        lazyjj # Lazygit like util for jj
-      ];
     };
   };
 }

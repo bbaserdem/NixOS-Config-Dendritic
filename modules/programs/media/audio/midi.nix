@@ -1,12 +1,10 @@
 # Configuring Fluidsynth
 {...}: {
-  flake.modules.home-manager.midi = {pkgs, ...}: {
+  flake.modules.homeManager.midi = {...}: {
     # Enable fluidsynth as midi synthesizer service
     services.fluidsynth = {
       enable = true;
       soundService = "pipewire-pulse";
-      # Using Arachno font
-      soundFont = "${pkgs.soundfont-arachno}/share/soundfonts/arachno.sf2";
     };
   };
 }

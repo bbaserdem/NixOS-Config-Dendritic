@@ -1,6 +1,6 @@
 # Keepassxc
 {...}: {
-  flake.modules.home-manager.keepassxc = {
+  flake.modules.homeManager.keepassxc = {
     pkgs,
     lib,
     ...

@@ -3,16 +3,16 @@
 # - git
 # - jj
 {inputs, ...}: {
-  flake.modules.home-manager.vcs = {...}: {
+  flake.modules.homeManager.vcs = {...}: {
     # VCS tools configuration
 
     # Import specific modules
-    imports = with inputs.self.modules.home-manager; [
+    imports = with inputs.self.modules.homeManager; [
       jj
       git
     ];
 
-    # Configure cross-tool integration
+    # Configure cross-tool integrations
     config = {
       programs = {
         delta = {

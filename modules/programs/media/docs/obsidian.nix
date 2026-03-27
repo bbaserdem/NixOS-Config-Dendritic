@@ -1,6 +1,6 @@
-# Zathura
+# Obsidian config
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Enable stylix theming
     stylix = {config, ...}: {
       stylix.targets.obsidian = {
@@ -8,7 +8,7 @@
         colors.enable = true;
         fonts.enable = true;
         polarity.enable = true;
-        # If home-manager is managing the vault, apply themes to that vaulty
+        # If home-manager is managing the vault, apply themes to that vault
         vaultNames = builtins.attrNames config.programs.obsidian.vaults;
       };
     };
@@ -17,9 +17,6 @@
     obsidian = {...}: {
       programs.obsidian = {
         enable = true;
-        vaults = {
-          # Vaults to manage on system level
-        };
       };
     };
   };

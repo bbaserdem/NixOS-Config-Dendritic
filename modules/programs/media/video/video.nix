@@ -1,10 +1,10 @@
 # Video related software suite
-{self, ...}: {
-  flake.modules.home-manager.video = {pkgs, ...}: {
+{inputs, ...}: {
+  flake.modules.homeManager.video = {pkgs, ...}: {
     # Video related software suite
 
     # Video modules
-    imports = with self.modules.home-manager; (
+    imports = with inputs.self.modules.homeManager; (
       [
         mpv
         yt-dlp
@@ -19,25 +19,5 @@
         else []
       )
     );
-
-    # Install these apps to userspace
-    config = {
-      home.packages = with pkgs; (
-        [
-          vlc # Playback alternative to mpd
-          haruna # Frontend for mpv
-        ]
-        ++ (
-          if pkgs.stdenv.hostPlatform.isLinux
-          then [
-            handbrake # Video conversion tool (broken on darwin; deps)
-            kdePackages.kdenlive # Video editing software suite
-          ]
-          else if pkgs.stdenv.hostPlatform.isDarwin
-          then []
-          else []
-        )
-      );
-    };
   };
 }

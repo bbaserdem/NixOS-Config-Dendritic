@@ -1,6 +1,6 @@
-# Configuring gimp
+# Configuring yazi
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Stylix theming
     stylix = {...}: {
       stylix.targets.yazi = {

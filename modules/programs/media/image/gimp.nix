@@ -1,6 +1,6 @@
 # Configuring gimp
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Install gimp to userspace with plugins
     gimp = {pkgs, ...}: {
       home.packages = with pkgs; [

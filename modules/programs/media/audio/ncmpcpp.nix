@@ -1,6 +1,6 @@
-# Configuring MPD
+# Configuring terminal music player for mpd
 {...}: {
-  flake.modules.home-manager.ncmpcpp = {
+  flake.modules.homeManager.mpd = {
     config,
     pkgs,
     ...
@@ -14,6 +14,7 @@
     # NCMPCPP settings
     programs.ncmpcpp = {
       enable = true;
+      # Build custom features in
       package = pkgs.ncmpcpp.override {
         outputSupport = true;
         visualizerSupport = true;

@@ -1,6 +1,6 @@
 # Foliate, ebook reader
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Enable stylix theming
     stylix = {...}: {
       stylix.targets.foliate.enable = true;

@@ -1,16 +1,9 @@
 # SSH common config
 {...}: {
-  flake.modules.home-manager.ssh = {config, ...}: {
+  flake.modules.homeManager.ssh = {config, ...}: {
     programs.ssh = {
       enable = true;
       matchBlocks = {
-        # Servers to bind to by default
-        "github.com" = {
-          user = "git";
-          hostname = "github.com";
-          identitiesOnly = true;
-          extraOptions.IdentityFile = "${config.home.homeDirectory}/.ssh/id_ed25519_GITHUB";
-        };
         "*" = {
           forwardAgent = false;
           addKeysToAgent = "no";

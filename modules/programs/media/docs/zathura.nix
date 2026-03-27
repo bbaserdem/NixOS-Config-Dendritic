@@ -1,6 +1,6 @@
 # Zathura
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Enable stylix theming
     stylix = {...}: {
       stylix.targets.zathura.enable = true;

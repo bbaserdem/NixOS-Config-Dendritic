@@ -1,0 +1,83 @@
+# Nix settings
+{inputs, ...}: {
+  flake.modules = {
+    # Modules to setup the nix daemon
+
+    # Nixos module
+    nixos.nix = {...}: {
+      imports = [
+        inputs.self.modules.generic.nix
+        inputs.nix-index-database.nixosModules.nix-index
+      ];
+
+      config = {
+        # Garbage collect settings
+        nix = {
+          nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+          gc.automatic = true;
+          settings.auto-optimise-store = true;
+        };
+        programs = {
+          # Linux-specific configuration
+          nix-ld.enable = true;
+        };
+      };
+    };
+
+    # Darwin module
+    darwin.nix = {...}: {
+      imports = [
+        inputs.self.modules.generic.nix
+        inputs.nix-index-database.darwinModules.nix-index
+      ];
+
+      config = {
+        nix = {
+          nixPath = ["nixpkgs=${inputs.nixpkgs-darwin}"];
+          optimise.automatic = true;
+          enable = true;
+          gc.interval = [
+            {
+              Hour = 3;
+              Minute = 15;
+              Weekday = 7;
+            }
+          ];
+
+          # Enable cross-comp
+          linux-builder.enable = true;
+          settings.trusted-users = ["@admin"];
+        };
+      };
+    };
+
+    # Generic settings
+    generic.nix = {pkgs, ...}: {
+      config = {
+        # Package manager config
+        nix = {
+          gc.options = "--delete-older-than 60d";
+          settings = {
+            experimental-features = [
+              "nix-command"
+              "flakes"
+              "pipe-operators"
+              "ca-derivations"
+            ];
+            # For dev related things
+            keep-outputs = true;
+            keep-derivations = true;
+          };
+        };
+
+        # Nix helper utilities
+        environment.systemPackages = with pkgs; [
+          nh
+          nix-output-monitor
+          nvd
+          sops
+        ];
+      };
+    };
+  };
+}

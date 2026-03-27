@@ -1,28 +1,15 @@
 # Configuring kitty
 {...}: {
-  flake.modules.home-manager = {
+  flake.modules.homeManager = {
     # Enable stylix theming for kitty
     stylix = {...}: {
       stylix.targets.kitty.enable = true;
     };
 
     # Kitty settings
-    kitty = {
-      pkgs,
-      lib,
-      ...
-    }: {
+    kitty = {...}: {
       programs.kitty = {
         enable = true;
-
-        # We override stylix for our custom font
-        font = lib.mkForce {
-          #name = "Victor Mono";
-          #package = pkgs.victor-mono;
-          name = "Iosevka Light";
-          package = pkgs.iosevka;
-          size = 13;
-        };
 
         # General settings
         settings = {
@@ -50,15 +37,6 @@
           # Liberate ctrl+tab
           map ctrl+tab        send_text normal,application \x1b[9;5u
           map ctrl+shift+tab  send_text normal,application \x1b[9;6u
-
-          # Iosevka overrides
-          bold_font           Iosevka Heavy
-          italic_font         Iosevka Light Italic
-          bold_italic_font    Iosevka ExtraBold Oblique
-          font_features       Iosevka-Light               +dlig +ss05
-          font_features       Iosevka-Heavy               +dlig +ss05
-          font_features       Iosevka-Light-Italic        +dlig +ss05
-          font_features       Iosevka-ExtraBold-Oblique   +dlig +ss05
 
           # Nerd Font override
           # https://github.com/ryanoasis/nerd-fonts/wiki/Glyph-Sets-and-Code-Points

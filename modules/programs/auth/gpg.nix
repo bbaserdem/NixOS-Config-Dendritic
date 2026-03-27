@@ -1,9 +1,8 @@
-# SSH common config
+# GPG configuration
 {...}: {
-  flake.modules.home-manager.gpg = {pkgs, ...}: {
+  flake.modules.homeManager.gpg = {...}: {
     services.gpg-agent = {
       enable = true;
-      pinentry.package = pkgs.pinentry-gnome3;
       enableBashIntegration = true;
       enableZshIntegration = true;
       enableSshSupport = true;
