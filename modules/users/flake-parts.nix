@@ -1,4 +1,4 @@
-# Home-Manager flake-parts setup
+# Home-Manager flake-parts boilerplate
 {inputs, ...}: {
   # Import the flake-parts modules for home-manager
   imports = [
@@ -7,7 +7,7 @@
 
   config = {
     flake = {
-      # Module to define user constants
+      # Module to add options to homeManager modules
       modules = {
         generic.userConstants = {lib, ...}: {
           options = {
@@ -16,42 +16,41 @@
               description = "The username for this system";
               default = "";
             };
-            arch = lib.mkOption {
-              type = lib.types.nullOr lib.types.string;
-              description = "The system architecture of this user";
-              default = null;
-            };
           };
         };
       };
 
       # Standalone home-manager config builder
-      # Will not be used in this flake, but is possible
+      # Takes an argument modules to load modules, mostly from this flake
+      # While function is defined here, this would be used in host configurations
       lib = {
-        mkHomeManager = {
+        mkHome = {
           system,
           user,
+          host,
+          modules ? [],
           ...
         }: {
-          ${user} = inputs.home-manager.lib.homeManagerConfiguration {
+          "${user}@${host}" = inputs.home-manager.lib.homeManagerConfiguration {
             pkgs = inputs.nixpkgs.legacyPackages.${system};
-            modules = [
-              inputs.self.modules.homeManager.${user}
-              # Additional modules to load on top of the user one
-              {
-                userConstants = {
-                  arch = system;
-                };
-              }
-              inputs.self.modules.generic.nixpkgs
-            ];
+            modules =
+              [
+                inputs.self.modules.homeManager.${user}
+                # Additional modules to load on top of the user one
+                inputs.self.modules.generic.nixpkgs
+              ]
+              ++ modules;
           };
         };
       };
 
       # User module factory function;
-      # Initializes home-manager module for the user
-      # And creates nixos and darwin modules to add user to context
+      # Initializes the following;
+      # - modules.homeManager: Module to configure user-level hm settings
+      # - modules.nixos:       Module to configure user-level os settings
+      #                         also initializes the user as hm-module in nixos
+      # - modules.darwin:      Module to configure user-level os settings
+      #                         also initializes the user as hm-module in darwin
       # Takes is attrset with at least username, and optional flags for user roles
       factory.user = {
         username,
@@ -60,7 +59,7 @@
         isNix ? false,
         ...
       }: {
-        # Nixos config for thin user, this uses home-manager as nixos module
+        # Nixos config for this user, this uses home-manager as nixos module
         nixos."${username}" = {
           lib,
           pkgs,
@@ -80,7 +79,6 @@
               ];
               shell = pkgs.zsh;
             };
-            programs.zsh.enable = true;
 
             home-manager = {
               useGlobalPkgs = true;
@@ -127,7 +125,6 @@
             };
 
             system.primaryUser = lib.mkIf isAdmin "${username}";
-            programs.zsh.enable = true;
           };
         };
 
@@ -135,11 +132,7 @@
         homeManager."${username}" = {
           imports = [
             inputs.self.modules.generic.userConstants
-            {
-              userConstants = {
-                username = username;
-              };
-            }
+            {userConstants.username = username;}
           ];
           config = {
             home.username = "${username}";

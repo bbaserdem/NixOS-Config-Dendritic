@@ -6,7 +6,7 @@
   ...
 }: {
   # currently, there's no nix-darwin module for flake-parts,
-  # so we have to manually add flake.darwinConfigurations as flake output
+  # Manually add flake.darwinConfigurations as flake output
   options = {
     flake = flake-parts-lib.mkSubmoduleOptions {
       darwinConfigurations = lib.mkOption {
@@ -25,14 +25,9 @@
         generic.hostConstants = {lib, ...}: {
           options = {
             hostname = lib.mkOption {
-              type = lib.types.string;
+              type = lib.types.nullOr lib.types.string;
               description = "Hostname for this system";
-              default = "";
-            };
-            arch = lib.mkOption {
-              type = lib.types.string;
-              description = "System architecture";
-              default = "";
+              default = null;
             };
           };
         };
@@ -50,12 +45,7 @@
           ${name} = inputs.nixpkgs.lib.nixosSystem {
             modules = [
               inputs.self.modules.generic.hostConstants
-              {
-                hostConstants = {
-                  hostname = name;
-                  arch = system;
-                };
-              }
+              {hostConstants.hostname = name;}
               inputs.self.modules.generic.nixpkgs
               inputs.self.modules.nixos.${name}
               {nixpkgs.hostPlatform = lib.mkDefault system;}
@@ -72,12 +62,7 @@
           ${name} = inputs.nix-darwin.lib.darwinSystem {
             modules = [
               inputs.self.modules.generic.hostConstants
-              {
-                hostConstants = {
-                  hostname = name;
-                  arch = system;
-                };
-              }
+              {hostConstants.hostname = name;}
               inputs.self.modules.generic.nixpkgs
               inputs.self.modules.darwin.${name}
               {nixpkgs.hostPlatform = lib.mkDefault system;}

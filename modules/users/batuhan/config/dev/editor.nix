@@ -3,7 +3,6 @@
   flake.modules.homeManager.batuhan = {
     lib,
     options,
-    config,
     ...
   }: {
     # Use this module only iF the wrapper module is defined
@@ -11,7 +10,7 @@
     config = lib.mkMerge [
       {}
       (
-        lib.optionalAttrs (builtins.hasAttrPath ["wrappers" "neovim"] options) {
+        lib.optionalAttrs (lib.attrsets.hasAttrPath ["wrappers" "neovim"] options) {
           wrappers.neovim = {
             # Set default theme
             settings = {
@@ -22,11 +21,6 @@
                 default = "dark";
               };
             };
-          };
-
-          # Set editor
-          home.sessionVariables = {
-            EDITOR = lib.getExe config.wrappers.neovim.wrapper;
           };
         }
       )
