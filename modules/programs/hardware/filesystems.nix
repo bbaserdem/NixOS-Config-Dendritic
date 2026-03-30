@@ -1,6 +1,11 @@
 # Filesystem settings
 {...}: {
   flake.modules.nixos.filesystems = {pkgs, ...}: {
+    # Enable udisks for hardware detection
+    services.udisks2 = {
+      enable = true;
+    };
+
     environment.systemPackages = with pkgs; [
       btrfs-progs
       btrfs-assistant

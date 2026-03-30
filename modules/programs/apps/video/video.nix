@@ -8,7 +8,6 @@
       [
         mpv
         yt-dlp
-        # obs
       ]
       ++ (
         if pkgs.stdenv.hostPlatform.isLinux

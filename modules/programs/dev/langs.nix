@@ -12,9 +12,10 @@
 
     # Python config
     python = {...}: {
-      # Enable uv to be able to set global configuration
+      # Set global configuration for uv
       programs.uv = {
         enable = true;
+        package = null;
         settings = {
           exclude-newer = "1 week";
         };

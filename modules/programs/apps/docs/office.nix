@@ -9,7 +9,7 @@
           kdeIntegration = true; # Do KDE integration
         }
       )
-      enchant2 # Spellchecker library that can use nuspell
+      enchant # Spellchecker library that can use nuspell
       nuspell # Spellchecker hunspell alternative that can do agglutinative
     ];
 

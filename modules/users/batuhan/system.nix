@@ -9,7 +9,6 @@
       # Add this user to additional groups
       users.users.batuhan = {
         extraGroups = [
-          "networkmanager"
           "docker"
           "libvirtd"
           "libvirtd-qemu"
