@@ -3,7 +3,7 @@
   flake.modules = {
     # Nixos and darwin modules to replace vim command
     # Also sets sudo editor
-    generic.vim = {
+    generic.editor = {
       lib,
       pkgs,
       config,
@@ -44,7 +44,7 @@
     };
 
     # Home manager module to install full neovim module
-    homeManager.neovim = {
+    homeManager.editor = {
       options,
       config,
       lib,
