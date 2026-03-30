@@ -1,4 +1,4 @@
-# Gaming within nixos
+# Gaming utilities
 {...}: {
   flake.modules = {
     # Gaming modules
@@ -38,13 +38,30 @@
       ];
     };
 
+    darwin.gaming = {pkgs, ...}: {
+      # We install steam using brew
+      homebrew.casks = [
+        "steam"
+        "steamcmd"
+      ];
+    };
+
     # Home manager module for lutris
-    homeManager.gaming = {osConfig, ...}: {
-      # Enable lutris
-      programs.lutris = {
-        enable = true;
-        steamPackage = osConfig.programs.steam.package;
-      };
+    homeManager.gaming = {
+      osConfig,
+      pkgs,
+      lib,
+      ...
+    }: {
+      config = lib.mkMerge [
+        (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+          # Enable lutris
+          programs.lutris = {
+            enable = true;
+            steamPackage = osConfig.programs.steam.package;
+          };
+        })
+      ];
     };
   };
 }

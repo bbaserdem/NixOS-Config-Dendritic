@@ -17,14 +17,20 @@
       ];
     };
 
-    darwin.docker = {...}: {
-      # Install through brew
-      homebrew.casks = [
-        "orbstack"
+    # Install orbstack on nix darwin
+    homeManager.docker = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      config = lib.mkMerge [
+        {}
+        (lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+          home.packages = with pkgs; [
+            orbstack
+          ];
+        })
       ];
-    };
-
-    homeManager.docker = {...}: {
     };
   };
 }

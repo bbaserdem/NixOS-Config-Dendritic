@@ -1,27 +1,29 @@
 # Music related apps
 {...}: {
-  flake.modules.homeManager.audio = {pkgs, ...}: {
+  flake.modules.homeManager.audio = {
+    pkgs,
+    lib,
+    ...
+  }: {
     # Install these apps to userspace
-    config = {
-      home.packages = with pkgs; (
-        [
+    config = lib.mkMerge [
+      {
+        home.packages = with pkgs; [
           streamrip # Music downloader
           audacity # Audio editor
           musescore # Score editing
           picard # Tag music
           chromaprint # Calculate acoustic id
-        ]
-        ++ (
-          if pkgs.stdenv.hostPlatform.isLinux
-          then [
+        ];
+      }
+      (
+        lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+          home.packages = with pkgs; [
             cantata
             prejectm-sdl-cpp # Broken on darwin
-          ]
-          else if pkgs.stdenv.hostPlatform.isDarwin
-          then []
-          else []
-        )
-      );
-    };
+          ];
+        }
+      )
+    ];
   };
 }

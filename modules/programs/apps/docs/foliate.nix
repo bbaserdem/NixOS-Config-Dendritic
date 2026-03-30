@@ -7,9 +7,15 @@
     };
 
     # Enable foliate
-    foliate = {...}: {
-      programs.foliate = {
-        enable = true;
+    foliate = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+        programs.foliate = {
+          enable = true;
+        };
       };
     };
   };

@@ -13,62 +13,57 @@
     git = {
       config,
       pkgs,
+      lib,
       ...
     }: {
-      programs = {
-        # Main git config
-        git = {
-          enable = true;
-          lfs.enable = true;
-          settings = {
-            core = {
-              editor = config.home.sessionVariables.EDITOR;
-            };
-            pull = {
-              rebase = false;
-            };
-            push = {
-              autoSetupRemote = true;
-            };
-            init = {
-              defaultBranch = "main";
-            };
-          };
-        };
-
-        # TUI for git
-        lazygit = {
-          enable = true;
-          settings = {
+      config = lib.mkMerge [
+        {
+          programs = {
+            # Main git config
             git = {
-              commit.autoWrapWidth = 80;
-              mainBranches = [
-                "main"
-                "master"
-              ];
-              parseEmoji = true;
+              enable = true;
+              lfs.enable = true;
+              settings = {
+                core = {
+                  editor = config.home.sessionVariables.EDITOR;
+                };
+                pull = {
+                  rebase = false;
+                };
+                push = {
+                  autoSetupRemote = true;
+                };
+                init = {
+                  defaultBranch = "main";
+                };
+              };
             };
-            os = {
-              edit = "${config.home.sessionVariables.EDITOR} {{filename}}";
+
+            # TUI for git
+            lazygit = {
+              enable = true;
+              settings = {
+                git = {
+                  commit.autoWrapWidth = 80;
+                  mainBranches = [
+                    "main"
+                    "master"
+                  ];
+                  parseEmoji = true;
+                };
+                os = {
+                  edit = "${config.home.sessionVariables.EDITOR} {{filename}}";
+                };
+              };
             };
           };
-        };
-
-        # Also add userspace packages
-        home.packages = with pkgs; (
-          [
-          ]
-          ++ (
-            if pkgs.stdenv.hostPlatform.isLinux
-            then [
-              gitg
-            ]
-            else if pkgs.stdenv.hostPlatform.isDarwin
-            then []
-            else []
-          )
-        );
-      };
+        }
+        (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+          home.packages = with pkgs; [
+            gitg
+          ];
+        })
+      ];
     };
   };
 }

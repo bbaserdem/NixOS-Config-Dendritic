@@ -1,7 +1,7 @@
 # Configuring the editor, using the neovim wrapper from this flake
 {inputs, ...}: {
   flake.modules = {
-    # Nixos and darwin modules to replace vim command
+    # Nixos and Darwin modules to replace vim command
     # Also sets sudo editor
     generic.editor = {
       lib,

@@ -1,11 +1,22 @@
 # Comm integration software suite
 {...}: {
-  flake.modules.homeManager.communication = {pkgs, ...}: {
-    # Install tools
-    home.packages = with pkgs; [
-      signal-desktop # Messaging
-      ferdium # Comms aggregator
-      zoom-us # Video conferancing
+  flake.modules.homeManager.communication = {
+    pkgs,
+    lib,
+    ...
+  }: {
+    config = lib.mkMerge [
+      {
+        home.packages = with pkgs; [
+          signal-desktop # Messaging
+          zoom-us # Video conferancing
+        ];
+      }
+      (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+        home.packages = with pkgs; [
+          ferdium # Comms aggregator
+        ];
+      })
     ];
   };
 }

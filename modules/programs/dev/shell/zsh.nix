@@ -94,15 +94,20 @@
     in {
       # Integrations
       home.shell.enableZsshIntegration = true;
-      programs.fzf.enableZshIntegration = true;
-      programs.direnv.enableZshIntegration = true;
-      programs.ghostty.enableZshIntegration = true;
-      programs.kitty.shellIntegration.enableZshIntegration = true;
-      programs.lazygit.enableZshIntegration = true;
-      programs.nix-index.enableZshIntegration = true;
-      programs.starship.enableZshIntegration = true;
-      programs.yazi.enableZshIntegration = true;
-      programs.zoxide.enableZshIntegration = true;
+      services = {
+        gpg-agent.enableZshIntegration = true;
+      };
+      programs = {
+        fzf.enableZshIntegration = true;
+        direnv.enableZshIntegration = true;
+        ghostty.enableZshIntegration = true;
+        kitty.shellIntegration.enableZshIntegration = true;
+        lazygit.enableZshIntegration = true;
+        nix-index.enableZshIntegration = true;
+        starship.enableZshIntegration = true;
+        yazi.enableZshIntegration = true;
+        zoxide.enableZshIntegration = true;
+      };
 
       # Setup zsh
       programs.zsh = {

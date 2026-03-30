@@ -7,11 +7,21 @@
     };
 
     # Enable in home-manager
-    mangohud = {...}: {
-      programs.mangohud = {
-        enable = true;
-        enableSessionWide = false;
-      };
+    mangohud = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      config = lib.mkMerge [
+        {
+        }
+        (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+          programs.mangohud = {
+            enable = true;
+            enableSessionWide = false;
+          };
+        })
+      ];
     };
   };
 }

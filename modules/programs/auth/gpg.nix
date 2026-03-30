@@ -1,10 +1,17 @@
 # GPG configuration
 {...}: {
   flake.modules.homeManager.gpg = {...}: {
+    # Enable GPG
+    programs.gpg = {
+      enable = true;
+      homedir = "${config.xdg.dataHome}/gnupg";
+      mutableKeys = true;
+      mutableTrust = true;
+    };
+
+    # Enable gpg agent
     services.gpg-agent = {
       enable = true;
-      enableBashIntegration = true;
-      enableZshIntegration = true;
       enableSshSupport = true;
       defaultCacheTtl = 86400;
       defaultCacheTtlSsh = 86400;

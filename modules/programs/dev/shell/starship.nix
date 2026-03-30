@@ -28,7 +28,7 @@
 
     # Enable starship on user level
     # We pull in nerd font symbols override
-    homeManager.virtualization = {osConfig, ...}: let
+    homeManager.shell = {osConfig, ...}: let
       starship = osConfig.programs.starship.package;
       nfToml = builtins.readFile "${starship}/share/starship/presets/nerd-font-symbols.toml";
       nfSettings = builtins.fromTOML nfToml;

@@ -26,6 +26,9 @@
     homeManager.shell = {...}: {
       # Integrations
       home.shell.enableBashIntegration = true;
+      services = {
+        gpg-agent.enableBashIntegration = true;
+      };
       programs = {
         fzf.enableBashIntegration = true;
         direnv.enableBashIntegration = true;

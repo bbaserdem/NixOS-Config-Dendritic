@@ -14,31 +14,35 @@
       lib,
       ...
     }: {
-      programs.ghostty = lib.mkMerge [
+      config = lib.mkMerge [
         {
-          enable = true;
+          programs.ghostty = {
+            enable = true;
 
-          # Integrations
-          installVimSyntax = true;
-          installBatSyntax = true;
+            # Integrations
+            installVimSyntax = true;
+            installBatSyntax = true;
 
-          # Settings
-          settings = {
+            # Settings
+            settings = {
+            };
           };
         }
         (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
           # Linux only settings
-          systemd = {
-            enable = true;
-          };
-          settings = {
-            linux-cgroup = "single-instance";
+          programs.ghostty = {
+            systemd.enable = true;
+            settings = {
+              linux-cgroup = "single-instance";
+            };
           };
         })
         (lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
           # MacOS only settings
-          settings = {
-            macos-option-as-alt = true;
+          programs.ghostty = {
+            settings = {
+              macos-option-as-alt = true;
+            };
           };
         })
       ];

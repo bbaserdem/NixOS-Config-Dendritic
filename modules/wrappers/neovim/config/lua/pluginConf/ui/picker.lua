@@ -17,6 +17,12 @@ local M = {
       local telescope = require("telescope")
 
       telescope.setup({
+        pickers = {
+          colorscheme = {
+            enable_preview = true,
+            ignore_builtins = true,
+          },
+        },
         extensions = {
           fzf = {
             fuzzy = true,

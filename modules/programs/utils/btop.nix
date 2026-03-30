@@ -1,7 +1,7 @@
 # Btop; system monitor
 {...}: {
   flake.modules.homeManager = {
-    # Enable stylix theming for mangohud
+    # Enable stylix theming
     stylix = {...}: {
       stylix.targets.btop.enable = true;
     };

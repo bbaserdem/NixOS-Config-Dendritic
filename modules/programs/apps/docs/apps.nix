@@ -1,23 +1,23 @@
 # Document related software
 {...}: {
-  flake.modules.homeManager.docs = {pkgs, ...}: {
+  flake.modules.homeManager.docs = {
+    pkgs,
+    lib,
+    ...
+  }: {
     # Install these apps to userspace
-    config = {
-      home.packages = with pkgs; (
-        [
+    config = lib.mkMerge [
+      {
+        home.packages = with pkgs; [
           calibre # Book library organizer
           zotero # Reference manager
-        ]
-        ++ (
-          if pkgs.stdenv.hostPlatform.isLinux
-          then [
-            kdePackages.okular
-          ]
-          else if pkgs.stdenv.hostPlatform.isDarwin
-          then []
-          else []
-        )
-      );
-    };
+        ];
+      }
+      (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+        home.packages = with pkgs; [
+          kdePackages.okular
+        ];
+      })
+    ];
   };
 }

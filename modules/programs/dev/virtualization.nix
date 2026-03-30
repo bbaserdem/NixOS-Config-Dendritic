@@ -31,6 +31,12 @@
             };
           };
         })
+        # Install UTM to darwin userspace
+        (lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+          home.packages = with pkgs; [
+            utm
+          ];
+        })
       ];
     };
   };
