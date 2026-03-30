@@ -65,7 +65,9 @@
         inputs.self.modules.homeManager.neovim
       ];
 
-      config = {
+      config = let
+        neovim-bin = lib.getExe config.wrappers.neovim.wrapper;
+      in {
         # Configure this neovim instance
         wrappers.neovim = {...}: {
           # Enable nvim
@@ -76,9 +78,15 @@
           hosts.neovide.nvim-host.enable = true;
         };
 
+        # Also install neovide in our system, configured to use our neovim
+        programs.neovide = {
+          enable = true;
+          settings.neovim-bin = neovim-bin;
+        };
+
         # Set editor
         home.sessionVariables = {
-          EDITOR = lib.getExe config.wrappers.neovim.wrapper;
+          EDITOR = neovim-bin;
         };
       };
     };
