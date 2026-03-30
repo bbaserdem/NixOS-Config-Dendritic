@@ -75,11 +75,11 @@
           # Enable neovide
           hosts.neovide.nvim-host.enable = true;
         };
-      };
 
-      # Set editor
-      home.sessionVariables = {
-        EDITOR = lib.getExe config.wrappers.neovim.wrapper;
+        # Set editor
+        home.sessionVariables = {
+          EDITOR = lib.getExe config.wrappers.neovim.wrapper;
+        };
       };
     };
   };
