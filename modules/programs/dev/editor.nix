@@ -49,7 +49,7 @@
         stylix.targets.neovide = {
           enable = true;
           fonts.enable = true;
-          opacity.enable = true;
+          opacity.enable = false;
         };
       };
 

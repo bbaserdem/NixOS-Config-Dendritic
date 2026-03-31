@@ -31,6 +31,12 @@
           mini-base16
           nvim-lspconfig
         ];
+
+        # These are default gui fonts
+        extraPackages = with pkgs; [
+          jetbrains-mono
+          nerd-fonts.symbols-only
+        ];
       };
     };
   };
