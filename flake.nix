@@ -4,6 +4,7 @@
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
 
   inputs = {
+    base16.url = "github:SenchoPens/base16.nix";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,15 +35,15 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    nixcord = {
-      url = "github:FlameFlag/nixcord";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixcord.url = "github:FlameFlag/nixcord";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-lib.follows = "nixpkgs";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nur.url = "github:nix-community/NUR";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     packages = {
       url = "path:./packages";
       flake = false;
@@ -52,12 +53,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix = {
-      url = "github:nix-community/stylix/release-25.11";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        nur.follows = "nur";
-      };
+    stylix.url = "github:nix-community/stylix/release-25.11";
+    tinted-terminal = {
+      url = "github:tinted-theming/tinted-terminal";
+      flake = false;
     };
     wrappers = {
       url = "github:BirdeeHub/nix-wrapper-modules";

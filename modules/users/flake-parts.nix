@@ -7,16 +7,10 @@
 
   config = {
     flake = {
-      # Module to add options to homeManager modules
       modules = {
-        generic.userConstants = {lib, ...}: {
-          options = {
-            username = lib.mkOption {
-              type = lib.types.string;
-              description = "The username for this system";
-              default = "";
-            };
-          };
+        # Default settings for all home-manager invocations
+        homeManager.default = {...}: {
+          home.stateVersion = "25.11";
         };
       };
 
@@ -107,11 +101,16 @@
             inputs.home-manager.darwinModules.home-manager
           ];
           config = {
-            # Configure user
-            users.users."${username}" = {
-              home = "/Users/${username}";
-              shell = pkgs.zsh;
-              isHidden = false;
+            users = {
+              # Add us to managed users
+              knownUsers = [
+                "${username}"
+              ];
+              # Configure user
+              users."${username}" = {
+                home = "/Users/${username}";
+                isHidden = false;
+              };
             };
 
             home-manager = {
@@ -131,8 +130,7 @@
         # Home-manager module initialization for the user
         homeManager."${username}" = {
           imports = [
-            inputs.self.modules.generic.userConstants
-            {userConstants.username = username;}
+            inputs.self.modules.homeManager.default
           ];
           config = {
             home.username = "${username}";

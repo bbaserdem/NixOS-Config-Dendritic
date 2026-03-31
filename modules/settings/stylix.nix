@@ -3,12 +3,11 @@
   # https://github.com/nix-community/stylix
 
   flake-file.inputs = {
-    stylix = {
-      url = "github:nix-community/stylix/release-25.11";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        nur.follows = "nur";
-      };
+    stylix.url = "github:nix-community/stylix/release-25.11";
+    base16.url = "github:SenchoPens/base16.nix";
+    tinted-terminal = {
+      url = "github:tinted-theming/tinted-terminal";
+      flake = false;
     };
   };
 
@@ -22,7 +21,7 @@
 
     darwin.stylix = {...}: {
       imports = [
-        inputs.stylix.darwminModules.stylix
+        inputs.stylix.darwinModules.stylix
       ];
     };
 

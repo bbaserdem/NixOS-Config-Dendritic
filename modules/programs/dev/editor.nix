@@ -43,50 +43,61 @@
       };
     };
 
-    # Home manager module to install full neovim module
-    homeManager.editor = {
-      options,
-      config,
-      lib,
-      ...
-    }: let
-      # Load stylix colors if they are available
-      stylixColors =
-        if (builtins.hasAttr "stylix" options.lib)
-        then
-          (lib.filterAttrs (
-              k: v: ((builtins.match "base0[0-9A-F]" k) != null)
-            )
-            config.lib.stylix.colors.withHashtag)
-        else null;
-    in {
-      # Import the wrapper module in the home-manager context
-      imports = [
-        inputs.self.modules.homeManager.neovim
-      ];
+    homeManager = {
+      # Stylix theme for neovide
+      stylix = {...}: {
+        stylix.targets.neovide = {
+          enable = true;
+          fonts.enable = true;
+          opacity.enable = true;
+        };
+      };
 
-      config = let
-        neovim-bin = lib.getExe config.wrappers.neovim.wrapper;
+      # Home manager module to install full neovim module
+      editor = {
+        options,
+        config,
+        lib,
+        ...
+      }: let
+        # Load stylix colors if they are available
+        stylixColors =
+          if (builtins.hasAttr "stylix" options.lib)
+          then
+            (lib.filterAttrs (
+                k: v: ((builtins.match "base0[0-9A-F]" k) != null)
+              )
+              config.lib.stylix.colors.withHashtag)
+          else null;
       in {
-        # Configure this neovim instance
-        wrappers.neovim = {...}: {
-          # Enable nvim
-          enable = true;
-          # Pass stylix theme through if loaded
-          settings.colorscheme.base16 = stylixColors;
-          # Enable neovide
-          hosts.neovide.nvim-host.enable = true;
-        };
+        # Import the wrapper module in the home-manager context
+        imports = [
+          inputs.self.modules.homeManager.neovim
+        ];
 
-        # Also install neovide in our system, configured to use our neovim
-        programs.neovide = {
-          enable = true;
-          settings.neovim-bin = neovim-bin;
-        };
+        config = let
+          neovim-bin = lib.getExe config.wrappers.neovim.wrapper;
+        in {
+          # Configure this neovim instance
+          wrappers.neovim = {...}: {
+            # Enable nvim
+            enable = true;
+            # Pass stylix theme through if loaded
+            settings.colorscheme.base16 = stylixColors;
+            # Enable neovide
+            hosts.neovide.nvim-host.enable = true;
+          };
 
-        # Set editor
-        home.sessionVariables = {
-          EDITOR = neovim-bin;
+          # Also install neovide in our system, configured to use our neovim
+          programs.neovide = {
+            enable = true;
+            settings.neovim-bin = neovim-bin;
+          };
+
+          # Set editor
+          home.sessionVariables = {
+            EDITOR = neovim-bin;
+          };
         };
       };
     };

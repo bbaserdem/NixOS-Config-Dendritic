@@ -1,13 +1,20 @@
-{inputs, ...}: {
+# System settings for this user
+{inputs, ...}: let
+  userName = "batuhan";
+in {
   flake.modules = {
+    # Modules population for system settings
+
     # Nixos module settings
-    nixos.batuhan = {...}: {
+    nixos."${userName}" = {...}: {
       # Nixos modules to load with this user enabled
       imports = with inputs.self.modules.nixos; [
       ];
 
-      # Add this user to additional groups
-      users.users.batuhan = {
+      # System settings for user
+      users.users."${userName}" = {
+        description = "Batuhan Baserdem";
+        # Add this user to theese additional groups
         extraGroups = [
           "docker"
           "libvirtd"
@@ -17,15 +24,22 @@
     };
 
     # Darwin module settings
-    darwin.batuhan = {...}: {
+    darwin."${userName}" = {...}: {
       # Darwin modules to load for this user
       imports = with inputs.self.modules.darwin; [
       ];
+
+      # System settings for user
+      users.users."${userName}" = {
+        description = "Batuhan Baserdem";
+      };
     };
 
-    # Hmoe manager settings
-    homeManager.batuhan = {...}: {
-      home.stateVersion = "25.05";
+    # Home manager settings
+    homeManager."${userName}" = {...}: {
+      # Home manager modules to load for this user
+      imports = with inputs.self.modules.homeManager; [
+      ];
     };
   };
 }

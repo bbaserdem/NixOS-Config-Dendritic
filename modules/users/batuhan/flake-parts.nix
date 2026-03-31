@@ -1,8 +1,9 @@
-# Initialize this user in flake-parts
+# Initialize this user
 {inputs, ...}: let
+  userName = "batuhan";
 in {
   flake.modules = inputs.self.factory.user {
-    username = "batuhan";
+    username = "${userName}";
     isAdmin = true;
     isNix = true;
   };

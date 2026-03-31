@@ -1,6 +1,6 @@
 # GPG configuration
 {...}: {
-  flake.modules.homeManager.gpg = {...}: {
+  flake.modules.homeManager.gpg = {config, ...}: {
     # Enable GPG
     programs.gpg = {
       enable = true;

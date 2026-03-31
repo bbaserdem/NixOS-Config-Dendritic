@@ -17,9 +17,37 @@
   };
 
   config = {
-    # Put modules as canonical modules
-    flake.nixosModules = inputs.self.modules.nixos;
-    flake.homeModules = inputs.self.modules.homeManager;
-    flake.darwinModules = inputs.self.modules.darwin;
+    flake = {
+      # Put all modules as canonical modules
+      nixosModules = inputs.self.modules.nixos;
+      homeModules = inputs.self.modules.homeManager;
+      darwinModules = inputs.self.modules.darwin;
+
+      # Boilerplate for initializing system modules from home-manager modules
+      factory = {
+        inclusionModules = name: {
+          homeManager."${name}" = {...}: {
+            # Just init this module as empty
+          };
+          # Generic home-manager shared module importer
+          generic."${name}" = {...}: {
+            home-manager.sharedModules = [
+              inputs.self.modules.homeManager."${name}"
+            ];
+          };
+          # Import generic module to system
+          nixos."${name}" = {...}: {
+            imports = [
+              inputs.self.modules.generic."${name}"
+            ];
+          };
+          darwin."${name}" = {...}: {
+            imports = [
+              inputs.self.modules.generic."${name}"
+            ];
+          };
+        };
+      };
+    };
   };
 }

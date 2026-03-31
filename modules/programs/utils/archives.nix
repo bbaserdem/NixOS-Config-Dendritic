@@ -1,5 +1,5 @@
 # Archiving utilities
-{...}: {
+{inputs, ...}: {
   flake.modules = let
     archivePkgs = pkgs: (with pkgs; [
       patool
@@ -17,10 +17,23 @@
       zstd
     ]);
   in {
-    # Modules to install archiving tools
-    nixos.archives = {pkgs, ...}: {
+    # Include to homeManager
+    generic.archives = {pkgs, ...}: {
+      home-manager.sharedModules = [
+        inputs.self.modules.homeManager.archives
+      ];
       environment.systemPackages = archivePkgs pkgs;
     };
+
+    # Modules to install archiving tools
+    nixos.archives = {...}: {
+      imports = [inputs.self.modules.generic.archives];
+    };
+    darwin.archives = {...}: {
+      imports = [inputs.self.modules.generic.archives];
+    };
+
+    # Install to user
     homeManager.archives = {pkgs, ...}: {
       home.packages = archivePkgs pkgs;
     };

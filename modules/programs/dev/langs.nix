@@ -8,6 +8,19 @@
       home.sessionVariables = {
         "PNPM_HOME" = "${config.xdg.dataHome}/pnpm";
       };
+
+      # Configure package manager with safety overrides
+      programs = {
+        bun = {
+          enable = true;
+          package = null;
+          settings = {
+            install = {
+              minimumReleaseAge = 604800; # One week in seconds
+            };
+          };
+        };
+      };
     };
 
     # Python config

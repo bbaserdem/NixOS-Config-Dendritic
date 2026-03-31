@@ -21,15 +21,16 @@
       # Host related functionality creating system / home-manager configurations
 
       modules = {
-        # Host specific setting definitions to propagate inside system
-        generic.hostConstants = {lib, ...}: {
-          options = {
-            hostname = lib.mkOption {
-              type = lib.types.nullOr lib.types.string;
-              description = "Hostname for this system";
-              default = null;
-            };
-          };
+        # Default settings modules
+
+        # NixOS
+        nixos.default = {...}: {
+          system.stateVersion = "25.11";
+        };
+
+        # Darwin
+        darwin.default = {...}: {
+          system.stateVersion = "6";
         };
       };
 
@@ -44,11 +45,14 @@
         }: {
           ${name} = inputs.nixpkgs.lib.nixosSystem {
             modules = [
-              inputs.self.modules.generic.hostConstants
-              {hostConstants.hostname = name;}
               inputs.self.modules.generic.nixpkgs
+              inputs.self.modules.nixos.default
               inputs.self.modules.nixos.${name}
-              {nixpkgs.hostPlatform = lib.mkDefault system;}
+              {
+                nixpkgs.hostPlatform = lib.mkDefault system;
+                networking.hostName = "${name}";
+                # hardware.bluetooth.settings.General.Name
+              }
             ];
           };
         };
@@ -61,11 +65,17 @@
         }: {
           ${name} = inputs.nix-darwin.lib.darwinSystem {
             modules = [
-              inputs.self.modules.generic.hostConstants
-              {hostConstants.hostname = name;}
               inputs.self.modules.generic.nixpkgs
+              inputs.self.modules.darwin.default
               inputs.self.modules.darwin.${name}
-              {nixpkgs.hostPlatform = lib.mkDefault system;}
+              ({config, ...}: {
+                nixpkgs.hostPlatform = lib.mkDefault system;
+                networking = {
+                  hostName = "${name}";
+                  localHostName = "${config.networking.hostName}.local";
+                  # computerName
+                };
+              })
             ];
           };
         };

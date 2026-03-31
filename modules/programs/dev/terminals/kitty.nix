@@ -1,5 +1,13 @@
 # Configuring kitty
 {...}: {
+  # Flake source; terminal theming
+  flake-file.inputs = {
+    tinted-terminal = {
+      url = "github:tinted-theming/tinted-terminal";
+      flake = false;
+    };
+  };
+
   flake.modules.homeManager = {
     # Enable stylix theming for kitty
     stylix = {...}: {
