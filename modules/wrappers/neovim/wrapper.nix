@@ -73,7 +73,17 @@
               type = lib.types.str;
               default = "dawnfox";
             };
-            # Whether to enable tranparent background
+            # Dark scheme for gui
+            gui-dark = lib.mkOption {
+              type = lib.types.str;
+              default = "kanagawa-dragn";
+            };
+            # Light scheme for gui
+            gui-light = lib.mkOption {
+              type = lib.types.str;
+              default = "kanagawa-lotus";
+            };
+            # Whether to enable tranparency background
             translucent = lib.mkOption {
               type = lib.types.bool;
               default = false;
@@ -86,6 +96,11 @@
             # Provide base16 colors to the stylix theme
             base16 = lib.mkOption {
               type = lib.types.nullOr lib.types.attrs;
+              default = null;
+            };
+            # Stylix polarity, needed to make the theme function correctly
+            base16-polarity = lib.mkOption {
+              type = lib.types.nullOr (lib.types.enum ["light" "dark"]);
               default = null;
             };
           };

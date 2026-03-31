@@ -1,14 +1,11 @@
 -- Set up neovide
 
 -- Define fallback fonts, we don't have any of the builtins
-vim.opt.guifont = {
-  "JetBrains_Mono",
-  "Symbols_Nerd_Font_Mono",
-  ":h14",
-  ":#h-full",
-  ":#e-antialias",
-}
--- Neovide only loads the font settings in stylix, rest is ours
+vim.opt.guifont = "JetBrains_Mono,Symbols_Nerd_Font_Mono:h14"
+
+-- Neovide will be set with only font settings in config.toml.
+-- That's due to having a complex override that's not possible with opt.guifont
+-- Rest of the config is done here
 vim.g.neovide_opacity = 0.8
 vim.g.neovide_text_gamma = 0.8
 vim.g.neovide_text_contrast = 0.5
