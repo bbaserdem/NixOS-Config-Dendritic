@@ -76,7 +76,7 @@
             # Dark scheme for gui
             gui-dark = lib.mkOption {
               type = lib.types.str;
-              default = "kanagawa-dragn";
+              default = "kanagawa-dragon";
             };
             # Light scheme for gui
             gui-light = lib.mkOption {
