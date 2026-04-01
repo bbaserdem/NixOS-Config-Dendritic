@@ -79,6 +79,7 @@
           twilight-nvim # Dims inactive code
           mini-map # Code visual overview
           nvim-highlight-colors # Render colors with highlights
+          satellite-nvim # Shows status signs on the right hand side
         ];
         extraPackages = with pkgs.unstable; [
           dwt1-shell-color-scripts

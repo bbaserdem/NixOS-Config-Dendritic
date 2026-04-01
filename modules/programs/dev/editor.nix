@@ -58,6 +58,7 @@
         options,
         config,
         lib,
+        pkgs,
         ...
       }: let
         # Load stylix colors if they are available
@@ -91,6 +92,8 @@
           # Also install neovide in our system, configured to use our neovim
           programs.neovide = {
             enable = true;
+            # Pull from unstable
+            package = pkgs.unstable.neovide;
             settings.neovim-bin = neovim-bin;
           };
 

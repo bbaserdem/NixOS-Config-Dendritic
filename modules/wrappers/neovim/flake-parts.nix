@@ -27,7 +27,7 @@
       };
 
       # Home-manager module
-      homeManager.neovim = {pkgs, ...}: {
+      homeManager.neovim = {...}: {
         # Import the module from the wrapper
         imports = [
           # The modules are exported in outputs.wrapperModules
@@ -37,12 +37,6 @@
             name = "neovim";
             value = inputs.self.wrapperModules.neovim;
           })
-        ];
-
-        # Add the fallback gui font to system packages
-        home.packages = with pkgs; [
-          jetbrains-mono
-          nerd-fonts.symbols-only
         ];
       };
     };
