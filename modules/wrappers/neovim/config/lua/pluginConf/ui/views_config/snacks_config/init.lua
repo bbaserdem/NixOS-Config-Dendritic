@@ -7,13 +7,13 @@ local M = {
   after = function(plugin)
     require("snacks").setup({
       -- Enabled plugins
-      dashboard = require("pluginConf.ui.views.snacks.dashboard"),
+      dashboard = require("pluginConf.ui.views_config.snacks_config.dashboard_config"),
       gh = { enabled = true },
-      indent = require("pluginConf.ui.views.snacks.indent"),
+      indent = require("pluginConf.ui.views_config.snacks_config.indent_config"),
       input = { enabled = true },
-      notifier = require("pluginConf.ui.views.snacks.notifier"),
+      notifier = require("pluginConf.ui.views_config.snacks_config.notifier_config"),
       scroll = { enabled = true },
-      toggle = require("pluginConf.ui.views.snacks.toggle"),
+      toggle = require("pluginConf.ui.views_config.snacks_config.toggle_config"),
       -- Disabled plugins, we don't even load them
       -- If they are explicitly disabled, they still get require calls
       -- Messes up with other plugins setting integrations with unused features

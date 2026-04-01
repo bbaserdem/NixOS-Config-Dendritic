@@ -20,13 +20,13 @@ nixInfo.lze.load({
       })
     end,
   },
-  { import = "lspConf.gopls" },
-  { import = "lspConf.harper" },
-  { import = "lspConf.lua-ls" },
-  { import = "lspConf.nixd" },
-  { import = "lspConf.rust-analyzer" },
-  { import = "lspConf.ty" },
-  { import = "lspConf.typescript-ls" },
+  { import = "lspConf.gopls_config" },
+  { import = "lspConf.harper_config" },
+  { import = "lspConf.lua-ls_config" },
+  { import = "lspConf.nixd_config" },
+  { import = "lspConf.rust-analyzer_config" },
+  { import = "lspConf.ty_config" },
+  { import = "lspConf.typescript-ls_config" },
 })
 
 -- Diagnostic signs

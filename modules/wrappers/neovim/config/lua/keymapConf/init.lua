@@ -1,19 +1,19 @@
 -- Keybinds entry point
 
 -- Leader keybinds for each functionality
-require("keymapConf.ai")
-require("keymapConf.buffer")
-require("keymapConf.code")
-require("keymapConf.debug")
-require("keymapConf.files")
-require("keymapConf.git")
-require("keymapConf.jujutsu")
-require("keymapConf.navigation")
-require("keymapConf.search")
-require("keymapConf.ui")
+require("keymapConf.ai_config")
+require("keymapConf.buffer_config")
+require("keymapConf.code_config")
+require("keymapConf.debug_config")
+require("keymapConf.files_config")
+require("keymapConf.git_config")
+require("keymapConf.jujutsu_config")
+require("keymapConf.navigation_config")
+require("keymapConf.search_config")
+require("keymapConf.ui_config")
 
 -- Specific file-type keymaps, uses localleader
-require("keymapConf.latex")
+require("keymapConf.latex_config")
 
 -- Load which-key group names
 local wk_status, wk = pcall(require, "which-key")
