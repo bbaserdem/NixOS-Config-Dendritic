@@ -16,12 +16,15 @@
         # Project environment
         bun
         lean4
+        postgresql
         # Tooling for agents
         ripgrep
         shellcheck
         # Doc rendering
         mdbook
         mdbook-mermaid
+        mdbook-d2
+        d2
       ];
       shellHook = ''
         # Node should be set in .envrc
