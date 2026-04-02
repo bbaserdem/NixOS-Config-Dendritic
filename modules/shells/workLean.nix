@@ -10,9 +10,6 @@
               pyyaml
             ])
         )
-        # Node.js for claude and codex
-        nodejs-slim
-        pnpm
         # Project environment
         bun
         lean4
