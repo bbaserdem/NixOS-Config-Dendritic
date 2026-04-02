@@ -35,6 +35,7 @@ in {
         url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
         inputs.nixpkgs.follows = "nixpkgs-darwin";
       };
+      stylix.url = "github:nix-community/stylix/release-25.11";
 
       # Auto-database fetching for nixpkgs
       nix-index-database = {

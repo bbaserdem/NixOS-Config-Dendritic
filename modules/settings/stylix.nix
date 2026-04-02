@@ -3,7 +3,7 @@
   # https://github.com/nix-community/stylix
 
   flake-file.inputs = {
-    stylix.url = "github:nix-community/stylix/release-25.11";
+    # Stylix flake-file input is in modules/flake/nixpkgs.nix for easy update
     base16.url = "github:SenchoPens/base16.nix";
     tinted-terminal = {
       url = "github:tinted-theming/tinted-terminal";
