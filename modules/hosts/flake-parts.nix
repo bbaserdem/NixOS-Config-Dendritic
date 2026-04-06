@@ -79,6 +79,22 @@
             ];
           };
         };
+
+        # Standalone home-manager builder
+        mkHome = {
+          system,
+          name,
+          user,
+          ...
+        }: {
+          "${user}@${name}" = inputs.home-manager.lib.homeManagerConfiguration {
+            modules = [
+              inputs.self.modules.generic.nixpkgs
+              inputs.self.modules.homeManager.${name}
+              inputs.self.modules.homeManager.${user}
+            ];
+          };
+        };
       };
     };
   };

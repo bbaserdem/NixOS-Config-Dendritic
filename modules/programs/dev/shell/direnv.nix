@@ -1,6 +1,6 @@
 # Direnv setup
 {...}: {
-  flake.modules.homeManager.direnv = {...}: {
+  flake.modules.homeManager.shell = {...}: {
     # Enable direnv for our shells
     programs.direnv = {
       enable = true;

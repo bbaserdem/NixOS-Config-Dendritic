@@ -6,6 +6,22 @@ My nix system flake.
 - Follows dendritic pattern
 - Using jj for vcs
 
+# Todo
+
+- [ ] Clean and setup secrets
+- [ ] Configure syncthing (import .stignore files to be managed by nix)
+- [ ] Finish personalized claude config
+- [ ] Add codecompanion to nvim wrapper
+- [ ] Setup individual theming
+- [ ] Test if kitty theme importer is working
+- [ ] Now that we moved from brew to nix for GUI, fix dock in darwin.
+- [ ] Test darwin modules on macos
+- [ ] Configure joey's user
+- [ ] Import desktop, display manager config
+- [ ] Import grub config
+- [ ] Fix polkit issues in hyprland
+- [ ] Test nixos modules on laptop
+
 # Development
 
 - Each host gets their own named branch after hostname.

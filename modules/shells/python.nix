@@ -2,21 +2,28 @@
 {inputs, ...}: {
   perSystem = {pkgs, ...}: {
     devShells.python = pkgs.mkShell {
-      packages = with pkgs; [
-        # Python projects use uv tooling for python environment
-        uv
-        # Node.js for claude and codex
-        nodejs-slim
-        pnpm
-        # Tooling for agents
-        ripgrep
-        shellcheck
-        nixd
-        bash-language-server
-        # Doc rendering
-        mdbook
-        mdbook-mermaid
-      ];
+      packages = with pkgs;
+        [
+          # Python projects use uv tooling for python environment
+          uv
+          # Node.js for claude and codex
+          nodejs-slim
+          pnpm
+          # Tooling for agents
+          ripgrep
+          shellcheck
+          nixd
+          bash-language-server
+          socat
+          # Doc rendering
+          mdbook
+          mdbook-mermaid
+        ]
+        ++ (
+          lib.optionals (pkgs.stdenv.hostPlatform.isLinux) (with pkgs; [
+            bubblewrap
+          ])
+        );
       shellHook = ''
         # Setup Python via uv
         export UV_PYTHON_PREFERENCE=only-managed

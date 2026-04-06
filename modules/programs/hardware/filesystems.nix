@@ -7,6 +7,7 @@
     };
 
     environment.systemPackages = with pkgs; [
+      acl
       btrfs-progs
       btrfs-assistant
       btrfs-heatmap

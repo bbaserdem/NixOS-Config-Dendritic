@@ -14,30 +14,6 @@
         };
       };
 
-      # Standalone home-manager config builder
-      # Takes an argument modules to load modules, mostly from this flake
-      # While function is defined here, this would be used in host configurations
-      lib = {
-        mkHome = {
-          system,
-          user,
-          host,
-          modules ? [],
-          ...
-        }: {
-          "${user}@${host}" = inputs.home-manager.lib.homeManagerConfiguration {
-            pkgs = inputs.nixpkgs.legacyPackages.${system};
-            modules =
-              [
-                inputs.self.modules.homeManager.${user}
-                # Additional modules to load on top of the user one
-                inputs.self.modules.generic.nixpkgs
-              ]
-              ++ modules;
-          };
-        };
-      };
-
       # User module factory function;
       # Initializes the following;
       # - modules.homeManager: Module to configure user-level hm settings
