@@ -22,6 +22,11 @@
       }: {
         # Use firefox-bin in the package
         config = lib.mkMerge [
+          {
+            programs.firefox = {
+              enable = true;
+            };
+          }
           (
             lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
               programs.firefox = {
