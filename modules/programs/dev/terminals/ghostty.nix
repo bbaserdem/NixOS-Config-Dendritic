@@ -28,10 +28,6 @@
             programs.ghostty = {
               enable = true;
 
-              # Integrations
-              installVimSyntax = true;
-              installBatSyntax = true;
-
               # Settings
               settings = {
               };
@@ -40,6 +36,11 @@
           (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
             # Linux only settings
             programs.ghostty = {
+              # Integrations, only available in linux
+              installVimSyntax = true;
+              installBatSyntax = true;
+
+              # Systemd integration
               systemd.enable = true;
               settings = {
                 linux-cgroup = "single-instance";
