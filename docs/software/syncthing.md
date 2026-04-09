@@ -141,4 +141,15 @@ Service is `home-manager`, ownership not a problem.
 
 Folders on `/home/user` location.
 Only sync users' folders. (Enable flags are from users' `home-manager`)
-Ownership not an issue from `home-manage`r.
+Ownership not an issue from `home-manager`.
+
+### Keys
+
+To generate keys;
+
+```bash
+export OUTPUT_DIR="/tmp/syncthing-keys"
+nix run nixpkgs#syncthing -- generate --home "$OUTPUT_DIR"
+nix run nixpkgs#syncthing -- device-id --home "$OUTPUT_DIR" > "$OUTPUT_DIR/public.id"
+nix run nixpkgs#openssl -- rand -hex 16 | fold -w4 | paste -sd'-' - > "$OUTPUT_DIR/restapi.key"
+```
