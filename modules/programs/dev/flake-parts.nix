@@ -1,8 +1,12 @@
 # Flake partsq inif modules
-{inputs, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
   # Collect factoried modules
-  flake.modules =
-    {}
-    // (inputs.self.factory.inclusionModules "ghostty")
-    // (inputs.self.factory.inclusionModules "kitty");
+  flake.modules = lib.foldl lib.recursiveUpdate {} [
+    (inputs.self.factory.inclusionModules "ghostty")
+    (inputs.self.factory.inclusionModules "kitty")
+  ];
 }
