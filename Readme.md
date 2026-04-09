@@ -9,6 +9,7 @@ My nix system flake.
 # Todo
 
 - [ ] Clean and setup secrets
+- [ ] Neovim: setup localleader commands to render markdown.
 - [ ] Configure syncthing (import .stignore files to be managed by nix)
 - [ ] Finish personalized claude config
 - [ ] Add codecompanion to nvim wrapper

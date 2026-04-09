@@ -7,6 +7,7 @@ My syncthing setup is meant to be used across different hosts and computers.
 ## TODO
 
 - [*] dataDir = "/home/syncthing"
+- [ ] redo secret hierarchy to `syncthing/host{,-user}/{key,cert,restapi}`
 - [ ] ACL rules
 - [ ] Paperless synching only media dir (ACL rules as well)
 - [ ] Paperless timer to backup db
@@ -81,8 +82,9 @@ While nixos module supports `.stignore` files, home-manager doesn't.
 Host specific behavior is also not easy to configure this way.
 We have a `Stignore` folder in each directory, that contains various `Stignore` files.
 
-Folders should be defined to `generic.syncthing` module, *except* their path variable.
-They all should have their enable flags set to `lib.mkOptionDefault false`.
+- Folders should be defined to `generic.syncthing` module, *except* their path variable.
+- **IMPORTANT**: All folders should have `ignorePerms = true`` set
+- All folders should have their enable flags set to `lib.mkOptionDefault false`.
 
 ### Host Config
 

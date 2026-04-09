@@ -36,6 +36,26 @@
                 init = {
                   defaultBranch = "main";
                 };
+                diff = {
+                  algorithm = "histogram";
+                };
+                merge = {
+                  conflictstyle = "zdiff3";
+                  log = true;
+                };
+                rebase = {
+                  autoStash = true;
+                  updateRefs = true;
+                };
+                fetch = {
+                  prune = false;
+                };
+                rerere = {
+                  enabled = true;
+                };
+                column = {
+                  ui = "auto";
+                };
               };
             };
 
