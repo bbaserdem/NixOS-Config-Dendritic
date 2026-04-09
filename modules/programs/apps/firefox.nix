@@ -1,6 +1,14 @@
 # Enabling shared firefox module
 {...}: {
   flake.modules = {
+    # Install firefox through brew in darwin
+    darwin.firefox = {...}: {
+      homebrew.casks = [
+        "firefox"
+      ];
+    };
+
+    # Home-manager configuration
     homeManager = {
       # Stylix theming for firefox
       stylix = {...}: {
@@ -37,7 +45,9 @@
           (
             lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
               programs.firefox = {
-                package = pkgs.firefox-bin;
+                # In darwin, the home-manager installation doesn't work
+                # Install through brew
+                package = null;
               };
             }
           )
