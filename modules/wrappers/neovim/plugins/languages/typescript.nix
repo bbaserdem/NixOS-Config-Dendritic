@@ -5,7 +5,7 @@
       lazy = true;
       data = null;
       extraPackages = with pkgs.unstable; [
-        nodePackages.typescript-language-server
+        typescript-language-server
       ];
     };
   };

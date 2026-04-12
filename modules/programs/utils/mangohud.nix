@@ -1,15 +1,6 @@
 # Mangohud; performance measurer
 {inputs, ...}: {
   flake.modules = {
-    # Include to system
-    generic.mangohud = {...}: {
-      home-manager.sharedModules = [
-        inputs.self.modules.homeManager.btop
-      ];
-    };
-    nixos.mangohud = inputs.self.modules.generic.mangohud;
-    darwin.mangohud = inputs.self.modules.generic.mangohud;
-
     homeManager = {
       # Enable stylix theming for mangohud
       stylix = {...}: {

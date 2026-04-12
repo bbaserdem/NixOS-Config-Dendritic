@@ -32,6 +32,7 @@ A rundown is as following
 └── ~/
     ├── .ssh/
     │   ├── id_ed25519
+    │   ├── id_ed25519.pub
     │   └── config
     └── .local/auth
         ├── age/
@@ -67,3 +68,5 @@ Then for each config deployed;
 - **Home-Manager**: 
 
 ## GPG
+
+## Passwords - KeepassXC

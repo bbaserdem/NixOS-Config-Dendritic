@@ -18,7 +18,7 @@
 
   config = {
     flake = {
-      # Put all modules as canonical modules
+      # Put all modules in as canonical modules
       nixosModules = inputs.self.modules.nixos;
       homeModules = inputs.self.modules.homeManager;
       darwinModules = inputs.self.modules.darwin;

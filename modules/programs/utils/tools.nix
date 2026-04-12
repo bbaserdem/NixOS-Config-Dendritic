@@ -11,7 +11,24 @@
       neofetch
     ]);
   in {
-    homeManager.tools = {pkgs, ...}: {
+    homeManager.tools = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      config = lib.mkMerge [
+        {
+          home.packages = toolPkgs pkgs;
+        }
+        (
+          lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+            home.packages = with pkgs; [
+              xquartz
+              appcleaner
+            ];
+          }
+        )
+      ];
       home.packages = toolPkgs pkgs;
     };
     nixos.tools = {pkgs, ...}: {
