@@ -54,7 +54,7 @@
         };
       }
       (
-        lib.optionalAttrs (lib.attrsets.hasAttrPath ["wrappers" "neovim"] options) {
+        lib.optionalAttrs (lib.hasAttrByPath ["wrappers" "neovim"] options) {
           wrappers.neovim = {
             # Set default theme
             settings = {
