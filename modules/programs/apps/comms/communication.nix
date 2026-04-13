@@ -1,6 +1,6 @@
 # Comm integration software suite
 {...}: {
-  flake.modules.homeManager.communication = {
+  flake.modules.homeManager.comms = {
     pkgs,
     lib,
     ...
