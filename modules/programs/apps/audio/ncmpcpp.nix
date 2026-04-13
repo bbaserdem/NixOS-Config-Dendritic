@@ -16,7 +16,7 @@
       enable = true;
       # Build custom features in
       package = pkgs.ncmpcpp.override {
-        outputSupport = true;
+        outputsSupport = true;
         visualizerSupport = true;
         clockSupport = true;
         taglibSupport = true;
