@@ -7,7 +7,7 @@
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
     (inputs.self.factory.inclusionModules "gpg")
-    (inputs.self.factory.inclusionModules "keepass")
+    (inputs.self.factory.inclusionModules "keepassxc")
     (inputs.self.factory.inclusionModules "pass")
     (inputs.self.factory.inclusionModules "polkit")
     (inputs.self.factory.inclusionModules "ssh")
