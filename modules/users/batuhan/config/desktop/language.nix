@@ -4,7 +4,7 @@
     # Need turkish and english
     home.packages = with pkgs; [
       (
-        hunspellWithDicts (with hunspellDicts; [
+        hunspell.withDicts (d: [
           en_US
           tr_TR
         ])
