@@ -13,7 +13,7 @@
         # Don't do anything by default
       }
       # Only try to append attrset if nixcord options are defined
-      (lib.optionalAttrs (builtins.hasAttrPath ["programs" "nixcord"] options) {
+      (lib.optionalAttrs (lib.hasAttrByPath ["programs" "nixcord"] options) {
         programs.nixcord = {
           # Configuration for vencord
           config = {
