@@ -29,7 +29,7 @@
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
           # On nixpkgs-25.11 darwin of direnv is broken, pull from unstable
-          programs.direnv.packages = pkgs.unstable.direnv;
+          programs.direnv.package = pkgs.unstable.direnv;
         }
       )
     ];
