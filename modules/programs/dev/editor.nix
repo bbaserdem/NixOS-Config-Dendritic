@@ -35,11 +35,11 @@
             };
           };
         };
-      };
 
-      # Set the sudo editor
-      environment.variables = {
-        SUDO_EDITOR = lib.getExe config.wrappers.neovim.wrapper;
+        # Set the sudo editor
+        environment.variables = {
+          SUDO_EDITOR = lib.getExe config.wrappers.neovim.wrapper;
+        };
       };
     };
 
