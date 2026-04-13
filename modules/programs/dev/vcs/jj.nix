@@ -22,12 +22,12 @@
         jjui = {
           enable = true;
         };
-
-        # Also add userspace packages
-        home.packages = with pkgs; [
-          lazyjj # Lazygit like util for jj
-        ];
       };
+
+      # Also add userspace packages
+      home.packages = with pkgs; [
+        lazyjj # Lazygit like util for jj
+      ];
     };
   };
 }
