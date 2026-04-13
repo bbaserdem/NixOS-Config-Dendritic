@@ -76,6 +76,31 @@
                 };
               };
             };
+
+            # Github: most commonly used git provider
+            gh = {
+              enable = true;
+              gitCredentialHelper.enable = true;
+              settings = {
+                editor = config.home.sessionVariables.EDITOR;
+                git_protocol = "ssh";
+              };
+              extensions = with pkgs; [
+                gh-s
+                gh-i
+                gh-f
+                gh-poi
+                gh-eco
+                gh-notify
+                gh-skyline
+                gh-contribs
+                gh-screensaver
+                gh-markdown-preview
+              ];
+            };
+            gh-dash = {
+              enable = true;
+            };
           };
         }
         (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
