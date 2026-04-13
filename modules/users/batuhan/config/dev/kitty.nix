@@ -6,7 +6,7 @@
     lib,
     ...
   }: let
-    base16 = inputs.base16.lib {inherit lib;};
+    base16 = inputs.base16.lib {inherit pkgs lib;};
     # Parse scheme YAML inta a callable colors object
     mkColors = schemePath: (base16.mkSchemeAttrs schemePath).override {};
     # Render kitty theme file using tinted-terminal templates
