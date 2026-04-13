@@ -21,7 +21,7 @@
           # Enable nvim
           enable = true;
           # Use neovim from regular nixpkgs
-          package = lib.mkDefault pkgs.neovim-unwrapped;
+          package = lib.mkForce pkgs.neovim-unwrapped;
           # Replace vim
           binName = "vim";
           settings = {

@@ -132,7 +132,7 @@
         hosts.python3.nvim-host.enable = lib.mkIf (!config.settings.minimal) true;
 
         # Use neovim nightly as package
-        package = lib.mkOptionDefault inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.neovim;
+        package = lib.mkDefault inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.neovim;
 
         settings = {
           # Use the neovim config from the config subdirectory
