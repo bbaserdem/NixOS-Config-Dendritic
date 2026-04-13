@@ -82,9 +82,10 @@
           config = {
             users = {
               # Add us to managed users
-              knownUsers = [
-                "${username}"
-              ];
+              # Needs setting uid of user; from AI tools
+              # knownUsers = [
+              #   "${username}"
+              # ];
               # Configure user
               users."${username}" = {
                 home = "/Users/${username}";

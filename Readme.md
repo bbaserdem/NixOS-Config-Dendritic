@@ -10,6 +10,7 @@ My nix system flake.
 
 - [ ] Clean and setup secrets (user: beets)
 - [ ] Integrate stylix properly (user: kitty)
+- [ ] Fix darwin UID issues (user: factory)
 - [ ] Apply flake-parts helper to all applicable program modules
 - [ ] Neovim: setup localleader commands to render markdown.
 - [ ] Configure syncthing (import .stignore files to be managed by nix)
