@@ -34,7 +34,6 @@
             streamrip # Music downloader
             audacity # Audio editor
             musescore # Score editing
-            picard # Tag music
             chromaprint # Calculate acoustic id
           ];
         }
