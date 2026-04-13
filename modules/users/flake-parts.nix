@@ -8,6 +8,17 @@
   config = {
     flake = {
       modules = {
+        # Import home-manager module to default contexts
+        nixos.default = {...}: {
+          imports = [
+            inputs.home-manager.nixosModules.home-manager
+          ];
+        };
+        darwin.default = {...}: {
+          imports = [
+            inputs.home-manager.darwinModules.home-manager
+          ];
+        };
         # Default settings for all home-manager invocations
         homeManager.default = {...}: {
           home.stateVersion = "25.11";
@@ -35,10 +46,6 @@
           pkgs,
           ...
         }: {
-          # Import home-manager module for nixos
-          imports = [
-            inputs.home-manager.nixosModules.home-manager
-          ];
           config = {
             users.users."${username}" = {
               isNormalUser = isNormalUser;
@@ -72,10 +79,6 @@
           pkgs,
           ...
         }: {
-          # Import home-manager module for darwin
-          imports = [
-            inputs.home-manager.darwinModules.home-manager
-          ];
           config = {
             users = {
               # Add us to managed users
