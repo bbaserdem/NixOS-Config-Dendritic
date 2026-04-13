@@ -9,6 +9,7 @@
             python3.withPackages (p:
               with p; [
                 pyyaml
+                playwright
               ])
           )
           # Node.js for claude and codex
@@ -22,6 +23,8 @@
           ripgrep
           shellcheck
           socat
+          playwright
+          playwright-test
           # Doc rendering
           mdbook
           mdbook-mermaid
