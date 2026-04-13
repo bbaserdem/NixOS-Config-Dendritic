@@ -102,8 +102,6 @@
                 ];
               };
             };
-
-            system.primaryUser = lib.mkIf isAdmin "${username}";
           };
         };
 
