@@ -63,7 +63,7 @@
       }: let
         # Load stylix colors if they are available
         stylixColors =
-          if (builtins.hasAttr "stylix" options.lib)
+          if (lib.hasAttrByPath ["stylix"] options.lib)
           then
             (lib.filterAttrs (
                 k: v: ((builtins.match "base0[0-9A-F]" k) != null)
@@ -97,7 +97,7 @@
             settings.neovim-bin = neovim-bin;
           };
 
-          # Set editor
+          # Set editor to nvim
           home.sessionVariables = {
             EDITOR = neovim-bin;
           };
