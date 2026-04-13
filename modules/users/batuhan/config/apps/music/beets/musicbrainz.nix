@@ -3,7 +3,7 @@
 {...}: {
   flake.modules.homeManager.batuhan = {config, ...}: {
     # Pull our musicbrainz password from encrypted secret
-    sops.secrets.musicbrainz = {};
+    #sops.secrets.musicbrainz = {};
 
     programs.beets.settings = {
       plugins = [
@@ -27,7 +27,7 @@
           deezer = "yes";
         };
         user = "silverbluep";
-        pass = "!include ${config.sops.secrets.musicbrainz.path}";
+        #pass = "!include ${config.sops.secrets.musicbrainz.path}";
       };
     };
   };
