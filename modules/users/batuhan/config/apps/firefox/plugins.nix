@@ -16,52 +16,55 @@
           # Need to include native messaging hosts as a package overlay
           profiles.batuhan = {
             isDefault = true;
-            packages = with pkgs.nur.repos.rycee.firefox-addons; [
-              # Steam store helpers
-              augmented-steam
-              protondb-for-steam
-              steam-database
-              # Graphical candy
-              automatic-dark
-              behind-the-overlay-revival
-              catppuccin-web-file-icons
-              enhanced-github
-              gruvbox-dark-theme
-              # Bandcamp
-              batchcamp
-              # Twitch
-              betterttv
-              # Casting
-              castkodi
-              # Containers
-              containerise
-              multi-account-containers
-              open-url-in-container
-              # Quality of Life
-              duckduckgo-privacy-essentials
-              don-t-fuck-with-paste
-              flagfox
-              h264ify
-              private-grammar-checker-harper
-              # OS integration
-              gnome-shell-integration
-              plasma-integration
-              # Synching
-              keepassxc-browser
-              # VPN
-              mullvad
-              # Functionality
-              greasemonkey
-              user-agent-string-switcher
-              # Adblock
-              sponsorblock
-              ublock-origin
-              # Downloaders
-              video-downloadhelper
-              aria2-integration
-              # Zotero
-              zotero-connector
-            ];
+            extensions = {
+              force = true;
+              packages = with pkgs.nur.repos.rycee.firefox-addons; [
+                # Steam store helpers
+                augmented-steam
+                protondb-for-steam
+                steam-database
+                # Graphical candy
+                automatic-dark
+                behind-the-overlay-revival
+                catppuccin-web-file-icons
+                enhanced-github
+                gruvbox-dark-theme
+                # Bandcamp
+                batchcamp
+                # Twitch
+                betterttv
+                # Casting
+                castkodi
+                # Containers
+                containerise
+                multi-account-containers
+                open-url-in-container
+                # Quality of Life
+                duckduckgo-privacy-essentials
+                don-t-fuck-with-paste
+                flagfox
+                h264ify
+                private-grammar-checker-harper
+                # OS integration
+                gnome-shell-integration
+                plasma-integration
+                # Synching
+                keepassxc-browser
+                # VPN
+                mullvad
+                # Functionality
+                greasemonkey
+                user-agent-string-switcher
+                # Adblock
+                sponsorblock
+                ublock-origin
+                # Downloaders
+                video-downloadhelper
+                aria2-integration
+                # Zotero
+                zotero-connector
+              ];
+            };
           };
         };
       }
