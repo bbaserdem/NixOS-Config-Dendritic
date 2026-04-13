@@ -93,7 +93,7 @@
       '';
     in {
       # Integrations
-      home.shell.enableZsshIntegration = true;
+      home.shell.enableZshIntegration = true;
       services = {
         gpg-agent.enableZshIntegration = true;
       };
