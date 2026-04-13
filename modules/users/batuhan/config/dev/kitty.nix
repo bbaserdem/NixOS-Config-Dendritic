@@ -18,14 +18,14 @@
     # mkSchemes
     schemes = "${pkgs.base16-schemes}/share/themes";
   in {
-    # Override kitty settings from stylix
-    stylix.targets.kitty.fonts.override = {
-      monospace = {
-        name = "Iosevka Light";
-        package = pkgs.iosevka;
-      };
-      sizes.terminal = 13;
-    };
+    # # Override kitty settings from stylix
+    # stylix.targets.kitty.fonts.override = {
+    #   monospace = {
+    #     name = "Iosevka Light";
+    #     package = pkgs.iosevka;
+    #   };
+    #   sizes.terminal = 13;
+    # };
 
     # Additional settings for kitty
     programs.kitty = {
@@ -46,10 +46,10 @@
     xdg.configFile = {
       "kitty/dark-theme.auto.conf".source = mkKittyTheme "${schemes}/gruvbox-dark-medium.yaml";
       "kitty/light-theme.auto.conf".source = mkKittyTheme "${schemes}/gruvbox-light-medium.yaml";
-      "kitty/no-preference-theme.auto.conf".source = config.lib.stylix.colors {
-        templateRepo = inputs.tinted-terminal;
-        target = "kitty-base16";
-      };
+      # "kitty/no-preference-theme.auto.conf".source = config.lib.stylix.colors {
+      #   templateRepo = inputs.tinted-terminal;
+      #   target = "kitty-base16";
+      # };
     };
   };
 }
