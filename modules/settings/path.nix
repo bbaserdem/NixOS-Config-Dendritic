@@ -11,9 +11,10 @@
     darwin.shell = {...}: {
       # Add homebrew sourcing to path
       homebrew = {
-        enableBashIntegration = true;
-        enableFishIntegration = true;
-        enableZshIntegration = true;
+        # TODO: not in stable yet
+        # enableBashIntegration = true;
+        # enableFishIntegration = true;
+        # enableZshIntegration = true;
       };
       # Local is a little more complicated, no default implementation on darwin
       # We just propagate it to shared home-manager modules
