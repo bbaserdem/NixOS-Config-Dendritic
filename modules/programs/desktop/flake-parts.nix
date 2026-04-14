@@ -10,5 +10,6 @@
     (inputs.self.factory.inclusionModules "kdeconnect")
     (inputs.self.factory.inclusionModules "keyboard")
     (inputs.self.factory.inclusionModules "language")
+    (inputs.self.factory.inclusionModules "stylix")
   ];
 }

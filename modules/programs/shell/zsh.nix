@@ -30,9 +30,6 @@
         enableBashCompletion = true;
       };
 
-      # Make root user use zsh by default
-      users.users.root.shell = pkgs.zsh;
-
       # Let zsh find system-based apps
       environment.pathsToLink = ["/share/zsh"];
     };

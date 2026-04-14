@@ -7,7 +7,6 @@
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
     (inputs.self.factory.inclusionModules "vcs")
-    (inputs.self.factory.inclusionModules "shell")
     (inputs.self.factory.inclusionModules "docker")
     (inputs.self.factory.inclusionModules "virtualization")
     (inputs.self.factory.inclusionModules "editor")

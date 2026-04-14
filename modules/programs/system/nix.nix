@@ -3,10 +3,9 @@
   flake.modules = {
     # Modules to setup the nix daemon
 
-    # Nixos module
+    # Nixos module; for nixos specific nix settings
     nixos.nix = {...}: {
       imports = [
-        inputs.self.modules.generic.nix
         inputs.nix-index-database.nixosModules.nix-index
       ];
 
@@ -24,10 +23,9 @@
       };
     };
 
-    # Darwin module
+    # Darwin module; for darwin specific settings
     darwin.nix = {...}: {
       imports = [
-        inputs.self.modules.generic.nix
         inputs.nix-index-database.darwinModules.nix-index
       ];
 
@@ -51,7 +49,7 @@
       };
     };
 
-    # Generic settings
+    # Generic; for nix settings for both nixos and darwin contexts
     generic.nix = {pkgs, ...}: {
       config = {
         # Package manager config

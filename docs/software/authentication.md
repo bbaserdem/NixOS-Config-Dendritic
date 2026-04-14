@@ -25,25 +25,22 @@ A rundown is as following
 ├── etc/
 │   └── ssh/
 │       ├── ssh_host_ed25519_key
-│       ├── ssh_age_host_ed25519_key
+│       ├── ssh_age_host_ed25519_key    # SSH key for specific host: sops-nix
 │       ├── ssh_age_host_ed25519_key.pub
-│       ├── ssh_age_all_ed25519_key
+│       ├── ssh_age_all_ed25519_key     # SSH key for global hosts: sops-nix
 │       └── ssh_age_all_ed25519_key.pub
 └── ~/
     ├── .ssh/
     │   ├── id_ed25519
     │   ├── id_ed25519.pub
+    │   ├── id_ed25519_user             # SSH key for global user: sops-nix
+    │   ├── id_ed25519_user.pub
+    │   ├── id_ed25519_<VCS-Provider>
+    │   ├── id_ed25519_<VCS-Provider>.pub
+    │   ├── ...
     │   └── config
-    └── .local/auth
-        ├── age/
-        │   └── keys.txt
-        └── ssh/
-            ├── ssh_age_user_ed25519_key
-            ├── ssh_age_user_ed25519_key.pub
-            ├── ssh_age_all_ed25519_key
-            ├── ssh_age_all_ed25519_key.pub
-            ├── id_ed25519_<VCS-Provider>
-            └── id_ed25519_<VCS-Provider>.pub
+    └── .config/sops/age
+            └── keys.txt                # Age key for specific user: sops-nix
 ```
 
 ### Key Storage
