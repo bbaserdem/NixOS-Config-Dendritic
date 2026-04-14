@@ -5,8 +5,5 @@
     imports = with inputs.self.modules.nixos; [
       vm-amd
     ];
-
-    # System state version
-    system.stateVersion = "25.11";
   };
 }

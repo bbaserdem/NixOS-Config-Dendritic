@@ -41,6 +41,7 @@
         mkNixos = {
           system,
           name,
+          description,
           ...
         }: {
           ${name} = inputs.nixpkgs.lib.nixosSystem {
@@ -61,6 +62,7 @@
         mkDarwin = {
           system,
           name,
+          description,
           ...
         }: {
           ${name} = inputs.nix-darwin.lib.darwinSystem {
@@ -73,14 +75,14 @@
                 networking = {
                   hostName = "${name}";
                   localHostName = "${config.networking.hostName}.local";
-                  # computerName
+                  computerName = description;
                 };
               })
             ];
           };
         };
 
-        # Standalone home-manager builder
+        # Standalone home-manager config builder
         mkHome = {
           system,
           name,
