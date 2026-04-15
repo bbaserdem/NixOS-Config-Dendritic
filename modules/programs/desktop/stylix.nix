@@ -29,5 +29,15 @@
     # In standalone, the home-manager module will need to be loaded
     # We leave home.stylix as a module to configure apps for stylix
     # The inputs.stylix.homeModules.stylix should be done on standalone context only
+    homeManager.stylix = {...}: {
+      imports = [
+        inputs.stylix.homeModules.stylix
+      ];
+
+      # Stylix settings
+      stylix = {
+        overlays.enable = false;
+      };
+    };
   };
 }
