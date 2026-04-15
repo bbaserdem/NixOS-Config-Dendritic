@@ -19,6 +19,8 @@
           yubikey-personalization
         ];
       };
+      # Enable yubikey hardware
+      hardware.gpgSmartcards.enable = true;
     };
   };
 }

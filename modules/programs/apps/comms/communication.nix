@@ -10,6 +10,7 @@
         home.packages = with pkgs; [
           signal-desktop # Messaging
           zoom-us # Video conferancing
+          slack # Team messaging
         ];
       }
       (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {

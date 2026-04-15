@@ -3,14 +3,29 @@
   flake.modules = {
     # Pinentry methods
     nixos.gpg = {pkgs, ...}: {
+      # Install all pinentry packages
       environment.systemPackages = with pkgs; [
         pinentry-all
       ];
+      # Further gnupg settings
+      programs.gnupg = {
+        agent = {
+          enableBrowserSocket = true;
+          enableExtraSocket = true;
+        };
+      };
     };
     darwin.gpg = {pkgs, ...}: {
       environment.systemPackages = with pkgs; [
         pinentry_mac
       ];
+    };
+    # Generic gnupg
+    generic.gpg = {...}: {
+      programs.gnupg.agent = {
+        enable = true;
+        enableSSHSupport = true;
+      };
     };
 
     homeManager.gpg = {config, ...}: {

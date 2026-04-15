@@ -13,12 +13,18 @@
         # Garbage collect settings
         nix = {
           nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+          registry.nixpkgs.flake = inputs.nixpkgs;
           gc.automatic = true;
           settings.auto-optimise-store = true;
         };
         programs = {
           # Linux-specific configuration
           nix-ld.enable = true;
+          nix-index = {
+            enableBashIntegration = true;
+            enableZshIntegration = true;
+            enableFishIntegration = true;
+          };
         };
       };
     };
@@ -32,6 +38,7 @@
       config = {
         nix = {
           nixPath = ["nixpkgs=${inputs.nixpkgs-darwin}"];
+          registry.nixpkgs.flake = inputs.nixpkgs-darwin;
           optimise.automatic = true;
           enable = true;
           gc.interval = [
@@ -68,6 +75,11 @@
           };
         };
 
+        programs = {
+          nix-index.enable = true;
+          nix-index-database.comma.enable = true;
+        };
+
         # Nix helper utilities
         environment.systemPackages = with pkgs; [
           nh
@@ -75,6 +87,24 @@
           nvd
           sops
         ];
+      };
+    };
+
+    # Home-manager; add nix-index to hm
+    homeManager.nix = {pkgs, ...}: {
+      imports = [
+        inputs.nix-index-database.homeModules.default
+      ];
+
+      programs = {
+        nix-index-database.comma.enable = true;
+        nix-index = {
+          enable = true;
+          enableBashIntegration = true;
+          enableZshIntegration = true;
+          enableFishIntegration = true;
+          enableNushellIntegration = true;
+        };
       };
     };
   };

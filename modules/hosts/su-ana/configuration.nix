@@ -7,6 +7,13 @@
     imports = with inputs.self.modules.darwin; [
       nix
       homebrew
+      macos
     ];
+
+    config = {
+      system = {
+        primaryUser = "batuhan";
+      };
+    };
   };
 }

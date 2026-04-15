@@ -11,7 +11,7 @@
     };
 
     # JJ module
-    jj = {pkgs, ...}: {
+    vcs = {pkgs, ...}: {
       programs = {
         # Main jujutsu tool
         jujutsu = {

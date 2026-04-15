@@ -1,11 +1,30 @@
 # ZSH config
 {...}: {
   flake.modules = {
-    # Configure zsh on system
+    # Generic settings for both settings
+    generic.shell = {...}: {
+      programs.zsh = {
+        enable = true;
+        enableCompletion = true;
+        enableBashCompletion = true;
+      };
+    };
+    # Nix-darwin settings
+    darwin.shell = {...}: {
+      programs.zsh = {
+        enableAutosuggestions = true;
+        enableFastSyntaxHighlighting = true;
+        enableFzfCompletion = true;
+        enableFzfGit = true;
+        enableGlobalCompInit = true;
+        enableFzfHistory = true;
+        enableSyntaxHighlighting = true;
+      };
+    };
+    # Configure zsh on nixos
     nixos.shell = {pkgs, ...}: {
       # ZSH
       programs.zsh = {
-        enable = true;
         vteIntegration = true;
         syntaxHighlighting = {
           enable = true;
@@ -26,8 +45,6 @@
           ];
         };
         enableLsColors = true;
-        enableCompletion = true;
-        enableBashCompletion = true;
       };
 
       # Let zsh find system-based apps
