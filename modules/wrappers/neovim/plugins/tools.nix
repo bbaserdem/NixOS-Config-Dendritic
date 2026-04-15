@@ -125,10 +125,38 @@
       # Treesitter
       treesitter = {
         lazy = true;
-        data = with pkgs.unstable.vimPlugins; [
-          nvim-treesitter.withAllGrammars
-          nvim-treesitter-textobjects
-        ];
+        data =
+          (with pkgs.unstable.vimPlugins; [
+            nvim-treesitter-textobjects
+          ])
+          ++ (with pkgs.unstable.vimPlugins.nvim-treesitter-parsers; [
+            css
+            scss
+            comment
+            json
+            yaml
+            toml
+            xml
+            ini
+            vimdoc
+            make
+            ssh_config
+            graphql
+            query
+            dockerfile
+            sql
+            rst
+            diff
+            git_config
+            git_rebase
+            gitattributes
+            gitcommit
+            gitignore
+            awk
+            regex
+            readline
+            passwd
+          ]);
       };
 
       # Utilities

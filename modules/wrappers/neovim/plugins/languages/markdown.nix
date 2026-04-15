@@ -8,6 +8,8 @@
         mkdnflow-nvim # Navigate wiki links
         glow-nvim # Render markdown in nvim terminal
         render-markdown-nvim
+        nvim-treesitter-parsers.markdown
+        nvim-treesitter-parsers.markdown_inline
       ];
       extraPackages = with pkgs.unstable; [
         vale # Linter

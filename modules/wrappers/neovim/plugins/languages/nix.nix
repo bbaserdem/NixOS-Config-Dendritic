@@ -3,7 +3,9 @@
   flake.wrappers.neovim = {pkgs, ...}: {
     config.specs.nix = {
       lazy = true;
-      data = null;
+      data = with pkgs.vimPlugins; [
+        nvim-treesitter-parsers.nix
+      ];
       extraPackages = with pkgs.unstable; [
         manix
         nix-doc

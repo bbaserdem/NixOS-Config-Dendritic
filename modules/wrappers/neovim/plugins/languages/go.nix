@@ -3,7 +3,9 @@
   flake.wrappers.neovim = {pkgs, ...}: {
     config.specs.go = {
       lazy = true;
-      data = null;
+      data = with pkgs.vimPlugins; [
+        nvim-treesitter-parsers.go
+      ];
       extraPackages = with pkgs.unstable; [
         go
         gotools
