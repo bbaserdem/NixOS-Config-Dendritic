@@ -13,7 +13,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPkgs = true;
-            backupFileExtention = "hm-backup";
+            backupFileExtension = "hm-backup";
             overwriteBackup = true;
           };
         };
