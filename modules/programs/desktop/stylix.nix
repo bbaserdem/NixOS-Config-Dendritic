@@ -28,9 +28,9 @@
     # We don't import the home-manager module, since we use home-manager as system module
     # In standalone, the home-manager module will need to be loaded
     homeManager.stylix = {...}: {
-      # imports = [
-      #   inputs.stylix.homeModules.stylix
-      # ];
+      imports = [
+        inputs.stylix.homeModules.stylix
+      ];
     };
 
     # Generic settings for both contexts
