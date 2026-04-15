@@ -13,7 +13,6 @@
         # Garbage collect settings
         nix = {
           nixPath = ["nixpkgs=${inputs.nixpkgs}"];
-          registry.nixpkgs.flake = inputs.nixpkgs;
           gc.automatic = true;
           settings.auto-optimise-store = true;
         };
@@ -38,7 +37,6 @@
       config = {
         nix = {
           nixPath = ["nixpkgs=${inputs.nixpkgs-darwin}"];
-          registry.nixpkgs.flake = inputs.nixpkgs-darwin;
           optimise.automatic = true;
           enable = true;
           gc.interval = [
