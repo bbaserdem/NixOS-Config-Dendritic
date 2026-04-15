@@ -27,17 +27,7 @@
 
     # We don't import the home-manager module, since we use home-manager as system module
     # In standalone, the home-manager module will need to be loaded
-    homeManager.stylix = {...}: {
-      imports = [
-        inputs.stylix.homeModules.stylix
-      ];
-    };
-
-    # Generic settings for both contexts
-    # Stylix should have a theme set
-    generic.stylix = {...}: {
-      stylix = {
-      };
-    };
+    # We leave home.stylix as a module to configure apps for stylix
+    # The inputs.stylix.homeModules.stylix should be done on standalone context only
   };
 }
