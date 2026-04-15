@@ -14,6 +14,7 @@
         bun = {
           enable = true;
           package = null;
+          enableGitIntegration = false;
           settings = {
             install = {
               minimumReleaseAge = 604800; # One week in seconds
