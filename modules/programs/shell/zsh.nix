@@ -18,7 +18,7 @@
         enableFzfGit = true;
         enableGlobalCompInit = true;
         enableFzfHistory = true;
-        enableSyntaxHighlighting = true;
+        enableSyntaxHighlighting = false;
       };
     };
     # Configure zsh on nixos
