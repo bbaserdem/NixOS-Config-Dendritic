@@ -17,7 +17,6 @@
         carlito #   Calibri/georgia alternative
         inconsolata # Monospace font, for prints
         iosevka # Monospace font, for terminal mostly
-        jetbrains-mono # Readable monospace font
         victor-mono
         noto-fonts
         source-serif-pro
@@ -28,10 +27,6 @@
       ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
         # Broken on nix-darwin right now
         jetbrains-mono
-      ]))
-      ++ (lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs; [
-        # Trying nerd-font variant
-        nerd-fonts.jetbrains-mono
       ]));
   in {
     # Include in system
