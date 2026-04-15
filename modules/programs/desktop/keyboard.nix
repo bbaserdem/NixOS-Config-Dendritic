@@ -4,9 +4,13 @@
     # Darwin: use karabiner-elements to configure keybinds
     darwin = {
       keyboard = {...}: {
-        services.karabiner-elements = {
-          enable = true;
-        };
+        # TODO: nix-darwin stable has the module broken, do from brew for now
+        # services.karabiner-elements = {
+        #   enable = true;
+        # };
+        homebrew.casks = [
+          "karabiner-elements"
+        ];
       };
     };
 
