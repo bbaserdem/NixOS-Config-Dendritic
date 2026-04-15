@@ -11,13 +11,12 @@ My nix system flake.
 - [ ] Clean and setup secrets (user: beets)
 - [ ] Integrate stylix properly (user: kitty)
 - [ ] Fix darwin UID issues (user: factory)
-- [ ] Darwin stable doesn't have shell integration options; fix it later
-- [ ] Apply flake-parts helper to all applicable program modules
+- [ ] Darwin stable doesn't have shell integration options in 25.11
 - [ ] Neovim: setup localleader commands to render markdown.
 - [ ] Configure syncthing (import .stignore files to be managed by nix)
 - [ ] Finish personalized claude config
 - [ ] Add codecompanion to nvim wrapper
-- [ ] Setup individual theming
+- [ ] Setup individual theming for each host
 - [ ] Test if kitty theme importer is working
 - [ ] Now that we moved from brew to nix for GUI, fix dock in darwin.
 - [ ] Test darwin modules on macos

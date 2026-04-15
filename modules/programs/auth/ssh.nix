@@ -5,6 +5,7 @@
     homeManager.ssh = {config, ...}: {
       programs.ssh = {
         enable = true;
+        enableDefaultConfig = false;
         matchBlocks = {
           "*" = {
             forwardAgent = false;

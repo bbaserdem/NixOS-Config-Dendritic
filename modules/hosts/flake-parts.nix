@@ -74,7 +74,7 @@
                 nixpkgs.hostPlatform = lib.mkDefault system;
                 networking = {
                   hostName = "${name}";
-                  localHostName = "${config.networking.hostName}.local";
+                  localHostName = config.networking.hostName;
                   computerName = description;
                 };
               })

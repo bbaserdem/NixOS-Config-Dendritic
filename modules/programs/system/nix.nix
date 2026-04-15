@@ -84,6 +84,7 @@
           nix-output-monitor
           nvd
           sops
+          nix-diff
         ];
       };
     };

@@ -5,14 +5,13 @@
 
     # Load modules that configure the system
     imports = with inputs.self.modules.darwin; [
-      # Main configuration
-      nix
-      homebrew
-      macos
-      # Additional config
-      tools
-      btop
-      archives
+      batuhan
     ];
+
+    config = {
+      system = {
+        primaryUser = "batuhan";
+      };
+    };
   };
 }

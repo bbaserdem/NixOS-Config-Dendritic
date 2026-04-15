@@ -10,7 +10,6 @@
       ncompress
       gzip
       rar
-      unrar
       rzip
       gnutar
       xz

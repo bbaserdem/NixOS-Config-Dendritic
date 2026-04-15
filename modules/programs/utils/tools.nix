@@ -14,6 +14,8 @@
         curl
         dash
         neofetch
+        fd
+        findutils
       ])
       ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
         kmon # Kernel module checker
