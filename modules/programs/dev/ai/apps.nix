@@ -5,7 +5,7 @@
       # Enable userspace tools
       homebrew = {
         casks = [
-          "repoprompt"
+          "repo-prompt"
           "claude"
           "claude-code@latest"
           "codex"

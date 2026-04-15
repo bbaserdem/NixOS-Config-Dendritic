@@ -26,7 +26,8 @@
         inotify-tools # File watching
       ]))
       ++ (lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs; [
-        unstable.xquartz # Nixpkgs one is broken
+        # TODO: stable xquartz is broken
+        unstable.xquartz
         appcleaner
       ]));
   in {
