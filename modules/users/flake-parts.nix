@@ -8,15 +8,26 @@
   config = {
     flake = {
       modules = {
+        # Generic home-manager settings
+        generic.default = {...}: {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPkgs = true;
+            backupFileExtention = "hm-backup";
+            overwriteBackup = true;
+          };
+        };
         # Import home-manager module to default contexts
         nixos.default = {...}: {
           imports = [
             inputs.home-manager.nixosModules.home-manager
+            inputs.self.modules.generic.default
           ];
         };
         darwin.default = {...}: {
           imports = [
             inputs.home-manager.darwinModules.home-manager
+            inputs.self.modules.generic.default
           ];
         };
         # Default settings for all home-manager invocations
@@ -54,18 +65,11 @@
                 "wheel"
                 "networkmanager"
               ];
-              shell = pkgs.zsh;
             };
 
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPkgs = true;
-              users."${username}" = {
-                imports = [
-                  inputs.self.modules.homeManager."${username}"
-                ];
-              };
-            };
+            home-manager.users."${username}".imports = [
+              inputs.self.modules.homeManager."${username}"
+            ];
 
             nix.settings.trusted-users = lib.optionals isNix [
               username
@@ -93,15 +97,9 @@
               };
             };
 
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users."${username}" = {
-                imports = [
-                  inputs.self.modules.homeManager."${username}"
-                ];
-              };
-            };
+            home-manager.users."${username}".imports = [
+              inputs.self.modules.homeManager."${username}"
+            ];
           };
         };
 
