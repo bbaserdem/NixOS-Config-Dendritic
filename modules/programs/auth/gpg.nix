@@ -36,12 +36,14 @@
         mutableKeys = true;
         mutableTrust = true;
         # Strong algorithm preferences
-        personal-cipher-preferences = "AES256";
-        personal-digest-preferences = "SHA512";
-        cert-digest-algo = "SHA512";
-        s2k-cipher-algo = "AES256";
-        s2k-digest-algo = "SHA512";
-        s2k-count = "65011712";
+        settings = {
+          personal-cipher-preferences = "AES256";
+          personal-digest-preferences = "SHA512";
+          cert-digest-algo = "SHA512";
+          s2k-cipher-algo = "AES256";
+          s2k-digest-algo = "SHA512";
+          s2k-count = "65011712";
+        };
       };
 
       # Enable gpg agent
