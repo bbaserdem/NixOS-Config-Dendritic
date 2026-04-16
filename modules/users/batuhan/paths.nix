@@ -18,6 +18,11 @@
           dataHome = "${config.home.homeDirectory}/.local/share";
           stateHome = "${config.home.homeDirectory}/.local/state";
         };
+        # Flake location
+        home.sessionVariables = {
+          NH_FLAKE = "${config.home.homeDirectory}/Projects/SystemConfigFlake";
+          NH_OS_FLAKE = "${config.home.homeDirectory}/Projects/SystemConfigFlake";
+        };
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {

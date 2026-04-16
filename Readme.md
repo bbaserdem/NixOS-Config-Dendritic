@@ -10,6 +10,8 @@ My nix system flake.
 
 - [ ] Clean and setup secrets (user: beets)
 - [ ] Integrate stylix properly (user: kitty)
+- [ ] Import other home-manager configuration (URGENT: PNPM)
+- [ ] Neovim dark/light mode auto-detect
 - [ ] Fix darwin UID issues (user: factory)
 - [ ] Darwin stable doesn't have shell integration options in 25.11
 - [ ] Neovim: setup localleader commands to render markdown.

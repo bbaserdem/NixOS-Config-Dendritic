@@ -9,7 +9,23 @@
         "PNPM_HOME" = "${config.xdg.dataHome}/pnpm";
       };
 
-      # Configure package manager with safety overrides
+      # Configure pnpm to put executables in .local/bin
+      xdg.configFile."pnpm/rc".text = ''
+        global-bin-dir=${config.home.homeDirectory}/.local/bin
+        minimum-release-age=10080 # minutes
+        block-exotic-subdeps=true
+        trust-policy=no-downgrade
+        strict-dep-builds=true
+        only-built-dependencies=[]
+      '';
+
+      # Configure npm as well
+      home.file.".npmrc".text = ''
+        min-release-age=7 # days
+        ignore-scripts=true
+      '';
+
+      # Configure bun package manager with safety overrides
       programs = {
         bun = {
           enable = true;
@@ -18,20 +34,10 @@
           settings = {
             install = {
               minimumReleaseAge = 604800; # One week in seconds
+              lockfile = true;
+              exact = true;
             };
           };
-        };
-      };
-    };
-
-    # Python config
-    python = {...}: {
-      # Set global configuration for uv
-      programs.uv = {
-        enable = true;
-        package = null;
-        settings = {
-          exclude-newer = "1 week";
         };
       };
     };

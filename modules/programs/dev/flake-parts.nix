@@ -10,8 +10,6 @@
     (inputs.self.factory.inclusionModules "docker")
     (inputs.self.factory.inclusionModules "virtualization")
     (inputs.self.factory.inclusionModules "editor")
-    (inputs.self.factory.inclusionModules "node")
-    (inputs.self.factory.inclusionModules "python")
     (inputs.self.factory.inclusionModules "ai")
   ];
 }

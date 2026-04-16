@@ -113,6 +113,13 @@
                 enable = true;
               };
             };
+
+            # Install hook packages
+            home.packages = with pkgs; [
+              pre-commit
+              pre-commit-hook-ensure-sops
+              gitleaks
+            ];
           }
           (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
             home.packages = with pkgs; [
