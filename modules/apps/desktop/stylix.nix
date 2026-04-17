@@ -13,22 +13,26 @@
 
   # Flake modules that enables stylix
   flake.modules = {
+    # Generic behavior settings for all contexts
+    generic.stylix = {...}: {
+      stylix = {
+        autoEnable = false;
+      };
+    };
+
+    # Context-specific module loading
     nixos.stylix = {...}: {
       imports = [
         inputs.stylix.nixosModules.stylix
       ];
     };
-
     darwin.stylix = {...}: {
       imports = [
         inputs.stylix.darwinModules.stylix
       ];
     };
 
-    # We don't import the home-manager module, since we use home-manager as system module
-    # In standalone, the home-manager module will need to be loaded
-    # We leave home.stylix as a module to configure apps for stylix
-    # The inputs.stylix.homeModules.stylix should be done on standalone context only
+    # Stylix tries to apply package overlays in home-manager, disable this
     homeManager.stylix = {...}: {
       imports = [
         inputs.stylix.homeModules.stylix

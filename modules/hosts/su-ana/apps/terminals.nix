@@ -1,19 +1,10 @@
-# Su-ana development config
+# Su-ana userspace configuration
 {inputs, ...}: {
   flake.modules.darwin.su-ana = {...}: {
     # System configuration
 
-    # Load modules for development
+    # Load modules that configure the system
     imports = with inputs.self.modules.darwin; [
-      ai
-      docker
-      editor
-      virtualization
-      vcs
-      shell
-      # Languages
-      node
-      python
       # Terminals
       ghostty
       kitty

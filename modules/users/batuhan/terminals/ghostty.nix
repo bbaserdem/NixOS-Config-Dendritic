@@ -9,7 +9,7 @@
       {
         # Settings
         settings = {
-          theme = "light:Belafonte Day,dark:Belafonte Night";
+          theme = "light:Desert,dark:Selenized Light";
         };
       }
       (lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {

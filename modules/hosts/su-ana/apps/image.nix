@@ -1,14 +1,13 @@
-# Su-ana system configuration
+# Su-ana userspace configuration
 {inputs, ...}: {
   flake.modules.darwin.su-ana = {...}: {
     # System configuration
 
     # Load modules that configure the system
     imports = with inputs.self.modules.darwin; [
-      # Main configuration
-      nix
-      homebrew
-      macos
+      # Image suite
+      image
+      blender
     ];
   };
 }
