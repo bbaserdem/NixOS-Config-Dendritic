@@ -8,8 +8,6 @@
         colors.enable = true;
         fonts.enable = true;
         polarity.enable = true;
-        # If home-manager is managing the vault, apply themes to that vault
-        vaultNames = builtins.attrNames config.programs.obsidian.vaults;
       };
     };
 

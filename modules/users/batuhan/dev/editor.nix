@@ -11,7 +11,6 @@
       {
         programs.neovide.settings = {
           font = {
-            size = 14;
             hinting = "full";
             edging = "antialias";
             normal = [

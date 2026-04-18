@@ -17,8 +17,10 @@
         carlito #   Calibri/georgia alternative
         inconsolata # Monospace font, for prints
         iosevka # Monospace font, for terminal mostly
+        fira-code
         victor-mono
         noto-fonts
+        source-code-pro
         source-serif-pro
         source-sans-pro
         curie # Bitmap fonts

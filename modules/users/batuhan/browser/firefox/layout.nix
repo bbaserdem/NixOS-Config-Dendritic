@@ -1,6 +1,8 @@
 # Configuring firefox layout
 {...}: {
   flake.modules.homeManager.batuhan = {...}: {
+    # Put our profile in stylix
+    stylix.targets.firefox.profileNames = ["batuhan"];
     programs.firefox.profiles.batuhan.settings = {
       "browser.uiCustomization.state" = builtins.toJSON {
         currentVersion = 24;

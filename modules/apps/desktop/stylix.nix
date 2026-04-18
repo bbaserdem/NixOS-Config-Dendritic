@@ -16,6 +16,7 @@
     # Generic behavior settings for all contexts
     generic.stylix = {...}: {
       stylix = {
+        enable = true;
         autoEnable = false;
       };
     };
@@ -24,6 +25,7 @@
     nixos.stylix = {...}: {
       imports = [
         inputs.stylix.nixosModules.stylix
+        inputs.self.modules.generic.stylix
       ];
     };
     darwin.stylix = {...}: {
@@ -32,16 +34,11 @@
       ];
     };
 
-    # Stylix tries to apply package overlays in home-manager, disable this
-    homeManager.stylix = {...}: {
+    # In standalone hm context, this module needs to be loaded
+    homeManager.stylix-hms = {...}: {
       imports = [
         inputs.stylix.homeModules.stylix
       ];
-
-      # Stylix settings
-      stylix = {
-        overlays.enable = false;
-      };
     };
   };
 }

@@ -36,6 +36,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixcord.url = "github:FlameFlag/nixcord";
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-lib.follows = "nixpkgs";

@@ -13,7 +13,6 @@
             tridactyl-native
             keepassxc
           ];
-          # Need to include native messaging hosts as a package overlay
           profiles.batuhan = {
             isDefault = true;
             extensions = {

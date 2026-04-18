@@ -83,9 +83,11 @@ local M = {
           if not treesitter_try_attach(buf, language) then
             if vim.tbl_contains(installable_parsers, language) then
               -- not already installed, so try to install them via nvim-treesitter if possible
-              require("nvim-treesitter").install(language):await(function()
-                treesitter_try_attach(buf, language)
-              end)
+              if not nixInfo.isNix then
+                require("nvim-treesitter").install(language):await(function()
+                  treesitter_try_attach(buf, language)
+                end)
+              end
             end
           end
         end,

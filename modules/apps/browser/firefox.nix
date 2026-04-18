@@ -16,9 +16,6 @@
           enable = true;
           colorTheme.enable = true;
           firefoxGnomeTheme.enable = true;
-          profileNames = [
-            "default"
-          ];
         };
       };
 
@@ -36,22 +33,6 @@
               package = pkgs.firefox;
             };
           }
-          # (
-          #   lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-          #     programs.firefox = {
-          #       package = pkgs.firefox;
-          #     };
-          #   }
-          # )
-          # (
-          #   lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-          #     programs.firefox = {
-          #       # In darwin, the home-manager installation doesn't work
-          #       # Install through brew
-          #       package = null;
-          #     };
-          #   }
-          # )
         ];
       };
     };
