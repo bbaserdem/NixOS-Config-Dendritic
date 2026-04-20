@@ -14,6 +14,7 @@
       # Languages
       node
       python
+      lean
     ];
   };
 }
