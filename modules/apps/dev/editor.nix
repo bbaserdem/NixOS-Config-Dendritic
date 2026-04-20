@@ -84,7 +84,7 @@
             # Enable nvim
             enable = true;
             # Pass stylix theme through if loaded
-            settings.colorscheme.base16 = stylixColors;
+            settings.colorscheme.base16.dark = stylixColors;
             # Enable neovide
             hosts.neovide.nvim-host.enable = true;
           };

@@ -25,7 +25,6 @@
     nixos.stylix = {...}: {
       imports = [
         inputs.stylix.nixosModules.stylix
-        inputs.self.modules.generic.stylix
       ];
     };
     darwin.stylix = {...}: {
@@ -33,11 +32,18 @@
         inputs.stylix.darwinModules.stylix
       ];
     };
+    homeManager.stylix = {...}: {
+      imports = [
+        inputs.self.modules.generic.stylix
+      ];
+    };
 
     # In standalone hm context, this module needs to be loaded
+    # We do the enables here too
     homeManager.stylix-hms = {...}: {
       imports = [
         inputs.stylix.homeModules.stylix
+        inputs.self.modules.homeManager.stylix
       ];
     };
   };

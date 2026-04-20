@@ -18,8 +18,10 @@
     }: {
       config = lib.mkMerge [
         (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+          # We just install to user-space
+          # the chromium module doesn't work well on chrome anyway
           home.packages = with pkgs; [
-            google-chrome # Google chrome package; no home-manager module
+            google-chrome
           ];
         })
       ];

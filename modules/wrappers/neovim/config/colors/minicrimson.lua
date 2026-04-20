@@ -35,7 +35,9 @@ end
 vim.g.colors_name = "minicrimson"
 apply_theme()
 
+local _group = vim.api.nvim_create_augroup("CrimsonTheme", { clear = true })
 vim.api.nvim_create_autocmd("OptionSet", {
+  group = _group,
   pattern = "background",
   callback = function()
     if vim.g.colors_name == "minicrimson" then

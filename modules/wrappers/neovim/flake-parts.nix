@@ -13,7 +13,7 @@
       # Config is available from config.wrappers.neovim in each context after this
 
       # Nixos and nix-darwin module
-      generic.neovim = {...}: {
+      generic.neovim = {config, ...}: {
         # Import the module from the wrapper
         imports = [
           # The modules are exported in outputs.wrapperModules

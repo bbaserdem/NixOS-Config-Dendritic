@@ -94,14 +94,15 @@
               default = null;
             };
             # Provide base16 colors to the stylix theme
-            base16 = lib.mkOption {
-              type = lib.types.nullOr lib.types.attrs;
-              default = null;
-            };
-            # Stylix polarity, needed to make the theme function correctly
-            base16-polarity = lib.mkOption {
-              type = lib.types.nullOr (lib.types.enum ["light" "dark"]);
-              default = null;
+            base16 = {
+              dark = lib.mkOption {
+                type = lib.types.nullOr lib.types.attrs;
+                default = null;
+              };
+              light = lib.mkOption {
+                type = lib.types.nullOr lib.types.attrs;
+                default = null;
+              };
             };
           };
 

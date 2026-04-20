@@ -15,8 +15,9 @@
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-          # Stylix inflates terminal font size in darwin
-          sizes.terminal = 9;
+          # Stylix inflates terminal font size in darwin; by 4/3
+          # Target we want is 12.5
+          sizes.terminal = 9.375;
         }
       )
     ];
@@ -26,7 +27,7 @@
         settings = {
           theme = "dark:stylix,light:Selenized Light";
           # Font options
-          font-style = "Light";
+          font-style = "SemiBold";
           font-style-bold = "Bold";
           font-style-italic = "Light Oblique";
           font-style-bold-italic = "Bold Italic";

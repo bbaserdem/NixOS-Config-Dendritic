@@ -13,6 +13,8 @@
         target = "kitty-base16";
         "check-parsed-config-yaml" = false;
       };
+    darkTheme = renderKitty "${schemes}/gruvbox-dark-medium.yaml";
+    lightTheme = renderKitty "${schemes}/gruvbox-light-medium.yaml";
     stylixKitty = config.lib.stylix.colors {
       templateRepo = inputs.tinted-terminal;
       target = "kitty-base16";
@@ -45,9 +47,9 @@
 
     # Enable color switching by dropping theme files
     xdg.configFile = {
-      "kitty/dark-theme.auto.conf".source = renderKitty "${schemes}/gruvbox-dark-medium.yaml";
-      "kitty/light-theme.auto.conf".source = renderKitty "${schemes}/gruvbox-light-medium.yaml";
-      "kitty/no-preference-theme.auto.conf".source = stylixKitty;
+      "kitty/dark-theme.auto.conf".source = stylixKitty;
+      "kitty/light-theme.auto.conf".source = lightTheme;
+      "kitty/no-preference-theme.auto.conf".source = darkTheme;
     };
   };
 }

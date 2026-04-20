@@ -17,7 +17,7 @@
           pnpm
           # Project environment
           bun
-          lean4
+          elan
           postgresql
           # Tooling for agents
           ripgrep

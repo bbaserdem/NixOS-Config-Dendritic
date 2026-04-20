@@ -9,7 +9,6 @@ My nix system flake.
 # Todo
 
 - [ ] Clean and setup secrets (user: beets)
-- [ ] Integrate stylix properly (user: kitty)
 - [ ] Neovim dark/light mode auto-detect
 - [ ] Fix darwin UID issues (user: factory)
 - [ ] Darwin stable doesn't have shell integration options in 25.11
