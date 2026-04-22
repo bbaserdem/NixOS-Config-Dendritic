@@ -4,12 +4,14 @@
 
 # Hardware
 
+- [Su Ana](hardware/su-ana.md)
 - [Umay](hardware/umay.md)
 
 # Flake
 
 - [Repository Structure](flake/structure.md)
 - [Modules](flake/modules.md)
+- [Systems](flake/systems.md)
 
 # Software
 

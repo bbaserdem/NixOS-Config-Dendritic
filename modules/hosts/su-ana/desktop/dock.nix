@@ -49,7 +49,7 @@
         {app = "${hmDir}/Slack.app/";}
         {app = "/Applications/Google Chrome.app/";}
         {app = "/Applications/Chromium.app/";}
-        {app = "/Applications/Firefox.app/";}
+        {app = "${hmDir}/Firefox.app/";}
         {spacer = {small = true;};}
         # Dev
         {app = "/Applications/GitHub Desktop.app/";}

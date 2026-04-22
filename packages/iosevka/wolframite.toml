@@ -1,5 +1,5 @@
-[buildPlans.IosevkaCustom]
-family = "Iosevka Custom"
+[buildPlans.IosevkaWolframite]
+family = "Iosevka Wolframite"
 spacing = "normal"
 serifs = "sans"
 noCvSs = true

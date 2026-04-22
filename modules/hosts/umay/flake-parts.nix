@@ -13,6 +13,7 @@ in {
     nixosConfigurations = inputs.self.lib.mkNixos {
       system = arch;
       name = host;
+      description = "Umay: NixOS VM";
     };
 
     # Output us as a package to be created by other linux hosts, platform specific
