@@ -18,8 +18,6 @@ My nix system flake.
 - [ ] Add codecompanion to nvim wrapper
 - [ ] Setup individual theming for each host
 - [ ] Test if kitty theme importer is working
-- [ ] Now that we moved from brew to nix for GUI, fix dock in darwin.
-- [ ] Test darwin modules on macos
 - [ ] Configure joey's user
 - [ ] Import desktop, display manager config
 - [ ] Import grub config
