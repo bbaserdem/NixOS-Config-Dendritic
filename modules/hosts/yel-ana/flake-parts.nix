@@ -1,10 +1,10 @@
-# Flake-parts config for su-ana
+# Flake-parts config for yel-ana
 {inputs, ...}: {
   flake = {
-    darwinConfigurations = inputs.self.lib.mkDarwin {
-      system = "aarch64-darwin";
-      name = "su-ana";
-      description = "Su Ana: Batuhan's MBP";
+    nixosConfigurations = inputs.self.lib.mkNixos {
+      system = "x86_64-linux";
+      name = "yel-ana";
+      description = "Yel Ana: Batuhan's Laptop";
     };
   };
 }

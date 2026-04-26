@@ -3,6 +3,8 @@
   flake.modules.homeManager.batuhan = {
     pkgs,
     config,
+    lib,
+    options,
     ...
   }: let
     # userDirs is only allowed on linux
@@ -11,25 +13,29 @@
       then config.xdg.userDirs.music
       else "${config.home.homeDirectory}/Media/Music";
   in {
-    config = {
-      # Listenbrainz token
-      # sops.secrets.listenbrainz = {};
-
-      services = {
+    config = lib.mkMerge [
+      {
         # MPD configuration
-        mpd = {
-          musicDirectory = srcDir;
-          playlistDirectory = "${srcDir}/Playlists";
-          network = {
-            listenAddress = "localhost";
-            port = 6600;
+        services = {
+          mpd = {
+            musicDirectory = srcDir;
+            playlistDirectory = "${srcDir}/Playlists";
+            network = {
+              listenAddress = "localhost";
+              port = 6600;
+            };
           };
         };
-        # Listenbrainz credentials
-        listenbrainz-mpd = {
-          # token_file = config.sops.secrets.listenbrainz.path;
-        };
-      };
-    };
+      }
+      (
+        lib.mkIf (lib.hasAttrByPath ["sops" "secrets"] options)
+        {
+          # Load secret key
+          sops.secrets."listenbrainz" = {};
+          # Listenbrainz credentials
+          services.listenbrainz-mpd.settings.submission.token_file = config.sops.secrets."listenbrainz".path;
+        }
+      )
+    ];
   };
 }

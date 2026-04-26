@@ -1,13 +1,10 @@
-# Su-ana userspace configuration
+# Su-ana secret provisioning
 {inputs, ...}: {
   flake.modules.darwin.su-ana = {...}: {
-    # System configuration
-
     # Load modules that configure the system
     imports = with inputs.self.modules.darwin; [
-      # Image suite
-      image
-      blender
+      secrets
     ];
+    sops.defaultSopsFile = inputs.self + /secrets/host/su-ana/secrets.yaml;
   };
 }

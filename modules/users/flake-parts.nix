@@ -8,8 +8,8 @@
   config = {
     flake = {
       modules = {
-        # Generic home-manager settings
-        generic.default = {...}: {
+        # Generic home-manager settings module, for using hm as a system module
+        generic.homeManagerOS = {...}: {
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
@@ -17,20 +17,21 @@
             overwriteBackup = true;
           };
         };
-        # Import home-manager module to default contexts
+        # Import home-manager OS module to default OS contexts
         nixos.default = {...}: {
           imports = [
             inputs.home-manager.nixosModules.home-manager
-            inputs.self.modules.generic.default
+            inputs.self.modules.generic.homeManagerOS
           ];
         };
         darwin.default = {...}: {
           imports = [
             inputs.home-manager.darwinModules.home-manager
-            inputs.self.modules.generic.default
+            inputs.self.modules.generic.homeManagerOS
           ];
         };
         # Default settings for all home-manager invocations
+        # Loaded into context by factory function
         homeManager.default = {...}: {
           home.stateVersion = "25.11";
         };
@@ -52,12 +53,9 @@
         ...
       }: {
         # Nixos config for this user, this uses home-manager as nixos module
-        nixos."${username}" = {
-          lib,
-          pkgs,
-          ...
-        }: {
+        nixos."${username}" = {lib, ...}: {
           config = {
+            # Manage user groups and settings outside home-manager
             users.users."${username}" = {
               isNormalUser = isNormalUser;
               home = "/home/${username}";
@@ -66,11 +64,11 @@
                 "networkmanager"
               ];
             };
-
+            # Ensure self is loaded
             home-manager.users."${username}".imports = [
               inputs.self.modules.homeManager."${username}"
             ];
-
+            # Add to trusted nix users
             nix.settings.trusted-users = lib.optionals isNix [
               username
             ];
@@ -78,18 +76,9 @@
         };
 
         # Nix-darwin config for the given user, uses home-manager as darwin module
-        darwin."${username}" = {
-          lib,
-          pkgs,
-          ...
-        }: {
+        darwin."${username}" = {...}: {
           config = {
             users = {
-              # Add us to managed users
-              # Needs setting uid of user; from AI tools
-              # knownUsers = [
-              #   "${username}"
-              # ];
               # Configure user
               users."${username}" = {
                 home = "/Users/${username}";

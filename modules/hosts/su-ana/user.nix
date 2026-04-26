@@ -10,7 +10,10 @@
 
     config = {
       system = {
+        # This option will be removed in the future, don't depend on it
         primaryUser = "batuhan";
+        # Our implementation
+        mainUser = "batuhan";
       };
     };
   };

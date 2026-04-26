@@ -7,7 +7,6 @@ My syncthing setup is meant to be used across different hosts and computers.
 ## TODO
 
 - [*] dataDir = "/home/syncthing"
-- [ ] redo secret hierarchy to `syncthing/host{,-user}/{key,cert,restapi}`
 - [ ] ACL rules
 - [ ] Paperless synching only media dir (ACL rules as well)
 - [ ] Paperless timer to backup db
@@ -27,9 +26,9 @@ So it is not compatible with multiple user Darwin and Standalone HM.
 This module can be loaded both into `nixos` and `home-manager` context.
 For the programs module, it configures settings compatible between the two.
 
-This module is written to in user configuration folder as well.
-Shared folders, and which hosts they are shared on, is defined by the users.
-That way, while each nixos host has one instance of syncthing, users can define their own folders
+This module is written to in user and host configurations as well.
+Hosts register their public addresses in this module.
+Shared folders, and which hosts they are shared on, are registered by the users.
 
 ### `inputs.self.modules.homeManager.syncthing`
 
@@ -43,6 +42,10 @@ When this REST api key is supported, however, this key will be defined as a host
 This home-manager module also imports this secret into the userspace.
 Users must be in the `syncthing` group to be able to get these secrets.
 
+Individual users also write to this module, for folders paths.
+Syncthing home-manager module is only *enabled* in standalone HM and Darwin settings.
+So the file paths defined in this option only effects these two contexts.
+
 ### `inputs.self.modules.nixos.syncthing`
 
 This module enables the system wide syncthing process, pulled by the generic module.
@@ -54,6 +57,9 @@ Access to different directories will be provisioned usinc ACL.
 This, along with other restrictions, makes it so that file ownership cannot be (and generally shouldn't) synced.
 
 This module also enables relay, since this is Linux only feature.
+
+Individual users also write to this module, for defining folders paths.
+This will be only loaded in NixOS contexts, so it defines NixOS level config.
 
 ### `inputs.self.modules.darwin.syncthing`
 

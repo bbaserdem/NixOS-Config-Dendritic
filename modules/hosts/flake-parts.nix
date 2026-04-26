@@ -49,11 +49,11 @@
               inputs.self.modules.generic.nixpkgs
               inputs.self.modules.nixos.default
               inputs.self.modules.nixos.${name}
-              {
+              ({...}: {
                 nixpkgs.hostPlatform = lib.mkDefault system;
                 networking.hostName = "${name}";
-                # hardware.bluetooth.settings.General.Name
-              }
+                hardware.bluetooth.settings.General.Name = description;
+              })
             ];
           };
         };
