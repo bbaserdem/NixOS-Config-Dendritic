@@ -32,10 +32,10 @@
             createDirectories = true;
             desktop = "${config.home.homeDirectory}/Desktop";
             documents = "${config.home.homeDirectory}/Media/Documents";
-            music = "${config.home.homeDirectory}/Media/Music";
+            # music = "${config.home.homeDirectory}/Media/Music";
             pictures = "${config.home.homeDirectory}/Media/Pictures";
             templates = "${config.home.homeDirectory}/Media/Templates";
-            videos = "${config.home.homeDirectory}/Media/Videos";
+            # videos = "${config.home.homeDirectory}/Media/Videos";
             publicShare = "${config.home.homeDirectory}/Shared/Public";
             download = "${config.home.homeDirectory}/Sort/Downloads";
             extraConfig = {

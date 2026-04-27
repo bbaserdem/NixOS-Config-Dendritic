@@ -18,6 +18,7 @@
           ssh-to-age
           gnupg
           age
+          mkpasswd
           # Node for plugins and tooling
           nodejs-slim
           pnpm

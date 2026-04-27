@@ -24,7 +24,7 @@
               "su-ana"
             ];
           };
-          wolframite-video = {
+          wolframite-videos = {
             enable = lib.mkDefault true;
             devices = [
               "su-ana"

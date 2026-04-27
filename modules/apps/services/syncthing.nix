@@ -79,10 +79,21 @@
 
             # The dataDir option is the home directory of the syncthing users
             dataDir = "/home/syncthing";
+          };
 
-            # Dispatch the homeManager module to all managed users
-            home-manager.sharedModules = [
-              inputs.self.modules.homeManager.syncthing
+          # Dispatch the homeManager module to all managed users
+          home-manager.sharedModules = [
+            inputs.self.modules.homeManager.syncthing
+          ];
+
+          # https://github.com/NixOS/nixpkgs/issues/338485
+          # By default, nixos module doesn't have permissions for ownership change
+          # This should allow the service to do ownership change
+          systemd.services.syncthing.serviceConfig = {
+            # Add these capabilities
+            AmbientCapabilities = [
+              "CAP_CHOWN"
+              "CAP_FOWNER"
             ];
           };
         }
