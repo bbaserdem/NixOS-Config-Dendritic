@@ -3,6 +3,7 @@
   inputs,
   lib,
   flake-parts-lib,
+  withSystem,
   ...
 }: {
   # currently, there's no nix-darwin module for flake-parts,
@@ -88,15 +89,21 @@
           name,
           user,
           ...
-        }: {
-          "${user}@${name}" = inputs.home-manager.lib.homeManagerConfiguration {
-            modules = [
-              inputs.self.modules.generic.nixpkgs
-              inputs.self.modules.homeManager.${name}
-              inputs.self.modules.homeManager.${user}
-            ];
-          };
-        };
+        }:
+          withSystem system ({pkgs, ...}: {
+            "${user}@${name}" = inputs.home-manager.lib.homeManagerConfiguration {
+              inherit pkgs;
+              modules = [
+                inputs.self.modules.homeManager.${name}
+                inputs.self.modules.homeManager.${user}
+                # Add the hostname to the homeManager standalone config
+                # Option defined in module/users/flake-parts.nix
+                ({...}: {
+                  networking.hostName = name;
+                })
+              ];
+            };
+          });
       };
     };
   };

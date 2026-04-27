@@ -16,22 +16,44 @@
       aliasUser ? nameUser,
       nameUserPretty ? (capitalize aliasUser),
       syncName ? "${aliasUser}-${userDir}",
+      sharedHosts ? [],
+      perHost ? {},
       ...
     }: {
       # Modules for setting up syncthing and user audio dir
 
       # Folder definitions for our user to share
-      generic.syncthing = {lib, ...}: {
-        services.syncthing.settings.folders."${syncName}" = {
-          enable = lib.mkOverride 1400 false;
-          label = "${nameUserPretty} ${userDirPretty}";
-          id = "${nameUserPretty}_${userDirPretty}";
-          type = "sendreceive";
-          versioning = {
-            type = "trashcan";
-            params = {cleanoutDays = "60";};
-          };
-        };
+      generic.syncthing = {
+        lib,
+        config,
+        ...
+      }: let
+        hostName = config.networking.hostName;
+      in {
+        config = lib.mkMerge [
+          {
+            services.syncthing.settings.folders."${syncName}" = {
+              enable = lib.mkOverride 1400 false;
+              label = "${nameUserPretty} ${userDirPretty}";
+              id = "${nameUserPretty}_${userDirPretty}";
+              type = "sendreceive";
+              devices = lib.filter (device: device != hostName) sharedHosts;
+              versioning = {
+                type = "trashcan";
+                params = {cleanoutDays = "60";};
+              };
+            };
+          }
+          (
+            lib.mkIf (lib.elem hostName sharedHosts) {
+              services.syncthing.settings.folders."${syncName}" =
+                {
+                  enable = lib.mkDefault true;
+                }
+                // (lib.attrByPath [hostName] {} perHost);
+            }
+          )
+        ];
       };
 
       # Folder location for darwin and hm-standalone settings
@@ -77,7 +99,7 @@
       }: {
         config = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
           # XDG directory setting
-          xdg.userDirs."${userDir}" = "${config.home.homeDirectory}/${userDirPretty}";
+          xdg.userDirs."${userDir}" = lib.mkOverride 1100 "${config.home.homeDirectory}/${userDirPretty}";
         };
       };
     };

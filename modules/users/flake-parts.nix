@@ -32,8 +32,23 @@
         };
         # Default settings for all home-manager invocations
         # Loaded into context by factory function
-        homeManager.default = {...}: {
-          home.stateVersion = "25.11";
+        homeManager.default = {lib, ...}: {
+          options = {
+            # Create a hostName attribute
+            # Either inherited from host (nixos, darwin)
+            # Or set by standalone hm factory
+            # Allows hostname to be queried from hm context without osConfig magic
+            networking.hostName = lib.mkOption {
+              type = lib.types.str;
+              description = ''
+                Variable used by modules to identify the machine running the HM config.
+                Should be set by flake-module factory functions.
+              '';
+            };
+          };
+          config = {
+            home.stateVersion = "25.11";
+          };
         };
       };
 
@@ -51,7 +66,11 @@
         isAdmin ? false,
         isNix ? false,
         ...
-      }: {
+      }: let
+        hostNameLoadingModule = {osConfig, ...}: {
+          networking.hostName = osConfig.networking.hostName;
+        };
+      in {
         # Nixos config for this user, this uses home-manager as nixos module
         nixos."${username}" = {lib, ...}: {
           config = {
@@ -67,6 +86,7 @@
             # Ensure self is loaded
             home-manager.users."${username}".imports = [
               inputs.self.modules.homeManager."${username}"
+              hostNameLoadingModule
             ];
             # Add to trusted nix users
             nix.settings.trusted-users = lib.optionals isNix [
@@ -88,6 +108,7 @@
 
             home-manager.users."${username}".imports = [
               inputs.self.modules.homeManager."${username}"
+              hostNameLoadingModule
             ];
           };
         };

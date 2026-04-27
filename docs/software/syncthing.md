@@ -77,10 +77,10 @@ We envision the following folders for syncthing;
 
 - `Documents-<user>`: `~/Documents` symlinks here
 - `Downloads-<user>`: `~/Downloads` symlinks here
-- `Videos-<user>`: `~/Videos` (~/Movies in Darwin) symlinks here
 - `Music-<user>`: `~/Music` symlinks here
 - `Pictures-<user>`: `~/Pictures` symlinks here
 - `Paperless`: The file database that paperless uses
+- `Videos-<user>`: `~/Videos` (~/Movies in Darwin) symlinks here
 
 ## Usage
 

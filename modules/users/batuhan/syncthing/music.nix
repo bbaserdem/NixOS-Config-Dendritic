@@ -1,9 +1,11 @@
-# Configuring synching video directory
+# Configuring syncthing music directory
 {inputs, ...}: {
   flake.modules = inputs.self.factory.syncMediaDir {
-    userDir = "videos";
-    userDirDarwin = "Movies";
+    userDir = "music";
     nameUser = "batuhan";
     aliasUser = "wolframite";
+    sharedHosts = [
+      "su-ana"
+    ];
   };
 }
