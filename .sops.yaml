@@ -1,15 +1,14 @@
 # SOPS key for secrets
 keys:
-  - &users            age1ug0qnjvm6e2cyjjvf6udhza7e6v4x78pmntk6w5kh3e86jwyvq4slvm5ew
   - &user_wolframite  age1kef20n2n6cgs4rrv76zwg50q0y8xqzpce69twyrrsct6v63cqplqf297my
   # - &user_joeysaur    age
-  - &hosts            age1fyg6evjlss9dqnk6wnrzwrsf6d4c0g9kl48q4tdtjr27n982u5cs8u9z6q
   - &host_su-ana      age1trtaqq9n93gck0gh4ew3ms6unu9qqd34yekhlla0ldn8mygjw46qnspvz5
 creation_rules:
   - path_regex: ^secrets/user/[^/]+\.(yaml|json|key)$
     key_groups:
     - age:
-      - *users
+      - *user_wolframite
+      # - *user_joeysaur
   - path_regex: ^secrets/user/wolframite/[^/]+\.(yaml|json|key)$
     key_groups:
     - age:
@@ -21,8 +20,13 @@ creation_rules:
   - path_regex: ^secrets/host/[^/]+\.(yaml|json|key)$
     key_groups:
     - age:
-      - *hosts
+      - *host_su-ana
+      # - *host_yel-ana
   - path_regex: ^secrets/host/su-ana/[^/]+\.(yaml|json|key)$
     key_groups:
     - age:
       - *host_su-ana
+  # - path_regex: ^secrets/host/yel-ana/[^/]+\.(yaml|json|key)$
+  #   key_groups:
+  #   - age:
+  #     - *host_yel-ana_

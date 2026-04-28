@@ -1,9 +1,7 @@
 # Configuring syncthing pictures directory
 {inputs, ...}: {
-  flake.modules = inputs.self.factory.syncMediaDir {
+  flake.modules = inputs.self.factory.syncthingXdg {
     userDir = "download";
-    userDirPretty = "Downloads";
-    userDirDarwin = "Downloads";
     nameUser = "batuhan";
     aliasUser = "wolframite";
     sharedHosts = [

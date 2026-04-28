@@ -28,19 +28,19 @@
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
           # User dirs are only available in Linux
           # Other user dirs are set by the sync module by default
+          # TODO: transition to projects dir; official in XDG user dirs; drops in 26.05
           xdg.userDirs = {
             enable = true;
             createDirectories = true;
-            # These are set by the sync module, allow overriding them
-            documents = lib.mkOverride 1250 "${config.home.homeDirectory}/Documents";
-            music = lib.mkOverride 1250 "${config.home.homeDirectory}/Music";
-            pictures = lib.mkOverride 1250 "${config.home.homeDirectory}/Pictures";
-            videos = lib.mkOverride 1250 "${config.home.homeDirectory}/Videos";
-            download = lib.mkOverride 1250 "${config.home.homeDirectory}/Downloads";
-            # These are defaults
+            documents = "${config.home.homeDirectory}/Documents";
+            music = "${config.home.homeDirectory}/Music";
+            pictures = "${config.home.homeDirectory}/Pictures";
+            videos = "${config.home.homeDirectory}/Videos";
+            download = "${config.home.homeDirectory}/Downloads";
             desktop = "${config.home.homeDirectory}/Desktop";
             templates = "${config.home.homeDirectory}/Templates";
             publicShare = "${config.home.homeDirectory}/Shared/Public";
+            # projects = "${config.home.homeDirectory}/Projects";
             # Some extras that I may use
             extraConfig = {
               XDG_PROJECTS_DIR = "${config.home.homeDirectory}/Projects";

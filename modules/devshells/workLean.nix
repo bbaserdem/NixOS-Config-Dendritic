@@ -19,6 +19,7 @@
           bun
           elan
           postgresql
+          awscli2
           # Tooling for agents
           ripgrep
           shellcheck

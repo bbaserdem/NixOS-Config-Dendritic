@@ -14,8 +14,7 @@
       # Default ssh key locations
       sops.age = {
         sshKeyPaths = [
-          "/etc/ssh/ssh_age_host_ed25519_key"
-          "/etc/ssh/ssh_age_all_ed25519_key"
+          "/etc/ssh/id_ed25519"
         ];
         generateKey = false;
       };
