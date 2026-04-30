@@ -4,6 +4,9 @@
     darwin.ai = {...}: {
       # Enable userspace tools
       homebrew = {
+        brews = [
+          "forgecode"
+        ];
         casks = [
           "repo-prompt"
           "claude"
@@ -11,6 +14,7 @@
           "codex"
           "codex-app"
           "codexbar"
+          "droid"
         ];
       };
     };
