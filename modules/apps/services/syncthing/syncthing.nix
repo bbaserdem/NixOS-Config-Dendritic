@@ -15,7 +15,11 @@
     };
 
     # NixOS specific options
-    nixos.syncthing = {lib, ...}: {
+    nixos.syncthing = {
+      lib,
+      config,
+      ...
+    }: {
       services.syncthing = {
         # Enable relays and ports
         openDefaultPorts = true;
@@ -24,18 +28,32 @@
         # The dataDir option is the home directory of the syncthing users
         dataDir = "/home/syncthing";
       };
+      systemd = {
+        # https://github.com/NixOS/nixpkgs/issues/338485
+        # By default, nixos module doesn't have permissions for ownership change
+        # This should allow the service to do ownership change though
+        services.syncthing.serviceConfig = {
+          # Add these capabilities
+          AmbientCapabilities = [
+            "CAP_CHOWN"
+            "CAP_FOWNER"
+          ];
+          # Disable user sandboxing, or file ownership won't work
+          PrivateUsers = lib.mkForce false;
+        };
 
-      # https://github.com/NixOS/nixpkgs/issues/338485
-      # By default, nixos module doesn't have permissions for ownership change
-      # This should allow the service to do ownership change though
-      systemd.services.syncthing.serviceConfig = {
-        # Add these capabilities
-        AmbientCapabilities = [
-          "CAP_CHOWN"
-          "CAP_FOWNER"
-        ];
-        # Disable user sandboxing, or file ownership won't work
-        PrivateUsers = lib.mkForce false;
+        # ACL provisioning to home directory
+        systemd.tmpfiles.settings."10-syncthing-data"."${config.services.syncthing.dataDir}" = {
+          # Set root directory ownership to syncthing
+          d = {
+            user = config.services.syncthing.user;
+            group = config.services.syncthing.group;
+            mode = "0750";
+          };
+          # Provision ACL access to the entire tree
+          "A+".argument = "u:${config.services.syncthing.user}:rwX,m::rwX";
+          "a+".argument = "d:u:${config.services.syncthing.user}:rwx,d:m::rwx";
+        };
       };
     };
 

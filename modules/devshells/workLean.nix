@@ -26,6 +26,7 @@
           socat
           playwright
           playwright-test
+          postman
           # Doc rendering
           mdbook
           mdbook-mermaid
