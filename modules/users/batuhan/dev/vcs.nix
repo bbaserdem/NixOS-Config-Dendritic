@@ -11,7 +11,23 @@
       jujutsu.settings.user.email = "baserdemb@gmail.com";
 
       # GH account
-      gh.hosts."github.com".user = "bbaserdem";
+      gh = {
+        settings = {
+          prompt = "enabled";
+          prefer_editor_prompt = "disabled";
+          color_labels = "enabled";
+          spinner = "enabled";
+        };
+        hosts = {
+          "github.com" = {
+            git_protocol = "ssh";
+            users = {
+              bbaserdem = "";
+            };
+            user = "bbaserdem";
+          };
+        };
+      };
     };
   };
 }

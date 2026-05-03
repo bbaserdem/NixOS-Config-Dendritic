@@ -117,12 +117,17 @@
         lib,
         ...
       }: let
-        targetDir = "${config.services.syncthing.dataDir}/${nameUserPretty}/${userDirPretty}";
+        userRootName = config.local.syncthing.userDirs.${nameUser} or nameUserPretty;
+        userRoot = "${config.services.syncthing.dataDir}/${userRootName}";
+        targetDir = "${userRoot}/${userDirPretty}";
       in {
         config = lib.mkMerge [
           {
             # Sync to the directory
-            services.syncthing.settings.folders."${syncName}".path = targetDir;
+            services.syncthing.settings.folders."${syncName}" = {
+              path = targetDir;
+              copyOwnershipFromParent = true;
+            };
           }
           (
             lib.mkIf (lib.hasAttrByPath ["users" "users" "${nameUser}"] config) {
