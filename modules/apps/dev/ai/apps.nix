@@ -15,7 +15,6 @@
           "codex-app"
           "codexbar"
           "droid"
-          "zed"
         ];
       };
     };

@@ -7,7 +7,6 @@
     imports = with inputs.self.modules.darwin; [
       ai
       docker
-      editor
       virtualization
       vcs
       shell
@@ -15,6 +14,11 @@
       node
       python
       lean
+      # Editors
+      nvim
+      neovide
+      vscode
+      zed
     ];
   };
 }

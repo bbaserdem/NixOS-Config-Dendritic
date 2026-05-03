@@ -3,12 +3,12 @@
   flake.modules.homeManager.batuhan = {
     lib,
     options,
+    config,
     ...
   }: {
-    # Use this module only iF the wrapper module is defined
-    # This will only happen if the neovim module is loaded
     config = lib.mkMerge [
       {
+        # Configure neovide
         programs.neovide.settings = {
           font = {
             hinting = "full";
@@ -53,6 +53,7 @@
         };
       }
       (
+        # Configure the neovim wrapper
         lib.optionalAttrs (lib.hasAttrByPath ["wrappers" "neovim"] options) {
           wrappers.neovim = {
             # Set default theme
@@ -66,7 +67,10 @@
             };
           };
 
-          # Set as default
+          # Set neovim as default editor
+          home.sessionVariables = {
+            EDITOR = lib.getExe config.wrappers.neovim.wrapper;
+          };
         }
       )
     ];
