@@ -32,6 +32,7 @@
       hyprland = {
         lib,
         pkgs,
+        config,
         ...
       } @ args: {
         config = lib.mkMerge [
@@ -55,7 +56,7 @@
                 # Screenshot utility
                 hyprshot = {
                   enable = true;
-                  saveLocation = "${config.xdg.userDirs.pictures}/Screenshots/${host}/";
+                  saveLocation = "${config.xdg.userDirs.pictures}/Screenshots/${config.networking.hostName}/";
                 };
               };
             }

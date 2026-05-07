@@ -4,17 +4,23 @@
     darwin.ai = {...}: {
       # Enable userspace tools
       homebrew = {
-        brews = [
-          "forgecode"
-        ];
         casks = [
+          # External context tools
           "repo-prompt"
-          "claude"
+          # Agentic coding
           "claude-code@latest"
           "codex"
+          # AI Apps
+          "claude"
           "codex-app"
           "codexbar"
+          # Harnesses
           "droid"
+        ];
+        brews = [
+          # Harnesses
+          "forgecode"
+          "opencode"
         ];
       };
     };
