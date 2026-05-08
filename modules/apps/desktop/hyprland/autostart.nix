@@ -1,8 +1,8 @@
 # Hyprland setup
 {...}: {
   flake.modules = {
-    # Home manager
     homeManager = {
+      # Enable stylix theming for hyprpaper
       stylix = {...}: {
         # Enable hyprpaper wallpaper daemon
         stylix.targets.hyprpaper = {
@@ -10,6 +10,7 @@
           image.enable = true;
         };
       };
+      # Enable autostart programs
       hyprland = {
         lib,
         pkgs,
@@ -29,11 +30,11 @@
                 services.hypridle.systemdTarget = "wayland-session@Hyprland.target";
               };
 
-              # Wallpaper setup
+              # Wallpaper setter that works with stylix
               services.hyprpaper = {
                 enable = true;
               };
-              # Make hyprpaper unit auto-load on UWSM hyprland
+              # Force hyprpaper unit to auto-load on UWSM hyprland
               systemd.user.services.hyprpaper = {
                 Install.WantedBy = lib.mkForce ["wayland-session@Hyprland.target"];
                 Unit = {

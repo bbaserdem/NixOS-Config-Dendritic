@@ -42,7 +42,7 @@
               type = lib.types.str;
               description = ''
                 Variable used by modules to identify the machine running the HM config.
-                Should be set by flake-module factory functions.
+                Should be set by flake-module factory functions
               '';
             };
           };

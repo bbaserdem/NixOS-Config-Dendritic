@@ -41,23 +41,22 @@
               # Enable hyprland
               wayland.windowManager.hyprland = {
                 enable = true;
+                # Don't do systemd integration, we will do this ourselves
                 systemd.enable = false;
               };
-              # Environment packages
-              home.packages = with pkgs; [
-                playerctl
-                brightnessctl
-                poweralertd
-                pavucontrol
-                # unstable.runapp  # Using uwsm app instead
-              ];
-              # Utilities
-              programs = {
-                # Screenshot utility
-                hyprshot = {
-                  enable = true;
-                  saveLocation = "${config.xdg.userDirs.pictures}/Screenshots/${config.networking.hostName}/";
-                };
+              # Systemd fix for uwsm, and env variables for hyprland
+              xdg.configFile = {
+                # Systemd fix for uwsm
+                "uwsm/env".source = "${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh";
+                # Env vars for hyprland
+                "uwsm/env-hyprland".text = ''
+                  export HYPRCURSOR_SIZE=24
+                  export QT_QPA_PLATFORMTHEME=qt6ct
+                  export QT_QPA_PLATFORM=wayland
+                  export QT_IM_MODULE="fcitx"
+                  export QT_IM_MODULES="wayland;fcitx;ibus"
+                  unset GTK_IM_MODULE
+                '';
               };
             }
           )
@@ -74,20 +73,6 @@
             lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && (lib.hasAttrByPath ["osConfig"] args)) {
               wayland.windowManager.hyprland.package = null;
               wayland.windowManager.hyprland.portalPackage = null;
-              # Systemd fix for uwsm, and env variables for hyprland
-              xdg.configFile = {
-                # Systemd fix for uwsm
-                "uwsm/env".source = "${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh";
-                # Env vars for hyprland
-                "uwsm/env-hyprland".text = ''
-                  export HYPRCURSOR_SIZE=24
-                  export QT_QPA_PLATFORMTHEME=qt6ct
-                  export QT_QPA_PLATFORM=wayland
-                  export QT_IM_MODULE="fcitx"
-                  export QT_IM_MODULES="wayland;fcitx;ibus"
-                  unset GTK_IM_MODULE
-                '';
-              };
             }
           )
         ];
