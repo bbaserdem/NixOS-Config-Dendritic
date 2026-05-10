@@ -13,7 +13,7 @@
             brightnessctl
             poweralertd
             pavucontrol
-            # TODO: grab from stable when drops
+            # TODO: grab from 26.05 when updates
             unstable.runapp
           ];
         }

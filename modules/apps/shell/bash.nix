@@ -38,6 +38,7 @@
         starship.enableBashIntegration = true;
         yazi.enableBashIntegration = true;
         zoxide.enableBashIntegration = true;
+        vivid.enableBashIntegration = true;
 
         # Setup zsh
         bash = {

@@ -12,7 +12,7 @@
           # Screenshot utility
           hyprshot = {
             enable = true;
-            saveLocation = "${config.xdg.userDirs.pictures}/Screenshots/${config.networking.hostName}/";
+            saveLocation = lib.mkOverride 1400 "${config.xdg.userDirs.pictures}/Screenshots/${config.networking.hostName}/";
           };
         }
       )

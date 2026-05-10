@@ -10,8 +10,6 @@
       {
         # XDG paths
         xdg = {
-          # Enables this feature
-          enable = true;
           # Directories
           cacheHome = "${config.home.homeDirectory}/.cache";
           configHome = "${config.home.homeDirectory}/.config";
@@ -30,8 +28,6 @@
           # Other user dirs are set by the sync module by default
           # TODO: transition to projects dir; official in XDG user dirs; drops in 26.05
           xdg.userDirs = {
-            enable = true;
-            createDirectories = true;
             documents = "${config.home.homeDirectory}/Documents";
             music = "${config.home.homeDirectory}/Music";
             pictures = "${config.home.homeDirectory}/Pictures";

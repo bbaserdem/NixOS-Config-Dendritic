@@ -8,10 +8,10 @@
   flake.modules.homeManager = {
     # Enable stylix theming
     stylix = {...}: {
-      stylix.targets = {
-        nixcord.enable = true;
-        vencord.enable = true;
-        vesktop.enable = true;
+      stylix.targets.nixcord = {
+        enable = true;
+        colors.enable = true;
+        fonts.enable = true;
       };
     };
 

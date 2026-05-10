@@ -121,6 +121,7 @@
         starship.enableZshIntegration = true;
         yazi.enableZshIntegration = true;
         zoxide.enableZshIntegration = true;
+        vivid.enableZshIntegration = true;
       };
 
       # Setup zsh

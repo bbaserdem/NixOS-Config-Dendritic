@@ -31,22 +31,61 @@
         jetbrains-mono
       ]));
   in {
-    # Include in system
-    generic.fonts = {
+    # Put fonts into darwin system (using nix-darwin)
+    darwin.fonts = {
       pkgs,
       lib,
       ...
     }: {
-      environment.systemPackages = fontPackages {inherit pkgs lib;};
+      fonts.packages = fontPackages {inherit pkgs lib;};
     };
 
-    # Install to user
-    homeManager.fonts = {
-      pkgs,
-      lib,
-      ...
-    }: {
-      home.packages = fontPackages {inherit pkgs lib;};
+    nixos = {
+      # Install fonts to user
+      fonts = {
+        pkgs,
+        lib,
+        ...
+      }: {
+        environment.systemPackages = fontPackages {inherit pkgs lib;};
+      };
+      # Stylix stuff
+      stylix = {...}: {
+        stylix.targets = {
+          fontconfig = {
+            enable = true;
+            fonts.enable = true;
+          };
+          font-packages = {
+            enable = true;
+            fonts.enable = true;
+          };
+        };
+      };
+    };
+
+    homeManager = {
+      # Stylix stuff
+      stylix = {...}: {
+        stylix.targets = {
+          fontconfig = {
+            enable = true;
+            fonts.enable = true;
+          };
+          font-packages = {
+            enable = true;
+            fonts.enable = true;
+          };
+        };
+      };
+      # Install to user too
+      fonts = {
+        pkgs,
+        lib,
+        ...
+      }: {
+        home.packages = fontPackages {inherit pkgs lib;};
+      };
     };
   };
 }

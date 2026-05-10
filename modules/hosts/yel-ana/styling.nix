@@ -1,13 +1,13 @@
-# Su-ana theming
-{inputs, ...}: {
-  flake.modules.darwin.su-ana = {pkgs, ...}: {
+# Su-ana theming using stylix
+{...}: {
+  flake.modules.nixos.yel-ana = {pkgs, ...}: {
     stylix = {
-      # Pick the base16 scheme for this user
+      # Pick the base16 scheme for this computer
       base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
-      # Default wallpaper for this computer, not relevant in darwin context
-      image = "${pkgs.pantheon.elementary-wallpapers}/share/backgrounds/Photo by SpaceX.jpg";
+      # Default wallpaper for this computer
+      image = "${pkgs.pantheon.elementary-wallpapers}/share/backgrounds/Sunset by the Pier.jpg";
 
-      # Fonts to be used, not super relevant in darwin context
+      # Fonts to be used
       fonts = with pkgs; {
         monospace = {
           package = _3270font;
@@ -25,6 +25,20 @@
           package = noto-fonts-color-emoji;
           name = "Noto Color Emoji";
         };
+      };
+
+      # Icons to be used
+      icons = {
+        enable = true;
+        package = pkgs.qogir-icon-theme;
+        dark = "Qogir-Dark";
+        light = "Qogir";
+      };
+
+      cursor = {
+        package = pkgs.bibata-cursors;
+        name = "Bibata-Modern-Ice";
+        size = 24;
       };
 
       opacity = {
