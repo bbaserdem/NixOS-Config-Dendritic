@@ -1,11 +1,31 @@
 # Opencode global setup
 {...}: {
-  flake.modules = {
-    homeManager.ai = {...}: {
+  flake.modules.homeManager = {
+    # Theming with stylix
+    stylix = {...}: {
+      stylix.targets.opencode = {
+        enable = true;
+        colors.enable = true;
+      };
+    };
+    # OpenCode setup
+    ai = {...}: {
       # Enable opencode code config without installing it ourselves
       programs.opencode = {
         enable = true;
         package = null;
+        # Agentic setup
+        commands = {
+          "_commit" = builtins.readFile ./commands/_commit.md;
+        };
+        agents = {};
+        rules = "";
+
+        settings = {
+          autoupdate = "notify";
+          share = "auto";
+          snapshot = true;
+        };
       };
 
       # Disable auto-lsp downloads
