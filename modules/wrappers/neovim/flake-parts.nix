@@ -1,5 +1,7 @@
 # Flake-Parts module for neovim config wrapper
-{inputs, ...}: {
+{config, ...}: let
+  neovimInstall = config.flake.wrappers.neovim.install;
+in {
   flake = {
     # Flake-Parts configuration for neovim wrapper
     # The general wrappers config is set in the flake config
@@ -16,13 +18,7 @@
       generic.neovim = {config, ...}: {
         # Import the module from the wrapper
         imports = [
-          # The modules are exported in outputs.wrapperModules
-          (inputs.wrappers.lib.mkInstallModule {
-            # Location to install
-            loc = ["environment" "systemPackages"];
-            name = "neovim";
-            value = inputs.self.wrapperModules.neovim;
-          })
+          neovimInstall
         ];
       };
 
@@ -30,13 +26,7 @@
       homeManager.neovim = {...}: {
         # Import the module from the wrapper
         imports = [
-          # The modules are exported in outputs.wrapperModules
-          (inputs.wrappers.lib.mkInstallModule {
-            # Location to install
-            loc = ["home" "packages"];
-            name = "neovim";
-            value = inputs.self.wrapperModules.neovim;
-          })
+          neovimInstall
         ];
       };
     };

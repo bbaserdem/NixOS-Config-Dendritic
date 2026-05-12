@@ -8,10 +8,8 @@
     ...
   }: {
     config =
-      lib.mkIf (
-        pkgs.stdenv.hostPlatform.isLinux
-        && (lib.hasAttrByPath ["programs" "noctalia-shell"] options)
-      ) {
+      lib.optionalAttrs (lib.hasAttrByPath ["programs" "noctalia-shell"] options)
+      (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
         # TODO: Redo config to new noctalia shell
         programs.noctalia-shell.settings = {
           appLauncher = {
@@ -567,6 +565,6 @@
             wallpaperChangeMode = "random";
           };
         };
-      };
+      });
   };
 }

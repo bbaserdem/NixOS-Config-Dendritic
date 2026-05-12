@@ -1,11 +1,14 @@
 # Su-ana theming
-{inputs, ...}: {
+{inputs, ...}: let
+  elementaryWallpapers = inputs.nixpkgs.legacyPackages."aarch64-linux".pantheon.elementary-wallpapers;
+in {
   flake.modules.darwin.su-ana = {pkgs, ...}: {
     stylix = {
       # Pick the base16 scheme for this user
       base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
-      # Default wallpaper for this computer, not relevant in darwin context
-      image = "${pkgs.pantheon.elementary-wallpapers}/share/backgrounds/Photo by SpaceX.jpg";
+      # Default wallpaper for this computer. Pull this data asset from the Linux
+      # package set because elementary-wallpapers is not marked for Darwin.
+      image = "${elementaryWallpapers}/share/backgrounds/Photo by SpaceX.jpg";
 
       # Fonts to be used, not super relevant in darwin context
       fonts = with pkgs; {
