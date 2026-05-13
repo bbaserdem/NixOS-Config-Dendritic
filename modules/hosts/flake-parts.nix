@@ -49,6 +49,7 @@
             modules = [
               inputs.self.modules.generic.nixpkgs
               inputs.self.modules.nixos.default
+              inputs.self.modules.nixos.nixos
               inputs.self.modules.nixos.${name}
               ({...}: {
                 nixpkgs.hostPlatform = lib.mkDefault system;
@@ -70,6 +71,7 @@
             modules = [
               inputs.self.modules.generic.nixpkgs
               inputs.self.modules.darwin.default
+              inputs.self.modules.darwin.macos
               inputs.self.modules.darwin.${name}
               ({config, ...}: {
                 nixpkgs.hostPlatform = lib.mkDefault system;
@@ -94,6 +96,8 @@
             "${user}@${name}" = inputs.home-manager.lib.homeManagerConfiguration {
               inherit pkgs;
               modules = [
+                inputs.self.modules.homeManager.default
+                inputs.self.modules.homeManager.hm
                 inputs.self.modules.homeManager.${name}
                 inputs.self.modules.homeManager.${user}
                 # Add the hostname to the homeManager standalone config

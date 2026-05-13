@@ -3,8 +3,10 @@
   flake.modules = {
     # Enable syncthing for this computer
     darwin.su-ana = {...}: {
-      imports = [
-        inputs.self.modules.darwin.syncthing
+      imports = with inputs.self.modules.darwin; [
+        syncthing
+        # Testing reverse proxy
+        caddy
       ];
     };
     # Global configuration

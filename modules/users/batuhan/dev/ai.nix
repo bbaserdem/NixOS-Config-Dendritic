@@ -1,7 +1,7 @@
 # Configuring AI tools
-{...}: {
+{inputs, ...}: {
   flake.modules.homeManager.batuhan = {lib, ...}: let
-    spinnerText = builtins.readFile ./spinners.txt;
+    spinnerText = builtins.readFile (inputs.self + /assets/wolframite/spinners.txt);
     spinnerList = lib.pipe spinnerText [
       (lib.splitString "\n")
       (map lib.trim)

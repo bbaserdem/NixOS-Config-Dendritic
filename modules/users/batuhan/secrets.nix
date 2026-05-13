@@ -10,7 +10,7 @@
       config,
       ...
     }: {
-      config = lib.mkIf (lib.hasAttrByPath ["sops"] options) {
+      config = lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) {
         # Load password hash from shared file
         sops.secrets."password/wolframite" = {
           sopsFile = inputs.self + /secrets/host/secrets.yaml;
@@ -30,7 +30,7 @@
       config,
       ...
     }: {
-      config = lib.mkIf (lib.hasAttrByPath ["sops"] options) {
+      config = lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) {
         # Listenbrainz token
         # sops.secrets.listenbrainz = {};
         sops = {

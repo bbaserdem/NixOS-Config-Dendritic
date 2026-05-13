@@ -19,9 +19,9 @@
       config,
       ...
     }: {
-      config = lib.mkIf (lib.hasAttrByPath ["system" "mainUser"] options) {
-        home-manager.users = lib.mkIf (config.system.mainUser != null) {
-          "${config.system.mainUser}".imports = [
+      config = lib.optionalAttrs (lib.hasAttrByPath ["local" "mainUser"] options) {
+        home-manager.users = lib.mkIf (config.local.mainUser != null) {
+          "${config.local.mainUser}".imports = [
             # Enable syncthing for this specific user
             inputs.self.modules.generic.syncthing
             inputs.self.modules.homeManager.syncthing

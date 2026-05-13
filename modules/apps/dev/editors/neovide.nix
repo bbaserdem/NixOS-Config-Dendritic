@@ -29,7 +29,7 @@
             };
           }
           ( # Link the neovim wrapper editor if enabled
-            lib.mkIf (lib.hasAttrByPath ["wrappers" "neovim"] options) (
+            lib.optionalAttrs (lib.hasAttrByPath ["wrappers" "neovim"] options) (
               let
                 neovim-bin = lib.getExe config.wrappers.neovim.wrapper;
               in {

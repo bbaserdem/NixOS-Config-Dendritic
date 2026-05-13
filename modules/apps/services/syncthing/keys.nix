@@ -15,13 +15,15 @@
       config = lib.mkMerge [
         (
           # Pull info from osConfig if we are hm as a module
-          lib.mkIf (lib.hasAttrByPath ["osConfig"] args) {
-            services.syncthing = {
-              key = lib.mkIf (lib.hasAttrByPath ["sops" "secrets" "syncthing/key"] args.osConfig) args.osConfig.sops.secrets."syncthing/key".path;
-              cert = lib.mkIf (lib.hasAttrByPath ["sops" "secrets" "syncthing/cert"] args.osConfig) args.osConfig.sops.secrets."syncthing/cert".path;
-              # apiKey = lib.mkIf (lib.hasAttrByPath ["sops" "secrets" "syncthing/restapi"] args.osConfig) args.osConfig.sops.secrets."syncthing/restapi".path;
-            };
-          }
+          lib.optionalAttrs (lib.hasAttrByPath ["osConfig"] args) (
+            lib.mkIf (lib.hasAttrByPath ["sops"] args.osConfig) {
+              services.syncthing = {
+                key = lib.mkIf (lib.hasAttrByPath ["sops" "secrets" "syncthing/key"] args.osConfig) args.osConfig.sops.secrets."syncthing/key".path;
+                cert = lib.mkIf (lib.hasAttrByPath ["sops" "secrets" "syncthing/cert"] args.osConfig) args.osConfig.sops.secrets."syncthing/cert".path;
+                # apiKey = lib.mkIf (lib.hasAttrByPath ["sops" "secrets" "syncthing/restapi"] args.osConfig) args.osConfig.sops.secrets."syncthing/restapi".path;
+              };
+            }
+          )
         )
         (
           # Set secrets if standalone, and point to the keys
@@ -52,7 +54,7 @@
       lib,
       ...
     }: {
-      config = lib.mkIf (lib.hasAttrByPath ["sops" "secrets"] options) (
+      config = lib.optionalAttrs (lib.hasAttrByPath ["sops" "secrets"] options) (
         let
           nixosKeyOwnership = {
             owner = "syncthing";
@@ -84,7 +86,7 @@
       lib,
       ...
     }: {
-      config = lib.mkIf (lib.hasAttrByPath ["sops" "secrets"] options) (let
+      config = lib.optionalAttrs (lib.hasAttrByPath ["sops" "secrets"] options) (let
         darwinKeyOwnership = {
           group = "staff";
           mode = "0440";

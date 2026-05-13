@@ -8,7 +8,7 @@
       # Main configuration
       nix
       homebrew
-      macos
+      homeManager
     ];
   };
 }

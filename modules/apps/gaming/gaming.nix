@@ -48,19 +48,27 @@
 
     # Home manager module for lutris
     homeManager.gaming = {
-      osConfig,
       pkgs,
       lib,
       ...
-    }: {
+    } @ args: {
       config = lib.mkMerge [
-        (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-          # Enable lutris
-          programs.lutris = {
-            enable = true;
-            steamPackage = osConfig.programs.steam.package;
-          };
-        })
+        (
+          lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+            # Enable lutris
+            programs.lutris = {
+              enable = true;
+            };
+          }
+        )
+        (
+          # If we are in HM as module in linux, pull steam from the OS module
+          lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) (
+            lib.optionalAttrs (lib.hasAttrByPath ["osConfig"] args) {
+              programs.lutris.steamPackage = args.osConfig.programs.steam.package;
+            }
+          )
+        )
       ];
     };
   };

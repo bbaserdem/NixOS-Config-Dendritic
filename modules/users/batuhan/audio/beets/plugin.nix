@@ -1,9 +1,9 @@
 # Configuring Beets
 #
-{...}: {
+{inputs, ...}: {
   flake.modules.homeManager.batuhan = {...}: {
     # Link our plugin in
-    xdg.dataFile."beets/beetsplug/sbp.py".source = ./sbp.py;
+    xdg.dataFile."beets/beetsplug/sbp.py".source = inputs.self + /assets/wolframite/sbp.py;
 
     # Load our plugin with beets
     programs.beets = {

@@ -1,10 +1,9 @@
 # Configuring macos systems
 {...}: {
   flake.modules.darwin.macos = {lib, ...}: {
-    # Create new option meta.defaultUser that can be used with other modules
     # Mirrors the "to-be-deprecated" system.primaryUser option
     options = {
-      system.mainUser = lib.mkOption {
+      local.mainUser = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
         description = ''

@@ -28,7 +28,7 @@
         };
       }
       (
-        lib.mkIf (lib.hasAttrByPath ["sops" "secrets"] options)
+        lib.optionalAttrs (lib.hasAttrByPath ["sops" "secrets"] options)
         {
           # Load secret key
           sops.secrets."listenbrainz" = {};

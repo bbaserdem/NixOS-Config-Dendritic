@@ -115,6 +115,7 @@
       nixos.syncthing = {
         config,
         lib,
+        options,
         ...
       }: let
         userRootName = config.local.syncthing.userDirs.${nameUser} or nameUserPretty;
@@ -130,7 +131,10 @@
             };
           }
           (
-            lib.mkIf (lib.hasAttrByPath ["users" "users" "${nameUser}"] config) {
+            lib.optionalAttrs (
+              (lib.hasAttrByPath ["users" "users" "${nameUser}"] config)
+              && (lib.hasAttrByPath ["home-manager" "users"] options)
+            ) {
               # Drop a symlink if user is enabled
               home-manager.users."${nameUser}".imports = [
                 ({

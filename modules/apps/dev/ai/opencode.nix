@@ -1,5 +1,5 @@
 # Opencode global setup
-{...}: {
+{inputs, ...}: {
   flake.modules.homeManager = {
     # Theming with stylix
     stylix = {...}: {
@@ -16,7 +16,7 @@
         package = null;
         # Agentic setup
         commands = {
-          "_commit" = builtins.readFile ./commands/_commit.md;
+          "_commit" = builtins.readFile (inputs.self + /assets/ai/commands/commit.md);
         };
         agents = {};
         rules = "";

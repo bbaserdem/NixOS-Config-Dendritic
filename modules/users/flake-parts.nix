@@ -7,9 +7,9 @@
 
   config = {
     flake = {
-      modules = {
+      modules = let
         # Generic home-manager settings module, for using hm as a system module
-        generic.homeManagerOS = {...}: {
+        homeManagerOSConfig = {...}: {
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
@@ -17,17 +17,24 @@
             overwriteBackup = true;
           };
         };
+      in {
         # Import home-manager OS module to default OS contexts
-        nixos.default = {...}: {
+        nixos.homeManager = {...}: {
           imports = [
             inputs.home-manager.nixosModules.home-manager
-            inputs.self.modules.generic.homeManagerOS
+            homeManagerOSConfig
+          ];
+          home-manager.sharedModules = [
+            inputs.self.modules.homeManager.default
           ];
         };
-        darwin.default = {...}: {
+        darwin.homeManager = {...}: {
           imports = [
             inputs.home-manager.darwinModules.home-manager
-            inputs.self.modules.generic.homeManagerOS
+            homeManagerOSConfig
+          ];
+          home-manager.sharedModules = [
+            inputs.self.modules.homeManager.default
           ];
         };
         # Default settings for all home-manager invocations
@@ -115,9 +122,6 @@
 
         # Home-manager module initialization for the user
         homeManager."${username}" = {
-          imports = [
-            inputs.self.modules.homeManager.default
-          ];
           config = {
             home.username = "${username}";
           };

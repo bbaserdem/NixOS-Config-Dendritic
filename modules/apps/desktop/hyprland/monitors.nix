@@ -36,7 +36,7 @@
           home.hyprdynamicmonitors = {
             extraFlags = ["--enable-lid-events"];
             extraFiles = {
-              "${hdmName}/${confName}/generic.conf" = ./_genericMonitor.conf;
+              "${hdmName}/${confName}/generic.conf" = inputs.self + /assets/hyprdynamicmonitors.conf;
             };
             config = ''
               [general]
