@@ -7,7 +7,7 @@
     imports = with inputs.self.modules.darwin; [
       # Comms
       comms
-      # discord # broken
+      discord
     ];
   };
 }

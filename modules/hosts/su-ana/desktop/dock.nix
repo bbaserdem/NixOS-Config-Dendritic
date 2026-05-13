@@ -12,7 +12,7 @@
       launchanim = true;
       minimize-to-application = true;
       mouse-over-hilite-stack = true;
-      orientation = "left";
+      orientation = "bottom";
       show-recents = false;
       showhidden = true;
       tilesize = 48;
@@ -25,7 +25,6 @@
       # TODO: Switch this to dockutil user-level later
       persistent-apps = [
         # System
-        {app = "/System/Applications/Home.app/";}
         {app = "/System/Applications/System Settings.app/";}
         {app = "/System/Applications/Utilities/Activity Monitor.app/";}
         {app = "/Applications/WorkSmart.app/";}
@@ -50,6 +49,7 @@
         {app = "/Applications/Google Chrome.app/";}
         {app = "/Applications/Chromium.app/";}
         {app = "${hmDir}/Firefox.app/";}
+        {app = "/Applications/legcord.app/";}
         {spacer = {small = true;};}
         # Dev
         {app = "/Applications/GitHub Desktop.app/";}

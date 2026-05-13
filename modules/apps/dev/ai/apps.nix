@@ -13,7 +13,6 @@
           # AI Apps
           "claude"
           "codex-app"
-          "codexbar"
           # Harnesses
           "droid"
         ];
