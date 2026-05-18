@@ -5,6 +5,14 @@
 
   inputs = {
     base16.url = "github:SenchoPens/base16.nix";
+    claude-nix = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    codex-nix = {
+      url = "github:sadjow/codex-cli-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -50,6 +58,10 @@
     };
     nur = {
       url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    opencode-flake = {
+      url = "github:aodhanhayter/opencode-flake";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     packages = {
