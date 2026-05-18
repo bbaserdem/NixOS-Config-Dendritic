@@ -17,22 +17,39 @@
           mdnsName = lib.mkOption {
             type = lib.types.str;
             default = "paperless";
-            description = "Local DNS address prefix for the network";
+            description = "Local mDNS name prefix for the Paperless web UI";
           };
-          lanAddress = lib.mkOption {
+          backupName = lib.mkOption {
             type = lib.types.str;
-            default = "192.168.1.50";
-            description = "IP address to advertise the paperless-ngx web UI";
+            default = "Export";
+            description = "Name of folder for state exports";
+          };
+          sambaHostsAllow = lib.mkOption {
+            type = lib.types.string;
+            default = "192.168.1.";
+            description = "Samba subnet mask for paperless.";
           };
         };
       };
-      config = {
+      config = let
+        exportDir = "${config.local.paperless.homeDir}/${config.local.paperless.backupName}";
+        trashDir = "${config.local.paperless.mediaDir}/trash";
+      in {
         # Provisioning the home directory
-        systemd.tmpfiles.settings."05-paperless-home"."${config.local.paperless.homeDir}" = {
-          d = {
-            user = config.services.paperless.user;
-            group = config.users.users.${config.services.paperless.user}.group;
-            mode = "0750";
+        systemd.tmpfiles.settings."05-paperless-home" = {
+          "${config.local.paperless.homeDir}" = {
+            "d" = {
+              user = config.services.paperless.user;
+              group = config.users.users.${config.services.paperless.user}.group;
+              mode = "0750";
+            };
+          };
+          ${trashDir} = {
+            "d" = {
+              user = config.services.paperless.user;
+              group = config.users.users.${config.services.paperless.user}.group;
+              mode = "0750";
+            };
           };
         };
         # Paperless settings
@@ -53,6 +70,27 @@
             PAPERLESS_OCR_USER_ARGS = {
               optimize = 1;
               pdfa_image_compression = "lossless";
+            };
+            # Enable turkish for OCR
+            PAPERLESS_OCR_LANGUAGE = "eng+tur";
+            # Filename in database
+            PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ title }}";
+            # Trash
+            PAPERLESS_EMPTY_TRASH_DIR = trashDir;
+          };
+          # Database
+          database = {};
+          # Backup
+          exporter = {
+            enable = true;
+            directory = exportDir;
+            onCalendar = "03:30:00";
+            settings = {
+              "no-progress-bar" = true;
+              "no-color" = true;
+              "compare-checksums" = true;
+              "delete" = true;
+              "use-folder-prefix" = true;
             };
           };
         };

@@ -40,12 +40,13 @@
                     restartUnits = ["nginx.service"];
                   };
                 };
-                services.nginx.virtualHosts."${config.local.paperless.mdnsName}.local" = {
-                  forceSSL = lib.mkOverride 1200 true;
-                  sslCertificate = config.sops.secrets."paperless/tls/fullchain".path;
-                  sslCertificateKey = config.sops.secrets."paperless/tls/key".path;
+                services = {
+                  nginx.virtualHosts."${config.services.paperless.domain}" = {
+                    forceSSL = true;
+                    sslCertificate = config.sops.secrets."paperless/tls/fullchain".path;
+                    sslCertificateKey = config.sops.secrets."paperless/tls/key".path;
+                  };
                 };
-                paperless.settings.PAPERLESS_URL = lib.mkOverride 1200 "https://${config.local.paperless.mdnsName}.local";
               }
             )
           ]

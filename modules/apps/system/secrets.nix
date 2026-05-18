@@ -12,11 +12,14 @@
   flake.modules = {
     generic.secrets = {...}: {
       # Default ssh key locations
-      sops.age = {
-        sshKeyPaths = [
-          "/etc/ssh/id_ed25519"
-        ];
-        generateKey = false;
+      sops = {
+        defaultSopsFile = inputs.self + /secrets/host/secrets.yaml;
+        age = {
+          sshKeyPaths = [
+            "/etc/ssh/id_ed25519"
+          ];
+          generateKey = false;
+        };
       };
     };
     nixos.secrets = {...}: {
@@ -34,7 +37,10 @@
         inputs.sops-nix.homeModules.sops
       ];
       # Default key file location
-      sops.age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+      sops = {
+        defaultSopsFile = inputs.self + /secrets/user/secrets.yaml;
+        age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+      };
     };
   };
 }

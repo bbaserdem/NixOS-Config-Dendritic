@@ -5,13 +5,13 @@
     paperless = {
       config,
       lib,
+      pkgs,
       ...
     }: {
       config = lib.mkMerge [
         (
-          # Setup local DNS resolution to paperless target.
-          lib.mkIf (config.services.avahi.enable == true) {
-            # Avahi publish to publish custom URL to DNS
+          # Setup local DNS resolution for paperless.local.
+          lib.mkIf (config.services.avahi.enable) {
             systemd.services.avahi-publish-paperless = {
               description = "Publish paperless-ngx via mDNS";
               after = [
@@ -21,44 +21,51 @@
               wants = ["network-online.target"];
               requires = ["avahi-daemon.service"];
               wantedBy = ["multi-user.target"];
+              path = [
+                config.services.avahi.package
+                pkgs.gawk
+                pkgs.iproute2
+              ];
+              script = ''
+                ip="$(
+                  ip -4 route get 1.1.1.1 \
+                    | awk '{ for (i = 1; i <= NF; i++) if ($i == "src") print $(i + 1) }'
+                )"
+
+                if [ -z "$ip" ]; then
+                  echo "Could not determine LAN IPv4 address for paperless mDNS publication" >&2
+                  exit 1
+                fi
+
+                exec avahi-publish-address ${config.local.paperless.mdnsName}.local "$ip"
+              '';
               serviceConfig = {
-                ExecStart = "${config.services.avahi.package}/bin/avahi-publish-address ${config.local.paperless.mdnsName}.local ${config.local.paperless.lanAddress}";
                 Restart = "on-failure";
               };
             };
           }
         )
         (
-          # Setup the HTTP routing
-          lib.mkIf (config.services.nginx.enable == true) {
+          # Setup HTTP routing through the Paperless NixOS module.
+          lib.mkIf (config.services.nginx.enable) {
             services = {
-              # Put paperless behind nginx
-              paperless.settings = {
-                PAPERLESS_URL = lib.mkOverride 1400 "http://${config.local.paperless.mdnsName}.local";
-                PAPERLESS_USE_X_FORWARD_HOST = true;
-                PAPERLESS_USE_X_FORWARD_PORT = true;
-              };
-              nginx.virtualHosts."${config.local.paperless.mdnsName}.local" = {
-                forceSSL = lib.mkOverride 1400 false;
-                enableACME = false;
-                locations."/" = {
-                  proxyPass = "http://127.0.0.1:${toString config.services.paperless.port}";
-                  proxyWebsockets = true;
-                  extraConfig = ''
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Host $host;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                  '';
+              paperless = {
+                configureNginx = true;
+                domain = "${config.local.paperless.mdnsName}.local";
+                settings = {
+                  PAPERLESS_USE_X_FORWARD_HOST = true;
+                  PAPERLESS_USE_X_FORWARD_PORT = true;
                 };
+              };
+              nginx.virtualHosts."${config.services.paperless.domain}" = {
+                enableACME = false;
               };
             };
           }
         )
         (
           # Setup shared consumption directory
-          lib.mkIf (config.services.samba.enable == true) (let
+          lib.mkIf (config.services.samba.enable) (let
             inboxDir = "${config.services.paperless.consumptionDir}/inbox";
             paperlessUser = config.services.paperless.user;
             paperlessGroup = config.users.users.${paperlessUser}.group;
@@ -79,6 +86,8 @@
               "read only" = "no";
               # Simple LAN mode
               "guest ok" = "yes";
+              "hosts allow" = config.local.paperless.sambaHostsAllow;
+              "hosts deny" = "0.0.0.0/0";
               "force user" = paperlessUser;
               "force group" = paperlessGroup;
               "create mask" = "0660";

@@ -131,50 +131,49 @@
             };
           }
           (
-            lib.optionalAttrs (
-              (lib.hasAttrByPath ["users" "users" "${nameUser}"] config)
-              && (lib.hasAttrByPath ["home-manager" "users"] options)
-            ) {
-              # Drop a symlink if user is enabled
-              home-manager.users."${nameUser}".imports = [
-                ({
-                  config,
-                  lib,
-                  ...
-                }: let
-                  removeSuffixPath = str:
-                    if str == null
-                    then null
-                    else
+            lib.optionalAttrs (lib.hasAttrByPath ["home-manager" "users"] options) (
+              lib.mkIf (lib.hasAttrByPath ["users" "users" "${nameUser}"] config) {
+                # Drop a symlink if user is enabled
+                home-manager.users."${nameUser}".imports = [
+                  ({
+                    config,
+                    lib,
+                    ...
+                  }: let
+                    removeSuffixPath = str:
+                      if str == null
+                      then null
+                      else
+                        str
+                        |> toString
+                        |> lib.removeSuffix "/";
+                    normalizePrefixPath = str:
                       str
                       |> toString
-                      |> lib.removeSuffix "/";
-                  normalizePrefixPath = str:
-                    str
-                    |> toString
-                    |> lib.removeSuffix "/"
-                    |> (s: "${s}/");
-                  homePrefix = config.home.homeDirectory |> normalizePrefixPath;
-                  homeFileTarget =
-                    config
-                    |> (lib.attrByPath ["xdg" "userDirs" userDir] null)
-                    |> removeSuffixPath
-                    |> (path:
-                      if path != null && lib.hasPrefix homePrefix path
-                      then lib.removePrefix homePrefix path
-                      else null)
-                    |> (path:
-                      if path != null && path != ""
-                      then path
-                      else userDirPretty);
-                in {
-                  home.file."${homeFileTarget}" = {
-                    source = config.lib.file.mkOutOfStoreSymlink "${targetDir}";
-                    force = true;
-                  };
-                })
-              ];
-            }
+                      |> lib.removeSuffix "/"
+                      |> (s: "${s}/");
+                    homePrefix = config.home.homeDirectory |> normalizePrefixPath;
+                    homeFileTarget =
+                      config
+                      |> (lib.attrByPath ["xdg" "userDirs" userDir] null)
+                      |> removeSuffixPath
+                      |> (path:
+                        if path != null && lib.hasPrefix homePrefix path
+                        then lib.removePrefix homePrefix path
+                        else null)
+                      |> (path:
+                        if path != null && path != ""
+                        then path
+                        else userDirPretty);
+                  in {
+                    home.file."${homeFileTarget}" = {
+                      source = config.lib.file.mkOutOfStoreSymlink "${targetDir}";
+                      force = true;
+                    };
+                  })
+                ];
+              }
+            )
           )
         ];
       };

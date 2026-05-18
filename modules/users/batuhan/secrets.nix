@@ -13,7 +13,6 @@
       config = lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) {
         # Load password hash from shared file
         sops.secrets."password/wolframite" = {
-          sopsFile = inputs.self + /secrets/host/secrets.yaml;
           neededForUsers = true;
         };
         # Deploy as user password
