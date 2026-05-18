@@ -3,11 +3,11 @@
   flake.modules = {
     homeManager = {
       # Stylix theme for neovide
-      stylix = {...}: {
+      stylix = {lib, ...}: {
         stylix.targets.neovide = {
           enable = true;
-          fonts.enable = true;
-          opacity.enable = false;
+          fonts.enable = lib.mkDefault true;
+          opacity.enable = true;
         };
       };
 

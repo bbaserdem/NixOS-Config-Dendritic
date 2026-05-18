@@ -1,11 +1,5 @@
 # Claude code global setup
 {inputs, ...}: {
-  flake-file.inputs = {
-    claude-nix = {
-      url = "github:sadjow/claude-code-nix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-  };
   flake.modules = {
     darwin.ai = {...}: {
       homebrew.casks = [
@@ -21,7 +15,7 @@
       # Enable claude code config without installing it ourselves
       programs.claude-code = {
         enable = true;
-        package = inputs.claude-nix.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
+        package = pkgs.llm-agents.claude-code;
 
         # Global settings
         settings = {

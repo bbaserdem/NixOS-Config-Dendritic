@@ -7,6 +7,12 @@
     ...
   }: {
     config = lib.mkMerge [
+      (
+        # Disable font config for neovide for fallback support
+        lib.optionalAttrs (lib.hasAttrByPath ["stylix"] options) {
+          stylix.targets.neovide.fonts.enable = lib.mkForce false;
+        }
+      )
       {
         # Configure neovide
         programs.neovide.settings = {
@@ -61,7 +67,7 @@
               colorscheme = {
                 dark = "onedark";
                 light = "kanagawa-lotus";
-                translucent = false;
+                translucent = true;
                 default = "dark";
               };
             };

@@ -25,10 +25,10 @@
         source-sans-pro
         curie # Bitmap fonts
         tamsyn
+        jetbrains-mono
       ])
       ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
         # Broken on nix-darwin right now
-        jetbrains-mono
       ]));
   in {
     # Put fonts into darwin system (using nix-darwin)

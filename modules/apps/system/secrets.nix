@@ -13,7 +13,6 @@
     generic.secrets = {...}: {
       # Default ssh key locations
       sops = {
-        defaultSopsFile = inputs.self + /secrets/host/secrets.yaml;
         age = {
           sshKeyPaths = [
             "/etc/ssh/id_ed25519"
@@ -38,7 +37,6 @@
       ];
       # Default key file location
       sops = {
-        defaultSopsFile = inputs.self + /secrets/user/secrets.yaml;
         age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
       };
     };

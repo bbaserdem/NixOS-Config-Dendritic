@@ -1,5 +1,5 @@
 # Samba: file sharing
-{...}: {
+{inputs, ...}: {
   flake = {
     modules.nixos.samba = {...}: {
       services = {
@@ -50,6 +50,7 @@
                 in {
                   # Load samba secret
                   sops.secrets."samba/${user}" = {
+                    sopsFile = inputs.self + /secrets/host/secrets.yaml;
                     mode = "0400";
                     restartUnits = [unitName];
                   };

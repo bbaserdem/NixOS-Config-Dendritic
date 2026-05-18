@@ -1,11 +1,5 @@
 # Codex global setup
 {inputs, ...}: {
-  flake-file.inputs = {
-    codex-nix = {
-      url = "github:sadjow/codex-cli-nix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-  };
   flake.modules = {
     darwin.ai = {...}: {
       homebrew.casks = [
@@ -16,7 +10,7 @@
     homeManager.ai = {pkgs, ...}: {
       programs.codex = {
         enable = true;
-        package = inputs.codex-nix.packages.${pkgs.stdenv.hostPlatform.system}.codex;
+        package = pkgs.llm-agents.codex;
 
         settings = {
         };

@@ -43,8 +43,8 @@
         url = "github:hercules-ci/flake-parts";
         inputs.nixpkgs-lib.follows = "nixpkgs";
       };
-      flake-file.url = "github:vic/flake-file";
-      import-tree.url = "github:vic/import-tree";
+      flake-file.url = "github:denful/flake-file";
+      import-tree.url = "github:denful/import-tree";
     };
 
     # Systems we will be building for

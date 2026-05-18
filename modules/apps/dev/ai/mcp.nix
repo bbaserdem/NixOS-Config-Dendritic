@@ -22,7 +22,7 @@
           lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
             programs.mcp.servers = {
               repoprompt = {
-                command = "/Applications/Repo Prompt.app/.../repoprompt-mcp";
+                command = "/Applications/Repo Prompt.app/Contents/MacOS/repoprompt-mcp";
                 args = [];
               };
             };

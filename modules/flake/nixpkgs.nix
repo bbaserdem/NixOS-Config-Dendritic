@@ -1,17 +1,25 @@
 # Nixpkgs configuration
-{inputs, ...}: let
-  # Overlays we want to apply to invocations of pkgs in general
-  myOverlays = [
-    inputs.self.overlays.additions
-    inputs.self.overlays.modifications
-    inputs.self.overlays.unstable-packages
-    inputs.nur.overlays.default
-  ];
-  # Configuration to apply to nixpkgs
-  nixpkgsConfig = {
-    allowUnfree = true;
+{
+  inputs,
+  lib,
+  config,
+  ...
+}: {
+  # Define new options to use for all nixpkgs invocations
+  options = {
+    nixpkgs = {
+      overlays = lib.mkOption {
+        type = lib.types.listOf lib.types.raw;
+        default = [];
+        description = "List of overlays to apply to nixpkgs invocations";
+      };
+      config = lib.mkOption {
+        type = lib.types.lazyAttrsOf lib.types.raw;
+        description = "Configuration to be applied to nixpkgs invocations";
+      };
+    };
   };
-in {
+
   config = {
     # Central config location for nixpkgs sources config
     flake-file.inputs = {
@@ -44,13 +52,24 @@ in {
       };
     };
 
+    nixpkgs = {
+      config = {
+        allowUnfree = true;
+      };
+      overlays = [
+        inputs.self.overlays.additions
+        inputs.self.overlays.modifications
+        inputs.self.overlays.unstable-packages
+        inputs.nur.overlays.default
+      ];
+    };
+
     flake = {
       # Application of overlays in system setting
       # This module is auto-imported by factory functions
       modules.generic.nixpkgs = {...}: {
-        config.nixpkgs = {
-          config = nixpkgsConfig;
-          overlays = myOverlays;
+        config = {
+          inherit (config) nixpkgs;
         };
       };
 
@@ -75,8 +94,7 @@ in {
     in {
       _module.args.pkgs = import thisNixpkgs {
         inherit system;
-        config = nixpkgsConfig;
-        overlays = myOverlays;
+        inherit (config.nixpkgs) config overlays;
       };
     };
   };

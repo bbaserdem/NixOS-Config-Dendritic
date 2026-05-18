@@ -39,7 +39,7 @@
             fixImagesQuality.enable = true;
             noTypingAnimation.enable = true;
             noUnblockToJump.enable = true;
-            petpet.enable = true;
+            PetPet.enable = true;
             pictureInPicture.enable = true;
             readAllNotificationsButton.enable = true;
             reverseImageSearch.enable = true;

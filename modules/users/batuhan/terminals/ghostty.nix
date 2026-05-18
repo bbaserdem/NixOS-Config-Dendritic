@@ -3,29 +3,46 @@
   flake.modules.homeManager.batuhan = {
     pkgs,
     lib,
+    options,
     ...
   }: {
-    # Override the font settings in stylix
-    stylix.targets.ghostty.fonts.override = lib.mkMerge [
-      {
-        monospace = {
-          name = "Victor Mono";
-          package = pkgs.victor-mono;
-        };
-      }
+    config = lib.mkMerge [
       (
-        lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-          # Stylix inflates terminal font size in darwin; by 4/3
-          # Target we want is 12.5
-          sizes.terminal = 9.375;
+        # Edit stylix settings if we can
+        lib.optionalAttrs (lib.hasAttrByPath ["stylix"] options) {
+          programs.ghostty.settings.theme = "dark:stylix,light:Selenized Light";
+          stylix.targets.ghostty.fonts.override = lib.mkMerge [
+            {
+              monospace = {
+                name = "Victor Mono";
+                package = pkgs.victor-mono;
+              };
+            }
+            (
+              # Enlarge fonts on darwin
+              lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+                sizes.terminal = 9.375;
+              }
+            )
+          ];
         }
       )
-    ];
-    programs.ghostty = lib.mkMerge [
+      (
+        # Edit stylix settings if can
+        lib.optionalAttrs (!(lib.hasAttrByPath ["stylix"] options)) {
+          programs.ghostty.settings.theme = "dark:Selenized Dark,light:Selenized Light";
+        }
+      )
+      (
+        # Edit stylix settings if can
+        lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+          programs.ghostty.settings = {
+            macos-icon = "microchip";
+          };
+        }
+      )
       {
-        # Settings
-        settings = {
-          theme = "dark:stylix,light:Selenized Light";
+        programs.ghostty.settings = {
           # Font options
           font-style = "SemiBold";
           font-style-bold = "Bold";
@@ -34,12 +51,6 @@
           font-feature = "+ss04, +ss06, +ss07";
         };
       }
-      (lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-        # MacOS only settings
-        settings = {
-          macos-icon = "microchip";
-        };
-      })
     ];
   };
 }

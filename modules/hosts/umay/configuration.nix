@@ -4,6 +4,7 @@
   flake.modules.nixos.umay = {...}: {
     imports = with inputs.self.modules.nixos; [
       vm-amd
+      homeManager
     ];
   };
 }

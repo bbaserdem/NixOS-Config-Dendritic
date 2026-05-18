@@ -1,12 +1,5 @@
 # Opencode global setup
 {inputs, ...}: {
-  flake-file.inputs = {
-    opencode-flake = {
-      url = "github:aodhanhayter/opencode-flake";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-  };
-
   flake.modules = {
     # Install opencode through brew, but we will punt this in favor of  flake for now
     darwin.ai = {
@@ -34,7 +27,7 @@
         # Enable opencode code config without installing it ourselves
         programs.opencode = {
           enable = true;
-          package = inputs.opencode-flake.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
+          package = pkgs.llm-agents.opencode;
           # Agentic setup
           agents = {};
 
@@ -63,6 +56,10 @@
           OPENCODE_ENABLE_EXA = 1;
           OPENCODE_DISABLE_CLAUDE_CODE = 1;
         };
+
+        home.packages = [
+          # inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.opencode-desktop
+        ];
 
         # TODO: 26.05 fixes this, fix this later
         # Settings are not read from config.json, it's from opencode.json
