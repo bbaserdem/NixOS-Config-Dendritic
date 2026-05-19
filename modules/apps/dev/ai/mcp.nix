@@ -14,6 +14,13 @@
               vercel-grep-mcp = {
                 url = "https://mcp.grep.app";
               };
+              context7 = {
+                type = "remote";
+                url = "https://mcp.context7.com/mcp";
+                headers = {
+                  "CONTEXT7_API_KEY" = "{env:CONTEXT7_API_KEY}";
+                };
+              };
             };
           };
         }
@@ -21,10 +28,6 @@
           # Darwin-only MCP servers
           lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
             programs.mcp.servers = {
-              repoprompt = {
-                command = "/Applications/Repo Prompt.app/Contents/MacOS/repoprompt-mcp";
-                args = [];
-              };
             };
           }
         )

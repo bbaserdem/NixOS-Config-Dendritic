@@ -24,9 +24,11 @@
           ripgrep
           shellcheck
           socat
-          playwright
-          playwright-test
           postman
+          # MCP
+          playwright
+          playwright-mcp
+          playwright-test
           # Doc rendering
           mdbook
           mdbook-mermaid

@@ -29,7 +29,7 @@
       ]))
       ++ (lib.optionals pkgs.stdenv.hostPlatform.isDarwin (with pkgs; [
         # TODO: stable xquartz is broken
-        unstable.xquartz
+        # unstable.xquartz
         appcleaner
       ]));
   in {

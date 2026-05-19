@@ -59,7 +59,6 @@
         {app = "${hmDir}/UTM.app/";}
         {spacer = {small = true;};}
         # AI
-        {app = "/Applications/Repo Prompt.app/";}
         {app = "/Applications/Claude.app/";}
         {app = "/Applications/Codex.app/";}
       ];

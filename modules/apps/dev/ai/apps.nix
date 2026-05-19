@@ -27,10 +27,11 @@
         homebrew = {
           casks = [
             # External context tools
-            "repo-prompt"
           ];
         };
       };
+
+      # Harnesses
       homeManager.ai = {pkgs, ...}: {
         home.packages = with pkgs.llm-agents; [
           forge
