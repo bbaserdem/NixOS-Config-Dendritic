@@ -25,6 +25,7 @@
           shellcheck
           socat
           postman
+          unstable.worktrunk
           # MCP
           playwright
           playwright-mcp

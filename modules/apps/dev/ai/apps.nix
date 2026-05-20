@@ -31,8 +31,10 @@
         };
       };
 
-      # Harnesses
       homeManager.ai = {pkgs, ...}: {
+        # Global MCP config
+        programs.mcp.enable = true;
+        # Harnesses
         home.packages = with pkgs.llm-agents; [
           forge
           droid

@@ -82,6 +82,10 @@
       url = "github:tinted-theming/tinted-terminal";
       flake = false;
     };
+    worktrunk = {
+      url = "github:max-sixty/worktrunk";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     wrappers = {
       url = "github:BirdeeHub/nix-wrapper-modules";
       inputs.nixpkgs.follows = "nixpkgs";

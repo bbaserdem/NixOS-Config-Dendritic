@@ -36,6 +36,7 @@
             autoupdate = "notify";
             share = "auto";
             snapshot = true;
+            lsp = true;
           };
 
           # TODO; New options in 26.05
