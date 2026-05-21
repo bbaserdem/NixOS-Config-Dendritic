@@ -18,7 +18,7 @@
         };
         # Deploy as user password
         users.users.batuhan = {
-          hashedPaswordFile = config.sops.secrets."password/wolframite".path;
+          hashedPasswordFile = config.sops.secrets."password/wolframite".path;
         };
       };
     };

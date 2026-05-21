@@ -121,6 +121,7 @@
         userRootName = config.local.syncthing.userDirs.${nameUser} or nameUserPretty;
         userRoot = "${config.services.syncthing.dataDir}/${userRootName}";
         targetDir = "${userRoot}/${userDirPretty}";
+        syncUser = config.services.syncthing.user;
       in {
         config = lib.mkMerge [
           {
@@ -132,47 +133,42 @@
           }
           (
             lib.optionalAttrs (lib.hasAttrByPath ["home-manager" "users"] options) (
-              lib.mkIf (lib.hasAttrByPath ["users" "users" "${nameUser}"] config) {
-                # Drop a symlink if user is enabled
-                home-manager.users."${nameUser}".imports = [
-                  ({
-                    config,
-                    lib,
-                    ...
-                  }: let
-                    removeSuffixPath = str:
-                      if str == null
-                      then null
-                      else
-                        str
-                        |> toString
-                        |> lib.removeSuffix "/";
-                    normalizePrefixPath = str:
-                      str
-                      |> toString
-                      |> lib.removeSuffix "/"
-                      |> (s: "${s}/");
-                    homePrefix = config.home.homeDirectory |> normalizePrefixPath;
-                    homeFileTarget =
-                      config
-                      |> (lib.attrByPath ["xdg" "userDirs" userDir] null)
-                      |> removeSuffixPath
-                      |> (path:
-                        if path != null && lib.hasPrefix homePrefix path
-                        then lib.removePrefix homePrefix path
-                        else null)
-                      |> (path:
-                        if path != null && path != ""
-                        then path
-                        else userDirPretty);
-                  in {
-                    home.file."${homeFileTarget}" = {
-                      source = config.lib.file.mkOutOfStoreSymlink "${targetDir}";
-                      force = true;
+              let
+                sourceDir = lib.attrByPath ["home-manager" "users" nameUser "xdg" "userDirs" userDir] null config;
+              in (
+                # Create a bind mount iff user is enabled, from the syncthing folder to user
+                lib.mkIf ((config.users.users.${nameUser}.enable == true) && (sourceDir != null)) {
+                  # Target and source should be provisioned if we are bind mounting
+                  systemd.tmpfiles.settings = {
+                    "35-syncthing-${nameUser}-${userDir}" = {
+                      "${targetDir}" = {
+                        d = {
+                          mode = "0750";
+                          user = nameUser;
+                          group = config.users.users.${nameUser}.group;
+                        };
+                        # Allow syncthing access here
+                        "A+".argument = "u:${syncUser}:rwX,m::rwX";
+                        "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
+                      };
+                      "${sourceDir}" = {
+                        d = {
+                          mode = "0750";
+                          user = nameUser;
+                          group = config.users.users.${nameUser}.group;
+                        };
+                      };
                     };
-                  })
-                ];
-              }
+                  };
+                  # Set the bind mount
+                  fileSystems."${sourceDir}" = {
+                    device = targetDir;
+                    fsType = "none";
+                    options = ["bind" "nofail"];
+                    depends = [userRoot];
+                  };
+                }
+              )
             )
           )
         ];

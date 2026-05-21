@@ -12,7 +12,7 @@
     # Global configuration
     generic.syncthing = {config, ...}: {
       config = {
-        services.syncthing.settings.devices."${config.networking.hostName}" = {
+        services.syncthing.settings.devices."su-ana" = {
           name = "Su Ana";
           id = "AWRTUF4-MXSTBEU-C6MBBL6-3OXH3AM-OW3SR4K-CQKFXVA-GXHB3YU-X3EBEAH";
           autoAcceptFolders = false;

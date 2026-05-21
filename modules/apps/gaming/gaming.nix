@@ -6,18 +6,6 @@
     # Nixos level integration
     nixos.gaming = {pkgs, ...}: {
       programs = {
-        # Enable steam
-        steam = {
-          enable = true;
-          remotePlay.openFirewall = true;
-          dedicatedServer.openFirewall = true;
-          gamescopeSession.enable = true;
-        };
-        # Enable gamescope: steam session
-        gamescope = {
-          enable = true;
-          capSysNice = true;
-        };
         # Enable gamemode; system optimization
         gamemode = {
           enable = true;
@@ -38,15 +26,7 @@
       ];
     };
 
-    darwin.gaming = {pkgs, ...}: {
-      # We install steam using brew
-      homebrew.casks = [
-        "steam"
-        "steamcmd"
-      ];
-    };
-
-    # Home manager module for lutris
+    # Home manager module for lutris on linux
     homeManager.gaming = {
       pkgs,
       lib,

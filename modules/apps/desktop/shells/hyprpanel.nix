@@ -25,9 +25,7 @@
       config,
       ...
     }: {
-      config = lib.mkIf ((pkgs.stdenv.hostPlatform.isLinux) && (config.local.waylandShell == "hyprpanel")) (let
-        hyprpanel = "${config.programs.hyprpanel.package}/bin/hyprpanel";
-      in {
+      config = lib.mkIf ((pkgs.stdenv.hostPlatform.isLinux) && (config.local.waylandShell == "hyprpanel")) {
         programs = {
           # Enable hyprpanel
           hyprpanel = {
@@ -56,15 +54,13 @@
         };
 
         # Hyprland integration
-
-        # Hyprland integration
         # Power menu
         wayland.windowManager.hyprland.settings.bindl = [
-          ", XF86PowerOff, exec, ${hyprpanel} toggleWindow powerdropdownmenu"
+          ", XF86PowerOff, exec, ${config.programs.hyprpanel.package}/bin/hyprpanel toggleWindow powerdropdownmenu"
         ];
         # Register hyprlock as the lock command
         services.hypridle.settings.general.lock_cmd = "${config.programs.hyprlock.package}/bin/hyprlock";
-      });
+      };
     };
   };
 }

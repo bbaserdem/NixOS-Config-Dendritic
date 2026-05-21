@@ -1,6 +1,6 @@
 # Hyprland plugins
 {...}: {
-  flake.modules.homeManager.hyprland = {
+  flake.modules.homeManager.batuhan = {
     lib,
     pkgs,
     ...
