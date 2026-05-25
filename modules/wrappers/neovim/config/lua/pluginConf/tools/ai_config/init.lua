@@ -1,19 +1,7 @@
 -- AI tooling to work with neovim
 
 local M = {
-  {
-    "codecompanion.nvim",
-    auto_enable = true,
-    on_require = "codecompanion",
-    cmd = {
-      "CodeCompanion",
-      "CodeCompanionCmd",
-      "CodeCompanionChat",
-    },
-    after = function(plugin)
-      require("codecompanion").setup({})
-    end,
-  },
+  { import = "pluginConf.tools.ai_config.codecompanion_config" },
   { -- Git status signs in the num column
     "claudecode.nvim",
     auto_enable = true,

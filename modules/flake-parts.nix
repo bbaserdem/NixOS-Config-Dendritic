@@ -23,6 +23,15 @@
       homeModules = inputs.self.modules.homeManager;
       darwinModules = inputs.self.modules.darwin;
 
+      # Initialize default modules for system management
+      modules = {
+        # Generic gets loaded to ALL contexts
+        generic.default = {...}: {};
+        nixos.default = {...}: {imports = [inputs.self.modules.generic.default];};
+        darwin.default = {...}: {imports = [inputs.self.modules.generic.default];};
+        homeManager.default = {...}: {imports = [inputs.self.modules.generic.default];};
+      };
+
       # Boilerplate for initializing system modules from home-manager modules
       factory = {
         inclusionModules = name: {

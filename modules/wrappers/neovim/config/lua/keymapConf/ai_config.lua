@@ -1,7 +1,13 @@
 -- <Leader>a: AI companion keymaps
 
+-- CodeCompanion
+vim.keymap.set("n", "<Leader>ac", "<cmd>CodeCompanionChat<CR>", { desc = "Open CodeCompanion Chat" })
+vim.keymap.set("n", "<Leader>at", "<cmd>CodeCompanion<CR>", { desc = "Open CodeCompanion CLI" })
+vim.keymap.set("n", "<Leader>ai", "<cmd>CodeCompanionInline<CR>", { desc = "Open CodeCompanion inline mode" })
+vim.keymap.set("n", "<Leader>a<C-c>", "<cmd>CodeCompanionCmd<CR>", { desc = "Open CodeCompanion vim cmdline mode" })
+
 -- ClaudeCode nvim
-vim.keymap.set("n", "<Leader>ac", "<cmd>ClaudeCode<CR>", { desc = "Toggle Claude" })
+vim.keymap.set("n", "<Leader>aC", "<cmd>ClaudeCode<CR>", { desc = "Toggle Claude" })
 vim.keymap.set("n", "<Leader>af", "<cmd>ClaudeCodeFocus<CR>", { desc = "Focus Claude" })
 vim.keymap.set("n", "<Leader>ar", "<cmd>ClaudeCode --resume<CR>", { desc = "Resume Claude" })
 vim.keymap.set("n", "<Leader>aR", "<cmd>ClaudeCode --continue<CR>", { desc = "Continue Claude" })

@@ -6,6 +6,7 @@
 }: {
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
+    (inputs.self.factory.inclusionModules "android")
     (inputs.self.factory.inclusionModules "bluetooth")
     (inputs.self.factory.inclusionModules "firmware")
     (inputs.self.factory.inclusionModules "fingerprint")

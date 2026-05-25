@@ -1,14 +1,15 @@
 # General systems boilerplate
-{inputs, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
   config = {
     flake = {
-      # Initialize default modules for system management
-      modules = {
-        generic.default = {...}: {};
-        nixos.default = {...}: {imports = [inputs.self.modules.generic.default];};
-        darwin.default = {...}: {imports = [inputs.self.modules.generic.default];};
-        homeManager.default = {...}: {imports = [inputs.self.modules.generic.default];};
-      };
+      modules = lib.foldl lib.recursiveUpdate {} [
+        (inputs.self.factory.inclusionModules "nix")
+        (inputs.self.factory.inclusionModules "secrets")
+      ];
     };
   };
 }
