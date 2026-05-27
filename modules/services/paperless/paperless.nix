@@ -25,17 +25,17 @@
             description = "Name of folder for state exports";
           };
           sambaHostsAllow = lib.mkOption {
-            type = lib.types.string;
+            type = lib.types.str;
             default = "192.168.1.";
             description = "Samba subnet mask for paperless.";
           };
         };
       };
       config = let
-        exportDir = "${config.local.paperless.homeDir}/${config.local.paperless.backupName}";
         trashDir = "${config.local.paperless.mediaDir}/trash";
       in {
         # Provisioning the home directory
+        # The other directories are provisioned by the paperless module by default
         systemd.tmpfiles.settings."05-paperless-home" = {
           "${config.local.paperless.homeDir}" = {
             "d" = {
@@ -83,11 +83,11 @@
           # Backup
           exporter = {
             enable = true;
-            directory = exportDir;
+            directory = "${config.local.paperless.homeDir}/${config.local.paperless.backupName}";
             onCalendar = "03:30:00";
             settings = {
               "no-progress-bar" = true;
-              "no-color" = true;
+              "no-color" = false;
               "compare-checksums" = true;
               "delete" = true;
               "use-folder-prefix" = true;

@@ -1,22 +1,32 @@
 # Paperless; provision folder to syncthing
-{...}: {
+{config, ...}: let
+  paperlessFolder = config.localConfig.syncthing.folders.paperless;
+in {
+  # Register paperless folder definition with syncthing
+  localConfig.syncthing.folders.paperless = {
+    owner = "paperless";
+    hosts = [
+      # This will actually be defined on host folders instead
+      # TODO; migrate this setting to each hosts' config
+      # "su-ana"
+    ];
+    ignore = {
+      global = ''
+      '';
+    };
+  };
+
   flake.modules = {
-    # Provision the folder to syncthing in general
+    # Establish folder settings
     generic.syncthing = {
       config,
       lib,
+      options,
       ...
     }: {
       services.syncthing.settings.folders.paperless = {
-        enable = lib.mkOverride 1400 false;
-        label = "Paperless";
-        id = "Paperless";
+        # Default to receive-only, paperless module will override this
         type = lib.mkOverride 1400 "receiveonly";
-        # Just share with all defined devices
-        devices =
-          config.services.syncthing.settings.devices
-          |> builtins.attrNames
-          |> (lib.filter (device: device != config.networking.hostName));
         versioning = lib.mkOverride 1400 {
           type = "trashcan";
           params.cleanoutDays = "365";
@@ -24,57 +34,41 @@
       };
     };
 
-    # Nixos settings for the shared folder
-    nixos.syncthing = {
+    # Nixos settings override for the shared folder
+    nixos.paperless = {
       config,
       lib,
       ...
     }: {
-      config = lib.mkMerge [
-        (
-          # When paperless is present on the host
-          lib.mkIf (config.services.paperless.enable == true) {
-            services.syncthing.settings.folders.paperless = {
-              # Enable by default
-              enable = lib.mkDefault true;
-              # The path is pulled from paperless export dir
-              path = "${config.services.paperless.exporter.directory}";
-              # This is a send only type of directory
-              type = lib.mkOverride 1200 "sendonly";
-              # Retain ownership of paperless, don't do syncthing
-              copyOwnershipFromParent = true;
-              # No versioning
-              versioning = lib.mkOverride 1200 null;
+      config =
+        lib.mkIf (
+          (config.services.syncthing.enable)
+          && (lib.elem config.networking.hostName paperlessFolder.hosts)
+        ) {
+          # Overwrite syncthing config
+          services.syncthing.settings.folders.paperless = {
+            # We are a provider, so we are sendonly here
+            type = lib.mkOverride 1200 "sendonly";
+            # No versioning
+            versioning = lib.mkOverride 1200 null;
+            # Retain ownership of paperless, don't do syncthing
+            copyOwnershipFromParent = true;
+          };
+          # Provision ACL read and write permissions to syncthing
+          systemd.tmpfiles.settings."20-paperless-syncthing" = {
+            "${config.services.paperless.exporter.directory}" = {
+              "A+".argument = "u:${config.services.syncthing.user}:rX,m::rX";
+              "a+".argument = "d:u:${config.services.syncthing.user}:rwx,d:m::rwx";
             };
-            # Provision ACL read and write permissions of the export dir to syncthing
-            systemd.tmpfiles.settings."20-paperless-syncthing" = {
-              "${config.local.paperless.homeDir}" = {
-                "A+".argument = "u:${config.services.syncthing.user}:rX,m::rX";
-              };
-              "${config.services.paperless.exporter.directory}" = {
-                "A+".argument = "u:${config.services.syncthing.user}:rwX,m::rwX";
-                "a+".argument = "d:u:${config.services.syncthing.user}:rwx,d:m::rwx";
-              };
-            };
-          }
-        )
-        (
-          # When paperless is not present, we are just a backup folder
-          lib.mkIf (config.services.paperless.enable == false) {
-            services.syncthing.settings.folders.paperless = {
-              # We default to a path in the syncthing home instead
-              path = "${config.services.syncthing.dataDir}/Paperless";
-            };
-          }
-        )
-      ];
-    };
-
-    # In standalone and darwin contexts, set paperless default path
-    homeManager.syncthing = {...}: {
-      services.syncthing.settings.folders.paperless = {
-        path = "~/Paperless";
-      };
+          };
+          # Let the syncthing directory be a bind mount to the actual directory
+          # Set the bind mount
+          fileSystems."${config.services.syncthing.settings.folders.paperless.path}" = {
+            device = config.services.paperless.exporter.directory;
+            fsType = "none";
+            options = ["bind" "nofail"];
+          };
+        };
     };
   };
 }
