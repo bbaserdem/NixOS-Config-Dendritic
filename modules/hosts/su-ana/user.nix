@@ -6,6 +6,7 @@
     # Load modules that configure the system
     imports = with inputs.self.modules.darwin; [
       batuhan
+      wolframite
     ];
 
     config = {

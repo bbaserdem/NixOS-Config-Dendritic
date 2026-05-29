@@ -10,5 +10,7 @@
     (inputs.self.factory.inclusionModules "docker")
     (inputs.self.factory.inclusionModules "virtualization")
     (inputs.self.factory.inclusionModules "ai")
+    (inputs.self.factory.inclusionModules "ghostty")
+    (inputs.self.factory.inclusionModules "kitty")
   ];
 }

@@ -26,31 +26,13 @@
     # Set default secrets location for user
     homeManager.batuhan = {
       lib,
-      pkgs,
       options,
-      config,
       ...
     }: {
-      config = lib.mkMerge [
-        (
-          # SOPS setup
-          lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) {
-            sops = {
-              age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
-              defaultSopsFile = inputs.self + /secrets/user/wolframite/secrets.yaml;
-            };
-          }
-        )
-        (
-          # Create symlink for sops secrets
-          lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-            home.file."Library/Application Support/sops" = {
-              source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/sops";
-              force = true;
-            };
-          }
-        )
-      ];
+      # SOPS setup
+      config = lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) {
+        sops.defaultSopsFile = lib.mkForce (inputs.self + /secrets/user/wolframite/secrets.yaml);
+      };
     };
   };
 }

@@ -13,6 +13,7 @@
       config =
         lib.optionalAttrs (
           (lib.hasAttrByPath ["sops" "secrets"] options)
+          (lib.hasAttrByPath ["networking" "hostName"] options)
           && (! (lib.hasAttrByPath ["osConfig"] args))
         )
         {
@@ -47,7 +48,6 @@
         # Pull keys
         sops.secrets = let
           nixosKeyConfig = {
-            sopsFile = inputs.self + /secrets/host/${config.networking.hostName}/secrets.yaml;
             owner = config.services.syncthing.user;
             group = config.services.syncthing.group;
             mode = "0440";
@@ -81,7 +81,6 @@
             sops.secrets = let
               darwinKeyOwnership = {
                 # sopsFile should default to user's host name
-                sopsFile = inputs.self + /secrets/host/${config.networking.hostName}/secrets.yaml;
                 group = "staff";
                 mode = "0440";
               };

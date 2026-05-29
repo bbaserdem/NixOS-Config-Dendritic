@@ -3,6 +3,41 @@
   flake.modules = {
     # Modules to setup the nix daemon
 
+    # Generic; for nix settings for both nixos and darwin contexts
+    generic.nix = {pkgs, ...}: {
+      config = {
+        # Package manager config
+        nix = {
+          gc.options = "--delete-older-than 60d";
+          settings = {
+            experimental-features = [
+              "nix-command"
+              "flakes"
+              "pipe-operators"
+              "ca-derivations"
+            ];
+            # For dev related things
+            keep-outputs = true;
+            keep-derivations = true;
+          };
+        };
+
+        programs = {
+          nix-index.enable = true;
+          nix-index-database.comma.enable = true;
+        };
+
+        # Nix helper utilities
+        environment.systemPackages = with pkgs; [
+          nh
+          nix-output-monitor
+          nvd
+          sops
+          nix-diff
+        ];
+      };
+    };
+
     # Nixos module; for nixos specific nix settings
     nixos.nix = {...}: {
       imports = [
@@ -54,43 +89,8 @@
       };
     };
 
-    # Generic; for nix settings for both nixos and darwin contexts
-    generic.nix = {pkgs, ...}: {
-      config = {
-        # Package manager config
-        nix = {
-          gc.options = "--delete-older-than 60d";
-          settings = {
-            experimental-features = [
-              "nix-command"
-              "flakes"
-              "pipe-operators"
-              "ca-derivations"
-            ];
-            # For dev related things
-            keep-outputs = true;
-            keep-derivations = true;
-          };
-        };
-
-        programs = {
-          nix-index.enable = true;
-          nix-index-database.comma.enable = true;
-        };
-
-        # Nix helper utilities
-        environment.systemPackages = with pkgs; [
-          nh
-          nix-output-monitor
-          nvd
-          sops
-          nix-diff
-        ];
-      };
-    };
-
     # Home-manager; add nix-index to hm
-    homeManager.nix = {pkgs, ...}: {
+    homeManager.nix = {...}: {
       imports = [
         inputs.nix-index-database.homeModules.default
       ];

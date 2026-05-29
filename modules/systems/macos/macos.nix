@@ -1,5 +1,5 @@
 # Configuring macos systems
-{...}: {
+{inputs, ...}: {
   flake.modules.darwin.macos = {lib, ...}: {
     # Mirrors the "to-be-deprecated" system.primaryUser option
     options = {
@@ -11,6 +11,12 @@
         '';
       };
     };
+
+    imports = with inputs.self.modules.darwin; [
+      nix
+      homebrew
+      homeManager
+    ];
 
     config = {
       system = {

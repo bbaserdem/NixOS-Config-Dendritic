@@ -5,9 +5,14 @@
 
     # Load modules that configure the system
     imports = with inputs.self.modules.nixos; [
-      # Main configuration
-      nix
-      homeManager
+      #---System modules
+      secrets
+      stylix
+      #---Services
+      avahi
+      networkmanager
+      nginx
+      samba
     ];
   };
 }

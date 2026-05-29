@@ -22,7 +22,7 @@
             playlistDirectory = "${srcDir}/Playlists";
             network = {
               listenAddress = "localhost";
-              port = 6600;
+              port = 6601;
             };
           };
         };

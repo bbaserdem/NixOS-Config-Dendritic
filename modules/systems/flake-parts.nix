@@ -9,6 +9,7 @@
       modules = lib.foldl lib.recursiveUpdate {} [
         (inputs.self.factory.inclusionModules "nix")
         (inputs.self.factory.inclusionModules "secrets")
+        (inputs.self.factory.inclusionModules "stylix")
       ];
     };
   };

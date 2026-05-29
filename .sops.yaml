@@ -1,32 +1,42 @@
 # SOPS key for secrets
 keys:
+  - &admin-pgp        AC27F5199E8B2E77F1F3D35F75ED91815D5B960E
   - &user_wolframite  age1kef20n2n6cgs4rrv76zwg50q0y8xqzpce69twyrrsct6v63cqplqf297my
-  # - &user_joeysaur    age
   - &host_su-ana      age1trtaqq9n93gck0gh4ew3ms6unu9qqd34yekhlla0ldn8mygjw46qnspvz5
+  - &host_yel-ana     age1ndu9qtzt0ywu992jwquadut0y7szflzz33atrqggunsr6kmk3ees0h2wep
 creation_rules:
+  # Global users keys
   - path_regex: ^secrets/user/[^/]+\.(yaml|json|key)$
     key_groups:
     - age:
       - *user_wolframite
-      # - *user_joeysaur
-  - path_regex: ^secrets/user/wolframite/[^/]+\.(yaml|json|key)$
-    key_groups:
-    - age:
-      - *user_wolframite
-  # - path_regex: ^secrets/user/joeysaur/[^/]+\.(yaml|json|key)$
-  #   key_groups:
-  #   - age:
-  #     - *user_joeysaur
+      pgp:
+      - *admin-pgp
+  # Global hosts keys
   - path_regex: ^secrets/host/[^/]+\.(yaml|json|key)$
     key_groups:
     - age:
       - *host_su-ana
-      # - *host_yel-ana
+      - *host_yel-ana
+      pgp:
+      - *admin-pgp
+    # Each user's keys
+  - path_regex: ^secrets/user/wolframite/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *user_wolframite
+      pgp:
+      - *admin-pgp
+    # Each host's keys
   - path_regex: ^secrets/host/su-ana/[^/]+\.(yaml|json|key)$
     key_groups:
     - age:
       - *host_su-ana
-  # - path_regex: ^secrets/host/yel-ana/[^/]+\.(yaml|json|key)$
-  #   key_groups:
-  #   - age:
-  #     - *host_yel-ana_
+      pgp:
+      - *admin-pgp
+  - path_regex: ^secrets/host/yel-ana/[^/]+\.(yaml|json|key)$
+    key_groups:
+    - age:
+      - *host_yel-ana
+      pgp:
+      - *admin-pgp

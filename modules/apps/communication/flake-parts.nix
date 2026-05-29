@@ -11,5 +11,6 @@
     (inputs.self.factory.inclusionModules "chromium")
     (inputs.self.factory.inclusionModules "firefox")
     (inputs.self.factory.inclusionModules "discord")
+    (inputs.self.factory.inclusionModules "remmina")
   ];
 }

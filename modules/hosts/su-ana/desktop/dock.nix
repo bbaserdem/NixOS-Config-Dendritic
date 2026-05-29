@@ -1,7 +1,7 @@
 # Su-ana dock config
-{inputs, ...}: {
+{...}: {
   flake.modules.darwin.su-ana = {config, ...}: let
-    username = "batuhan";
+    username = config.local.mainUser;
     hmDir = "${config.users.users.${username}.home}/Applications/Home Manager Apps";
   in {
     # System behavior settings
