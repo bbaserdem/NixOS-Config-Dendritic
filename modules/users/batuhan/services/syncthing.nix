@@ -18,6 +18,9 @@
             // Do not track obsidian workspace files
             .obsidian/workspace.json
 
+            // Zoom deposits files here, do not track
+            /Zoom
+
             // Don't track auxillary latex files
             (?d)*.aux
             (?d)*.bbl
@@ -47,6 +50,11 @@
           '';
           hosts = {
             su-ana = ''
+              // Su-Ana - Music ignores
+              // Assuming this is apple shit
+              Music
+              Music/*
+
             '';
           };
         };
@@ -58,6 +66,11 @@
           '';
           hosts = {
             su-ana = ''
+              // Su-Ana - Pictures ignores
+              // Assuming this is apple shit
+              /Photos Library.photoslibrary
+              /Photos Library.photoslibrary/*
+
             '';
           };
         };
@@ -69,6 +82,11 @@
           '';
           hosts = {
             su-ana = ''
+              // Su-Ana - Videos ignores
+              // Assuming this is apple shit
+              /TV
+              /TV/*
+
             '';
           };
         };

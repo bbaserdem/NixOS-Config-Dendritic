@@ -1,6 +1,15 @@
 # XDG setup settings
 {...}: {
   flake.modules = {
+    # Nixos system-wide xdg portal settings
+    nixos.xdg = {...}: {
+      xdg.portal = {
+        enable = true;
+        xdgOpenUsePortal = true;
+      };
+    };
+
+    # Home-manager settings
     homeManager.xdg = {
       lib,
       pkgs,

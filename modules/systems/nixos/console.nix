@@ -1,4 +1,4 @@
-# Console settings
+# Nixos systems console settings
 {...}: {
   flake.modules = {
     nixos = {
@@ -16,6 +16,7 @@
         };
       };
     };
+
     # Set colormap through stylix
     stylix = {...}: {
       stylix.targets.console = {

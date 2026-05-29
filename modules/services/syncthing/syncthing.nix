@@ -19,6 +19,7 @@
 
     // OS Junk
     (?d).DS_Store
+    .localized
   '';
 
   flake.modules = {

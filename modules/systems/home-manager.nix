@@ -1,5 +1,11 @@
 # Home-Manager system context modules
 {inputs, ...}: {
+  # Load the home-manager flake-parts module
+  imports = [
+    inputs.home-manager.flakeModules.home-manager
+  ];
+
+  # System wide home-manager modules
   flake.modules = let
     # Generic home-manager settings module, for using hm as a system module
     homeManagerOSConfig = {...}: {
