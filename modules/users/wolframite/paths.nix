@@ -1,7 +1,7 @@
 # Configuring user paths
 {...}: {
   # TODO; Adjust to new projects settings in 26.05
-  localConfig.wolframite.xdgPaths = {
+  localConfig.users.wolframite.xdgDirs = {
     documents = "Documents";
     music = "Music";
     pictures = "Pictures";
@@ -10,7 +10,7 @@
     desktop = "Desktop";
     templates = "Templates";
     publicShare = "Shared/Public";
-    projects = "Projects";
+    # projects = "Projects";
   };
   flake.modules.homeManager.wolframite = {
     config,
