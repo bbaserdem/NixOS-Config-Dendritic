@@ -1,5 +1,17 @@
 # Configuring user paths
 {...}: {
+  # TODO; Adjust to new projects settings in 26.05
+  localConfig.wolframite.xdgPaths = {
+    documents = "Documents";
+    music = "Music";
+    pictures = "Pictures";
+    videos = "Videos";
+    download = "Downloads";
+    desktop = "Desktop";
+    templates = "Templates";
+    publicShare = "Shared/Public";
+    projects = "Projects";
+  };
   flake.modules.homeManager.wolframite = {
     config,
     lib,
@@ -24,27 +36,7 @@
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-          # User dirs are only available in Linux
-          # Other user dirs are set by the sync module by default
-          # TODO: transition to projects dir; official in XDG user dirs; drops in 26.05
-          xdg.userDirs = {
-            documents = "${config.home.homeDirectory}/Documents";
-            music = "${config.home.homeDirectory}/Music";
-            pictures = "${config.home.homeDirectory}/Pictures";
-            videos = "${config.home.homeDirectory}/Videos";
-            download = "${config.home.homeDirectory}/Downloads";
-            desktop = "${config.home.homeDirectory}/Desktop";
-            templates = "${config.home.homeDirectory}/Templates";
-            publicShare = "${config.home.homeDirectory}/Shared/Public";
-            # projects = "${config.home.homeDirectory}/Projects";
-            # Some extras that I may use
-            extraConfig = {
-              XDG_PROJECTS_DIR = "${config.home.homeDirectory}/Projects";
-              XDG_PHONE_DIR = "${config.home.homeDirectory}/Shared/Android";
-            };
-          };
-
-          # Add the bookmarks to file browser
+          # Add the bookmarks to file browser(s)
           gtk.gtk3.bookmarks = [
             "file://${config.xdg.userDirs.documents}"
             "file://${config.xdg.userDirs.music}"
@@ -57,7 +49,7 @@
 
           # Aliases to navigate quickly
           home.shellAliases = {
-            cd-projs = "cd ${config.xdg.userDirs.extraConfig.XDG_PROJECTS_DIR}";
+            ## cd-projs = "cd ${config.xdg.userDirs.projects}";
             cd-music = "cd ${config.xdg.userDirs.music}";
             cd-image = "cd ${config.xdg.userDirs.pictures}";
             cd-video = "cd ${config.xdg.userDirs.videos}";

@@ -16,7 +16,7 @@
   };
 
   # Apply our nixpkgs overlay
-  nixpkgs.overlays = [
+  localConfig.nixpkgs.overlays = [
     inputs.llm-agents.overlays.default
   ];
 

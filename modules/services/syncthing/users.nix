@@ -6,6 +6,7 @@
 }: let
   # Shortcuts
   cfg = config.localConfig.syncthing;
+  usersCfg = config.localConfig.users;
   users = cfg.users;
   darwinDirs = {
     desktop = "Desktop";

@@ -1,5 +1,8 @@
 # User generation factory function
 {inputs, ...}: {
+  # Flake-Parts user
+  # User factory function to generate a user configuration config.
+  # By itself, it's home-manager agnostic.
   factory.user = {
     username,
     homeDir ? "/home/${username}",

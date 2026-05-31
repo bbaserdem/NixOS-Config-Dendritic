@@ -7,7 +7,7 @@
 }: {
   # Define new options to use for all nixpkgs invocations
   options = {
-    nixpkgs = {
+    localConfig.nixpkgs = {
       overlays = lib.mkOption {
         type = lib.types.listOf lib.types.raw;
         default = [];
@@ -52,7 +52,7 @@
       };
     };
 
-    nixpkgs = {
+    localConfig.nixpkgs = {
       config = {
         allowUnfree = true;
       };
@@ -69,7 +69,7 @@
       # This module is auto-imported by factory functions
       modules.generic.nixpkgs = {...}: {
         config = {
-          inherit (config) nixpkgs;
+          inherit (config.localConfig) nixpkgs;
         };
       };
 
@@ -94,7 +94,7 @@
     in {
       _module.args.pkgs = import thisNixpkgs {
         inherit system;
-        inherit (config.nixpkgs) config overlays;
+        inherit (config.localConfig.nixpkgs) config overlays;
       };
     };
   };
