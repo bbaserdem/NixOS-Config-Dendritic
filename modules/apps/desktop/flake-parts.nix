@@ -1,19 +1,19 @@
 # Flake partsq inif modules
 {
-  inputs,
+  config,
   lib,
   ...
 }: {
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
-    (inputs.self.factory.inclusionModules "fonts")
-    (inputs.self.factory.inclusionModules "gtk")
-    (inputs.self.factory.inclusionModules "kdeconnect")
-    (inputs.self.factory.inclusionModules "keyboard")
-    (inputs.self.factory.inclusionModules "language")
-    (inputs.self.factory.inclusionModules "geoclue")
-    (inputs.self.factory.inclusionModules "qt")
-    (inputs.self.factory.inclusionModules "xdg")
-    (inputs.self.factory.inclusionModules "waylandShell")
+    (config.factory.inclusionModules "fonts")
+    (config.factory.inclusionModules "gtk")
+    (config.factory.inclusionModules "kdeconnect")
+    (config.factory.inclusionModules "keyboard")
+    (config.factory.inclusionModules "language")
+    (config.factory.inclusionModules "geoclue")
+    (config.factory.inclusionModules "qt")
+    (config.factory.inclusionModules "xdg")
+    (config.factory.inclusionModules "waylandShell")
   ];
 }

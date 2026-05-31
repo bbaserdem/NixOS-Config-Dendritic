@@ -1,7 +1,7 @@
 # Flake-parts config for su-ana
-{inputs, ...}: {
+{config, ...}: {
   flake = {
-    darwinConfigurations = inputs.self.lib.mkDarwin {
+    darwinConfigurations = config.factory.mkDarwin {
       system = "aarch64-darwin";
       name = "su-ana";
       description = "Su Ana: Batuhan's MBP";

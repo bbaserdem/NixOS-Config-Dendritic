@@ -1,16 +1,16 @@
 # Flake partsq inif modules
 {
-  inputs,
+  config,
   lib,
   ...
 }: {
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
-    (inputs.self.factory.inclusionModules "vcs")
-    (inputs.self.factory.inclusionModules "docker")
-    (inputs.self.factory.inclusionModules "virtualization")
-    (inputs.self.factory.inclusionModules "ai")
-    (inputs.self.factory.inclusionModules "ghostty")
-    (inputs.self.factory.inclusionModules "kitty")
+    (config.factory.inclusionModules "vcs")
+    (config.factory.inclusionModules "docker")
+    (config.factory.inclusionModules "virtualization")
+    (config.factory.inclusionModules "ai")
+    (config.factory.inclusionModules "ghostty")
+    (config.factory.inclusionModules "kitty")
   ];
 }

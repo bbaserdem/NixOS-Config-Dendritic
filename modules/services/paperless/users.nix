@@ -1,6 +1,6 @@
 # Paperless user factory function; creates local consumption subdir
 {...}: {
-  flake.factory.paperlessUser = {
+  factory.paperlessUser = {
     user,
     directory ? "Shared/Paperless",
     ...

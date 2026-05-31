@@ -31,30 +31,30 @@
         darwin.default = {...}: {imports = [inputs.self.modules.generic.default];};
         homeManager.default = {...}: {imports = [inputs.self.modules.generic.default];};
       };
+    };
 
-      # Boilerplate for initializing system modules from home-manager modules
-      factory = {
-        inclusionModules = name: {
-          homeManager."${name}" = {...}: {
-            # Just init this module as empty
-          };
-          # Generic home-manager shared module importer
-          generic."${name}" = {...}: {
-            home-manager.sharedModules = [
-              inputs.self.modules.homeManager."${name}"
-            ];
-          };
-          # Import generic module to system
-          nixos."${name}" = {...}: {
-            imports = [
-              inputs.self.modules.generic."${name}"
-            ];
-          };
-          darwin."${name}" = {...}: {
-            imports = [
-              inputs.self.modules.generic."${name}"
-            ];
-          };
+    # Boilerplate for initializing system modules from home-manager modules
+    factory = {
+      inclusionModules = name: {
+        homeManager."${name}" = {...}: {
+          # Just init this module as empty
+        };
+        # Generic home-manager shared module importer
+        generic."${name}" = {...}: {
+          home-manager.sharedModules = [
+            inputs.self.modules.homeManager."${name}"
+          ];
+        };
+        # Import generic module to system
+        nixos."${name}" = {...}: {
+          imports = [
+            inputs.self.modules.generic."${name}"
+          ];
+        };
+        darwin."${name}" = {...}: {
+          imports = [
+            inputs.self.modules.generic."${name}"
+          ];
         };
       };
     };

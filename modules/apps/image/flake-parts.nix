@@ -1,13 +1,13 @@
 # Flake partsq inif modules
 {
-  inputs,
+  config,
   lib,
   ...
 }: {
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
-    (inputs.self.factory.inclusionModules "image")
-    (inputs.self.factory.inclusionModules "blender")
-    (inputs.self.factory.inclusionModules "gimp")
+    (config.factory.inclusionModules "image")
+    (config.factory.inclusionModules "blender")
+    (config.factory.inclusionModules "gimp")
   ];
 }

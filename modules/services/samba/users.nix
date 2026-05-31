@@ -3,7 +3,7 @@
   # Factory function to;
   # - register user with password for samba
   # - create a network share if enabled
-  factory.userSamba = {
+  factory.sambaUser = {
     user,
     guest ? false,
     readOnly ? false,

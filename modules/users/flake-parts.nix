@@ -1,6 +1,6 @@
 # User generation factory function
 {inputs, ...}: {
-  flake.factory.user = {
+  factory.user = {
     username,
     homeDir ? "/home/${username}",
     isHomeManager ? true,
@@ -19,7 +19,7 @@
       config = {
         # Register this user in the system definition
         users.users."${username}" = {
-          enable = lib.mkOverride 1400 false;
+          enable = lib.mkOverride 950 false;
         };
       };
     };
@@ -34,12 +34,11 @@
         {
           # Manage user groups and settings outside home-manager
           users.users."${username}" = {
-            enable = lib.mkDefault true;
+            enable = lib.mkOverride 900 true;
             isNormalUser = isNormalUser;
             home = homeDir;
             extraGroups = lib.optionals isAdmin [
               "wheel"
-              "networkmanager"
             ];
           };
         }

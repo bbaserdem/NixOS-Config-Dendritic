@@ -49,7 +49,6 @@
       options,
       config,
       lib,
-      pkgs,
       ...
     }: let
       # Load stylix colors if they are available

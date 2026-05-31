@@ -1,15 +1,15 @@
 # General systems boilerplate
 {
-  inputs,
+  config,
   lib,
   ...
 }: {
   config = {
     flake = {
       modules = lib.foldl lib.recursiveUpdate {} [
-        (inputs.self.factory.inclusionModules "nix")
-        (inputs.self.factory.inclusionModules "secrets")
-        (inputs.self.factory.inclusionModules "stylix")
+        (config.factory.inclusionModules "nix")
+        (config.factory.inclusionModules "secrets")
+        (config.factory.inclusionModules "stylix")
       ];
     };
   };

@@ -1,5 +1,5 @@
 # Mangohud; performance measurer
-{inputs, ...}: {
+{...}: {
   flake.modules = {
     homeManager = {
       # Enable stylix theming for mangohud

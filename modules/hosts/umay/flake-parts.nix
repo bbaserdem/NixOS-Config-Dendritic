@@ -2,6 +2,7 @@
 # Not only we define system outputs here, we also define packages that build the qemu image
 {
   inputs,
+  config,
   pkgs,
   ...
 }: let
@@ -10,7 +11,7 @@
 in {
   flake = {
     # Create nixosConfig for our VM
-    nixosConfigurations = inputs.self.lib.mkNixos {
+    nixosConfigurations = config.factory.mkNixos {
       system = arch;
       name = host;
       description = "Umay: NixOS VM";

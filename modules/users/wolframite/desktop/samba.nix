@@ -1,6 +1,6 @@
 # Provision shared directory through samba for this user
-{inputs, ...}: {
-  flake.modules = inputs.self.factory.userSamba {
+{config, ...}: {
+  flake.modules = config.factory.sambaUser {
     user = "wolframite";
     guest = true;
     readOnly = false;

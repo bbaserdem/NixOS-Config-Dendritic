@@ -2,7 +2,7 @@
 # Provide settings for;
 # - git
 # - jj
-{inputs, ...}: {
+{...}: {
   flake.modules.homeManager.vcs = {...}: {
     # Configure cross-tool integrations
     config = {

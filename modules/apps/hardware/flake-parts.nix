@@ -1,20 +1,20 @@
 # Flake partsq inif modules
 {
-  inputs,
+  config,
   lib,
   ...
 }: {
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
-    (inputs.self.factory.inclusionModules "android")
-    (inputs.self.factory.inclusionModules "bluetooth")
-    (inputs.self.factory.inclusionModules "firmware")
-    (inputs.self.factory.inclusionModules "fingerprint")
-    (inputs.self.factory.inclusionModules "qmk")
-    (inputs.self.factory.inclusionModules "power")
-    (inputs.self.factory.inclusionModules "printing")
-    (inputs.self.factory.inclusionModules "rasdaemon")
-    (inputs.self.factory.inclusionModules "sound")
-    (inputs.self.factory.inclusionModules "udisks")
+    (config.factory.inclusionModules "android")
+    (config.factory.inclusionModules "bluetooth")
+    (config.factory.inclusionModules "firmware")
+    (config.factory.inclusionModules "fingerprint")
+    (config.factory.inclusionModules "qmk")
+    (config.factory.inclusionModules "power")
+    (config.factory.inclusionModules "printing")
+    (config.factory.inclusionModules "rasdaemon")
+    (config.factory.inclusionModules "sound")
+    (config.factory.inclusionModules "udisks")
   ];
 }

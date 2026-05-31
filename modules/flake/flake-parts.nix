@@ -15,18 +15,10 @@
 }: {
   # New output options to our flake-parts repo
   options = {
-    flake = {
-      # Helper functions for creating system / home-manager configurations
-      lib = lib.mkOption {
-        type = lib.types.attrsOf lib.types.unspecified;
-        default = {};
-      };
-
-      # Factory aspect functions
-      factory = lib.mkOption {
-        type = lib.types.attrsOf lib.types.unspecified;
-        default = {};
-      };
+    # Factory aspect functions, that help with declaring options
+    factory = lib.mkOption {
+      type = lib.types.attrsOf lib.types.unspecified;
+      default = {};
     };
   };
 
@@ -54,26 +46,5 @@
       "x86_64-darwin"
       "x86_64-linux"
     ];
-
-    # Library functions, migrate this
-    flake.lib = {
-      # Standalone home-manager config builder
-      # Will not be used in this flake, but possible
-      # Historically, passed host parameter to the configuration to auto-load host specific user config
-      # This is not needed with flake-parts, but host-specific behavior requires home-manager as nixos/nix-darwin module
-      mkHomeManager = {
-        system,
-        user,
-        ...
-      }: {
-        ${user} = inputs.home-manager.lib.homeManagerConfiguration {
-          pkgs = inputs.nixpkgs.legacyPackages.${system};
-          modules = [
-            inputs.self.modules.homeManager.${user}
-            {nixpkgs.config.allowUnfree = true;}
-          ];
-        };
-      };
-    };
   };
 }

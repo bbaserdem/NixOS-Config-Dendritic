@@ -1,11 +1,11 @@
 # Flake parts init modules
 {
-  inputs,
+  config,
   lib,
   ...
 }: {
   # Collect factory modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
-    (inputs.self.factory.inclusionModules "gnome")
+    (config.factory.inclusionModules "gnome")
   ];
 }

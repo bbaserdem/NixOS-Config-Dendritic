@@ -1,14 +1,14 @@
 # Flake partsq inif modules
 {
-  inputs,
+  config,
   lib,
   ...
 }: {
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
-    (inputs.self.factory.inclusionModules "video")
-    (inputs.self.factory.inclusionModules "mpv")
-    (inputs.self.factory.inclusionModules "obs")
-    (inputs.self.factory.inclusionModules "yt-dlp")
+    (config.factory.inclusionModules "video")
+    (config.factory.inclusionModules "mpv")
+    (config.factory.inclusionModules "obs")
+    (config.factory.inclusionModules "yt-dlp")
   ];
 }

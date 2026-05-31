@@ -1,7 +1,7 @@
 # Flake-parts config for yel-ana
-{inputs, ...}: {
+{config, ...}: {
   flake = {
-    nixosConfigurations = inputs.self.lib.mkNixos {
+    nixosConfigurations = config.factory.mkNixos {
       system = "x86_64-linux";
       name = "yel-ana";
       description = "Yel Ana: Batuhan's Laptop";

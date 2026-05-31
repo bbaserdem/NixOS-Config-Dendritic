@@ -1,8 +1,8 @@
 # Initialize this user
-{inputs, ...}: let
+{config, ...}: let
   userName = "wolframite";
 in {
-  flake.modules = inputs.self.factory.user {
+  flake.modules = config.factory.user {
     username = "${userName}";
     isAdmin = true;
     isNix = true;

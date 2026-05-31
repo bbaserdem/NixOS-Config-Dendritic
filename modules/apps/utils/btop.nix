@@ -1,5 +1,5 @@
 # Btop; system monitor
-{inputs, ...}: {
+{...}: {
   flake.modules = {
     homeManager = {
       # Enable stylix theming

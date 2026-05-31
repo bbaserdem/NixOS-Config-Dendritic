@@ -13,7 +13,7 @@
       config =
         lib.optionalAttrs (
           (lib.hasAttrByPath ["sops" "secrets"] options)
-          (lib.hasAttrByPath ["networking" "hostName"] options)
+          && (lib.hasAttrByPath ["networking" "hostName"] options)
           && (! (lib.hasAttrByPath ["osConfig"] args))
         )
         {

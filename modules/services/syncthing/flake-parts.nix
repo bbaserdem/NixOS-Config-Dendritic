@@ -16,7 +16,6 @@ in {
     # NixOS module should pull in generic module
     nixos.syncthing = {
       lib,
-      config,
       options,
       ...
     }: {
@@ -30,10 +29,7 @@ in {
           syncthingUsers
           |> lib.mapAttrsToList (
             user: userCfg:
-              lib.mkIf (
-                userCfg.enable
-                && (config.users.users.${user}.enable or false)
-              ) {
+              lib.mkIf (userCfg.enable) {
                 "${user}".imports = [
                   inputs.self.modules.homeManager.syncthing
                 ];
