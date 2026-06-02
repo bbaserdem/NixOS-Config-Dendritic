@@ -74,7 +74,7 @@
             data = oil-git-status-nvim;
           }
         ];
-        extraPackages = with pkgs.unstable; [
+        runtimePackages = with pkgs.unstable; [
           chafa
           imagemagick
         ];
@@ -87,7 +87,7 @@
           conform-nvim # Code formatter
           nvim-lint # Linter without LSP
         ];
-        extraPackages = with pkgs.unstable; [
+        runtimePackages = with pkgs.unstable; [
           harper # Grammar checking lsp, for all not just tex
         ];
       };
@@ -168,7 +168,7 @@
           bufdelete-nvim # Delete buffers without touching windows
           tmux-nvim # Integrate nvim with tmux
         ];
-        extraPackages = platformUtils;
+        runtimePackages = platformUtils;
       };
     };
   };

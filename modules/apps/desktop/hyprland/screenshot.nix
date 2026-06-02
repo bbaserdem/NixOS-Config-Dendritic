@@ -10,7 +10,7 @@
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
           # Screenshot utility
-          hyprshot = {
+          programs.hyprshot = {
             enable = true;
             saveLocation = lib.mkOverride 1400 "${config.xdg.userDirs.pictures}/Screenshots/${config.networking.hostName}/";
           };

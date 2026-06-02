@@ -8,7 +8,7 @@
         nvim-treesitter-parsers.python
         nvim-treesitter-parsers.ninja
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         ruff # Formatter/linter
         ty # LSP & type checker
         yq # yaml parser

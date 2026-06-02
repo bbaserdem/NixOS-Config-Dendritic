@@ -11,7 +11,7 @@
         nvim-treesitter-parsers.markdown
         nvim-treesitter-parsers.markdown_inline
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         vale # Linter
         glow # Markdown typesetter for terminal
         mdformat # Markdown formatter

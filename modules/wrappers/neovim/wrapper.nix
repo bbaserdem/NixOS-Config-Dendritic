@@ -157,21 +157,21 @@
 
         # Spec modifiers
         specMods = {parentSpec, ...}: {
-          # Add extraPackages option to collect runtime dependencies
-          options.extraPackages = lib.mkOption {
+          # Add runtimePackages option to collect runtime dependencies
+          options.runtimePackages = lib.mkOption {
             type = lib.types.listOf wlib.types.stringable;
             default = [];
-            description = "a extraPackages spec field to put packages to suffix to the PATH";
+            description = "a runtimePackages spec field to put packages to suffix to the PATH";
           };
 
           # If we are minimal, then disable all specs
           config.enable = lib.mkIf config.settings.minimal (lib.mkOverride 1400 (parentSpec.enable or false));
         };
 
-        # By default, the extraPackages is a config option to put executable to path
+        # By default, the runtimePackages is a config option to put executable to path
         # We want to actually collect these from the (enabled) specs themselves
         # So we have each spec define both plugin-dependencies, and runtime dependencies
-        extraPackages = config.specCollect (acc: v: acc ++ (v.extraPackages or [])) [];
+        runtimePkgs = config.specCollect (acc: v: acc ++ (v.runtimePackages or [])) [];
 
         hosts = {
           # Provide extra packages to the python environment

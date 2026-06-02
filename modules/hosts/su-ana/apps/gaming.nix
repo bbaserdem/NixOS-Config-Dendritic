@@ -7,6 +7,7 @@
     imports = with inputs.self.modules.darwin; [
       # Games
       gaming
+      steam
     ];
   };
 }

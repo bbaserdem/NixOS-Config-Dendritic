@@ -47,34 +47,34 @@
                   globalOptions = {
                     Hotkey = {
                       ModifierOnlyKeyTimeout = 250;
-                      # Activation keys
-                      "Hotkey/TriggerKeys"."0" = "Control+Super+space";
-                      "Hotkey/EnumerateForwardKeys"."0" = "Super+grave";
-                      "Hotkey/EnumerateBackwardKeys"."0" = "Super+asciitilde";
-                      "Hotkey/EnumerateGroupForwardKeys"."0" = "Control+Super+grave";
-                      "Hotkey/EnumerateGroupBackwardKeys"."0" = "Control+Super+asciitilde";
                       # Switching logic
                       EnumerateWithTriggerKeys = false;
                       EnumerateSkipFirst = false;
-                      Behavior = {
-                        # State management
-                        resetStateWhenFocusIn = "No";
-                        ShareInputState = "No";
-                        PreeditEnabledByDefault = false;
-                        # Visibility
-                        ShowInputMethodInformation = true;
-                        CompactInputMethodInformation = true;
-                        ShowFirstInputMethodInformation = true;
-                        showInputMethodInformationWhenFocusIn = false;
-                        # Passwords
-                        AllowInputMethodForPassword = false;
-                        ShowPreeditForPassword = false;
-                        # Behavior
-                        ActiveByDefault = false;
-                        OverrideXkbOption = true;
-                        PreloadInputMethod = true;
-                        AutoSavePeriod = 30;
-                      };
+                    };
+                    # Activation keys
+                    "Hotkey/TriggerKeys"."0" = "Control+Super+space";
+                    "Hotkey/EnumerateForwardKeys"."0" = "Super+grave";
+                    "Hotkey/EnumerateBackwardKeys"."0" = "Super+asciitilde";
+                    "Hotkey/EnumerateGroupForwardKeys"."0" = "Control+Super+grave";
+                    "Hotkey/EnumerateGroupBackwardKeys"."0" = "Control+Super+asciitilde";
+                    Behavior = {
+                      # State management
+                      resetStateWhenFocusIn = "No";
+                      ShareInputState = "No";
+                      PreeditEnabledByDefault = false;
+                      # Visibility
+                      ShowInputMethodInformation = true;
+                      CompactInputMethodInformation = true;
+                      ShowFirstInputMethodInformation = true;
+                      showInputMethodInformationWhenFocusIn = false;
+                      # Passwords
+                      AllowInputMethodForPassword = false;
+                      ShowPreeditForPassword = false;
+                      # Behavior
+                      ActiveByDefault = false;
+                      OverrideXkbOption = true;
+                      PreloadInputMethod = true;
+                      AutoSavePeriod = 30;
                     };
                   };
 

@@ -58,7 +58,7 @@
           telescope-dap-nvim
           telescope-ui-select-nvim
         ];
-        extraPackages = with pkgs.unstable; [
+        runtimePackages = with pkgs.unstable; [
           ripgrep
           fd
         ];
@@ -81,7 +81,7 @@
           nvim-highlight-colors # Render colors with highlights
           satellite-nvim # Shows status signs on the right hand side
         ];
-        extraPackages = with pkgs.unstable; [
+        runtimePackages = with pkgs.unstable; [
           dwt1-shell-color-scripts
         ];
       };

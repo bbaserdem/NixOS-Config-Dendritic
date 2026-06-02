@@ -5,9 +5,9 @@
   ...
 }: let
   # Shortcuts
-  cfg = config.localConfig.syncthing;
-  usersCfg = config.localConfig.users;
-  users = cfg.users;
+  cfgSync = config.localConfig.syncthing;
+  cfgUsers = config.localConfig.users;
+  users = cfgSync.users;
   darwinDirs = {
     desktop = "Desktop";
     documents = "Documents";
@@ -27,8 +27,8 @@
 
   # Ignore
   mkIgnoreText = hostName: xdgCfg: ''
-    ${cfg.ignore.global}
-    ${cfg.ignore.hosts.${hostName} or ""}
+    ${cfgSync.ignore.global}
+    ${cfgSync.ignore.hosts.${hostName} or ""}
     ${xdgCfg.ignore.global}
     ${xdgCfg.ignore.hosts.${hostName} or ""}
   '';
@@ -126,76 +126,84 @@ in {
       options,
       ...
     }: {
-      config = lib.optionalAttrs (lib.hasAttrByPath ["home-manager"] options) (let
-        hostName = config.networking.hostName;
-        dataDir = config.services.syncthing.dataDir;
-        syncUser = config.services.syncthing.user;
-        syncGroup = config.services.syncthing.group;
-        # Enabled folders
-        enabledFolders = lib.filterAttrs (_: folder: lib.elem hostName folder.hosts) flattenXdgFolders;
-        userEnabled = user: config.users.users.${user}.enable or false;
-        userHome = user: config.users.users.${user}.home;
-        userGroup = user: config.users.users.${user}.group;
-        # Path resolvel
-        userXdgPath = user: xdgDir: config.home-manager.users.${user}.xdg.userDirs.${xdgDir};
-        mkPath = folder: "${dataDir}/${capitalize folder.user}/${capitalize folder.xdgDir}";
-      in {
-        services.syncthing.settings.folders =
-          enabledFolders
-          |> lib.mapAttrs' (name: folder: {
-            inherit name;
-            value = {
-              enable = true;
-              path = mkPath folder;
-              devices = lib.filter (host: host != hostName) folder.hosts;
-              ignorePatterns = lib.splitString "\n" (mkIgnoreText hostName folder);
-            };
-          });
-        # Provision folder permissions
-        systemd.tmpfiles.settings =
-          enabledFolders
-          |> lib.mapAttrs' (name: folder: {
-            name = "35-syncthing-xdg-${name}";
-            value =
-              if userEnabled folder.user
-              then {
-                "${userXdgPath folder.user folder.xdgDir}" = {
-                  d = {
+      config =
+        lib.optionalAttrs (
+          (lib.hasAttrByPath ["home-manager"] options)
+          && (lib.hasAttrByPath ["local" "hm" "users"] options)
+        ) (let
+          hostName = config.networking.hostName;
+          dataDir = config.services.syncthing.dataDir;
+          syncUser = config.services.syncthing.user;
+          syncGroup = config.services.syncthing.group;
+          # Enabled folders
+          enabledFolders = lib.filterAttrs (_: folder: lib.elem hostName folder.hosts) flattenXdgFolders;
+          userEnabled = user: config.local.hm.users.${user} or false;
+          # Path resolvel
+          userHome = user: cfgUsers.${user}.home.linux;
+          userGroup = user: cfgUsers.${user}.group;
+          userXdgRelPath = user: xdgDir: (
+            cfgUsers.${user}.xdgDirs.${xdgDir}
+          or (throw "localConfig.users.${user}.xdgDirs.${xdgDir} is needed for syncthing module")
+          );
+          userXdgPath = user: xdgDir: "${userHome user}/${userXdgRelPath user xdgDir}";
+          mkPath = folder: "${dataDir}/${capitalize folder.user}/${capitalize folder.xdgDir}";
+        in {
+          services.syncthing.settings.folders =
+            enabledFolders
+            |> lib.mapAttrs' (name: folder: {
+              inherit name;
+              value = {
+                enable = true;
+                path = mkPath folder;
+                devices = lib.filter (host: host != hostName) folder.hosts;
+                ignorePatterns = lib.splitString "\n" (mkIgnoreText hostName folder);
+              };
+            });
+          # Provision folder permissions
+          systemd.tmpfiles.settings =
+            enabledFolders
+            |> lib.mapAttrs' (name: folder: {
+              name = "35-syncthing-xdg-${name}";
+              value =
+                if (userEnabled folder.user)
+                then {
+                  "${userXdgPath folder.user folder.xdgDir}" = {
+                    d = {
+                      user = folder.user;
+                      group = userGroup folder.user;
+                      mode = "0750";
+                    };
+                    "A+".argument = "u:${syncUser}:rwX,m::rwX";
+                    "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
+                  };
+                  "${mkPath folder}".d = {
                     user = folder.user;
                     group = userGroup folder.user;
                     mode = "0750";
                   };
-                  "A+".argument = "u:${syncUser}:rwX,m::rwX";
-                  "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
+                }
+                else {
+                  "${mkPath folder}".d = {
+                    user = syncUser;
+                    group = syncGroup;
+                    mode = "0750";
+                  };
                 };
-                "${mkPath folder}".d = {
-                  user = folder.user;
-                  group = userGroup folder.user;
-                  mode = "0750";
-                };
-              }
-              else {
-                "${mkPath folder}".d = {
-                  user = syncUser;
-                  group = syncGroup;
-                  mode = "0750";
-                };
+            });
+          # Provision bind mounts
+          fileSystems =
+            enabledFolders
+            |> lib.filterAttrs (_: folder: userEnabled folder.user)
+            |> lib.mapAttrs' (name: folder: {
+              name = mkPath folder;
+              value = {
+                device = userXdgPath folder.user folder.xdgDir;
+                fsType = "none";
+                options = ["bind" "nofail"];
+                depends = [(userHome folder.user)];
               };
-          });
-        # Provision bind mounts
-        fileSystems =
-          enabledFolders
-          |> lib.filterAttrs (_: folder: userEnabled folder.user)
-          |> lib.mapAttrs' (name: folder: {
-            name = mkPath folder;
-            value = {
-              device = userXdgPath folder.user folder.xdgDir;
-              fsType = "none";
-              options = ["bind" "nofail"];
-              depends = [(userHome folder.user)];
-            };
-          });
-      });
+            });
+        });
     };
   };
 }

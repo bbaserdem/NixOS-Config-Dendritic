@@ -114,8 +114,8 @@
         )
         (
           lib.mkIf (cfg.name == "sddm") (let
-            flavor = cfg.config.flavor ? "mocha";
-            accent = cfg.config.accent ? "mauve";
+            flavor = cfg.config.flavor or "mocha";
+            accent = cfg.config.accent or "mauve";
           in {
             # There is no stylix target for SDDM, but we can do the cattpuccin theme
             services.displayManager.sddm.theme = "catppuccin-${flavor}-${accent}";
@@ -125,11 +125,11 @@
                 pkgs.catppuccin-sddm.override {
                   inherit flavor accent;
                   font = config.stylix.fonts.sansSerif.name;
-                  fontSize = config.stylix.fonts.sizes.desktop;
+                  fontSize = toString config.stylix.fonts.sizes.desktop;
                   background = config.stylix.image;
-                  loginBackground = cfg.config.loginBackground ? true;
-                  userIcon = cfg.config.userIcon ? true;
-                  clockEnabled = cfg.config.clockEnabled ? true;
+                  loginBackground = cfg.config.loginBackground or true;
+                  userIcon = cfg.config.userIcon or true;
+                  clockEnabled = cfg.config.clockEnabled or true;
                 }
               )
             ];

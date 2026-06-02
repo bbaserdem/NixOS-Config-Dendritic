@@ -6,7 +6,7 @@
       data = with pkgs.vimPlugins; [
         nvim-treesitter-parsers.rust
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         rustfmt
         rust-analyzer
       ];

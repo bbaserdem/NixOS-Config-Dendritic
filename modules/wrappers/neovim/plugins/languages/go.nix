@@ -6,7 +6,7 @@
       data = with pkgs.vimPlugins; [
         nvim-treesitter-parsers.go
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         go
         gotools
         gopls

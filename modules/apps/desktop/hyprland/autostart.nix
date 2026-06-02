@@ -27,7 +27,7 @@
               # Idle daemon
               services.hypridle = {
                 enable = true;
-                services.hypridle.systemdTarget = "wayland-session@Hyprland.target";
+                systemdTarget = "wayland-session@Hyprland.target";
               };
 
               # Wallpaper setter that works with stylix

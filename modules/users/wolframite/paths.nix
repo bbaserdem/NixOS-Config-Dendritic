@@ -36,6 +36,10 @@
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+          # TODO: Figure out a better solution for the android directory
+          xdg.userDirs.extraConfig = {
+            XDG_PHONE_DIR = "${config.home.homeDirectory}/Shared/Android";
+          };
           # Add the bookmarks to file browser(s)
           gtk.gtk3.bookmarks = [
             "file://${config.xdg.userDirs.documents}"
@@ -43,8 +47,7 @@
             "file://${config.xdg.userDirs.pictures}"
             "file://${config.xdg.userDirs.videos}"
             "file://${config.xdg.userDirs.download}"
-            "file://${config.xdg.userDirs.extraConfig.XDG_PHONE_DIR}"
-            "file://${config.xdg.userDirs.extraConfig.XDG_PROJECTS_DIR}"
+            # "file://${config.xdg.userDirs.projects}"
           ];
 
           # Aliases to navigate quickly

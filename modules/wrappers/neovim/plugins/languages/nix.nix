@@ -6,7 +6,7 @@
       data = with pkgs.vimPlugins; [
         nvim-treesitter-parsers.nix
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         manix
         nix-doc
         nixd

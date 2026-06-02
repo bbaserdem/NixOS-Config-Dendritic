@@ -10,7 +10,7 @@
         nvim-treesitter-parsers.java
         nvim-treesitter-parsers.javadoc
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         typescript-language-server
       ];
     };

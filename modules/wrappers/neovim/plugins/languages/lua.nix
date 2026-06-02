@@ -10,7 +10,7 @@
         nvim-treesitter-parsers.luap
         nvim-treesitter-parsers.luau
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         lua-language-server
         stylua
       ];

@@ -24,7 +24,7 @@
       # Sops secrets for key-file provisioning
       sops.secrets = {
         crypt-data = {
-          sopsFile = inputs.self + /secrets/host/yel-ana/crypt_data.key;
+          sopsFile = inputs.self + /secrets/host/yel-ana/Yel-Ana_Data.key;
           format = "binary";
           path = "/run/cryptsetup-keys.d/Yel-Ana_Data.key";
         };

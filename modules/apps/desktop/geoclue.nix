@@ -7,15 +7,11 @@
       appConfig = {
         redshift = {
           isAllowed = true;
-          isSystem = true;
-        };
-        firefox = {
-          isAllowed = true;
-          isSystem = true;
+          isSystem = false;
         };
         gammastep = {
           isAllowed = true;
-          isSystem = true;
+          isSystem = false;
         };
       };
     };

@@ -42,7 +42,7 @@
                 }
                 {
                   # 30:00 - Hibernate
-                  timeout = 360;
+                  timeout = 1800;
                   on-timeout = "systemd-ac-power || systemctl hybrid-sleep";
                 }
                 # POWERED

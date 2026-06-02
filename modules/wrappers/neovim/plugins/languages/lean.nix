@@ -7,7 +7,7 @@
         lean-nvim
       ];
       # LSP should be provided by the environment, in lean
-      # extraPackages = with pkgs.unstable; [
+      # runtimePackages = with pkgs.unstable; [
       #   lean
       # ];
     };

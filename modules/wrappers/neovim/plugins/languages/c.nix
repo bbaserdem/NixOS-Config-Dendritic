@@ -11,7 +11,7 @@
         nvim-treesitter-parsers.cmake
         nvim-treesitter-parsers.cuda
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         clang-tools
       ];
     };

@@ -9,7 +9,7 @@
         nvim-treesitter-parsers.fish
         nvim-treesitter-parsers.nu
       ];
-      extraPackages = with pkgs.unstable; [
+      runtimePackages = with pkgs.unstable; [
         bash
         dash
         dotenv-linter

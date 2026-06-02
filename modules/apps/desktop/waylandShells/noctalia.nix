@@ -33,8 +33,6 @@
           (
             # Auto-start
             lib.mkIf (config.local.waylandShell.default == "noctalia") {
-              programs.noctalia-shell.systemd.enable = true;
-              # Override targets to auto-launch only in wayland window managers (uwsm)
               systemd.user.services.noctalia-shell = {
                 Unit = {
                   After = lib.mkForce [
@@ -53,10 +51,16 @@
               # Hyprland
               # Register us as the lock command
               services.hypridle.settings.general.lock_cmd = noctalia-lock;
-              # Register us as the power menu in hyprland
-              wayland.windowManager.hyprland.settings.bindl = [
-                ", XF86PowerOff, exec, ${noctalia-session}"
-              ];
+              wayland.windowManager.hyprland.settings = {
+                # Launch at startup
+                exec-once = [
+                  "uwsm app -- ${noctalia-session}"
+                ];
+                # Register us as the power menu in hyprland
+                bindl = [
+                  ", XF86PowerOff, exec, ${noctalia-session}"
+                ];
+              };
               # Force hyprland to use our colortheme and not stylix
               wayland.windowManager.hyprland.extraConfig = lib.mkOrder 2000 ''
                 source=${config.xdg.configHome}/hypr/noctalia/noctalia-colors.conf

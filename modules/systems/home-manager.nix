@@ -17,24 +17,40 @@
       };
     };
   in {
+    # Dispatch option to register users into enabled hosts list
+    generic.homeManager = {lib, ...}: {
+      options = {
+        local.hm.users = lib.mkOption {
+          type = lib.types.attrsOf lib.types.bool;
+          default = {};
+          description = "Set of home manager enabled users.";
+        };
+      };
+    };
     # Import home-manager OS module to default OS contexts
     nixos.homeManager = {...}: {
       imports = [
         inputs.home-manager.nixosModules.home-manager
+        inputs.self.modules.generic.homeManager
         homeManagerOSConfig
       ];
-      home-manager.sharedModules = [
-        inputs.self.modules.homeManager.default
-      ];
+      config = {
+        home-manager.sharedModules = [
+          inputs.self.modules.homeManager.default
+        ];
+      };
     };
     darwin.homeManager = {...}: {
       imports = [
         inputs.home-manager.darwinModules.home-manager
+        inputs.self.modules.generic.homeManager
         homeManagerOSConfig
       ];
-      home-manager.sharedModules = [
-        inputs.self.modules.homeManager.default
-      ];
+      config = {
+        home-manager.sharedModules = [
+          inputs.self.modules.homeManager.default
+        ];
+      };
     };
     # Default settings for all home-manager invocations
     # Loaded into context by factory function

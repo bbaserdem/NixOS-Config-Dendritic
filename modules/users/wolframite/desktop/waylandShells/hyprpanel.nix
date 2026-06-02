@@ -71,7 +71,7 @@
               };
               left = {
                 # TODO: Adapt to new projects dir in 26.05
-                directory3.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.extraConfig.XDG_PROJECTS_DIR}";
+                # directory3.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.extraConfig.XDG_PROJECTS_DIR}";
                 directory2.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.videos}";
                 directory1.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.download}";
               };

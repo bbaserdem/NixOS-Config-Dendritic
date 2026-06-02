@@ -19,14 +19,14 @@
           auto = false;
           copy_album_art = true;
           album_art_maxwidth = 256;
-          dest = "${config.xdg.userDirs.extraConfig.XDG_MEDIA_DIR}/Music (Lossy)";
+          dest = "${config.xdg.userDirs.download}/Music (Lossy)";
           never_convert_lossy_files = true;
           embed = true;
           delete_originals = false;
           format = "opus";
           formats = {
             opus = {
-              command = "${pkgs.user-audio}/bin/audio-convert2opus $source $dest";
+              command = "${pkgs.local.audio-scripts}/bin/audio-convert2opus $source $dest";
               extension = "opus";
             };
           };
