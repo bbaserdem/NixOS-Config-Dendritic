@@ -22,7 +22,7 @@ in {
   config = {
     flake.modules = {
       # We install steam using brew in darwin
-      darwin.gaming = {...}: {
+      darwin.steam = {...}: {
         homebrew.casks = [
           "steam"
           "steamcmd"

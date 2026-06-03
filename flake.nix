@@ -10,6 +10,10 @@
 
   inputs = {
     base16.url = "github:SenchoPens/base16.nix";
+    chaotic = {
+      url = "github:chaotic-cx/nyx";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,7 +25,7 @@
     };
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprdynamicmonitors = {
@@ -42,7 +46,7 @@
       flake = false;
     };
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
     nix-index-database = {
@@ -51,8 +55,8 @@
     };
     nixcord.url = "github:FlameFlag/nixcord";
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-26.05-darwin";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
@@ -78,7 +82,7 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix.url = "github:nix-community/stylix/release-25.11";
+    stylix.url = "github:nix-community/stylix/release-26.05";
     tinted-terminal = {
       url = "github:tinted-theming/tinted-terminal";
       flake = false;

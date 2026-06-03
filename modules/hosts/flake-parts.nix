@@ -23,13 +23,13 @@
       # Default settings modules
 
       # NixOS
-      nixos.default = {...}: {
-        system.stateVersion = "25.11";
+      nixos.default = {lib, ...}: {
+        system.stateVersion = lib.mkDefault "26.05";
       };
 
       # Darwin
-      darwin.default = {...}: {
-        system.stateVersion = 6;
+      darwin.default = {lib, ...}: {
+        system.stateVersion = lib.mkDefault 7;
       };
     };
 

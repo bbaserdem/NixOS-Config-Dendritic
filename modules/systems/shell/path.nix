@@ -11,23 +11,22 @@
     darwin.shell = {...}: {
       # Add homebrew sourcing to path
       homebrew = {
-        # TODO: not in stable yet
-        # enableBashIntegration = true;
-        # enableFishIntegration = true;
-        # enableZshIntegration = true;
+        enableBashIntegration = true;
+        enableFishIntegration = true;
+        enableZshIntegration = true;
       };
       # Local is a little more complicated, no default implementation on darwin
       # We just propagate it to shared home-manager modules
-      home-manager.sharedModules = [
-        (
-          # Add local/bin to user session variables
-          {config, ...}: {
-            home.sessionPath = [
-              "${config.home.homeDirectory}/.local/bin"
-            ];
-          }
-        )
-      ];
+      # home-manager.sharedModules = [
+      #   (
+      #     # Add local/bin to user session variables
+      #     {config, ...}: {
+      #       home.sessionPath = [
+      #         "${config.home.homeDirectory}/.local/bin"
+      #       ];
+      #     }
+      #   )
+      # ];
     };
   };
 }

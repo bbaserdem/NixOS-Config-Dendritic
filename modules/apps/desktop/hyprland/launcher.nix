@@ -16,7 +16,6 @@
     hyprland = {
       lib,
       pkgs,
-      config,
       ...
     }: {
       config = lib.mkMerge [
@@ -28,8 +27,7 @@
                 main = {
                   dpi-aware = "auto";
                   minimal-lines = false;
-                  # TODO: Replace with runapp after mainlined
-                  launch-prefix = "uwsm app -- ";
+                  launch-prefix = "${pkgs.runapp}/bin/runapp ";
                 };
               };
             };

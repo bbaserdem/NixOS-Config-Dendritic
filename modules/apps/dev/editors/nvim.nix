@@ -38,7 +38,6 @@
         };
 
         # Set the vim mode as the sudo editor
-        # TODO: Pull to nixos system
         environment.variables = {
           SUDO_EDITOR = lib.getExe config.wrappers.neovim.wrapper;
         };

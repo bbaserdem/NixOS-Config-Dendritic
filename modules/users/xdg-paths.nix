@@ -29,11 +29,10 @@
         type = lib.types.nullOr lib.types.str;
         default = "Pictures";
       };
-      # TODO: Updating to 26.05 this option will drop in
-      # projects = lib.mkOption {
-      #   type = lib.types.nullOr lib.types.str;
-      #   default = "Projects";
-      # };
+      projects = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = "Projects";
+      };
       publicShare = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = "Public";

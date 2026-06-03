@@ -25,10 +25,9 @@
         # Toolkits
         commandsDir = inputs.self + /assets/ai/commands;
 
-        # TODO; New settings in 26.05
-        # configDir = "${config.xdg.configHome}/claude";
-        # enableMcpIntegration = true;
-        # context = inputs.self + /assets/ai/AGENTS.md;
+        configDir = "${config.xdg.configHome}/claude";
+        enableMcpIntegration = true;
+        context = inputs.self + /assets/ai/AGENTS.md;
       };
     };
   };

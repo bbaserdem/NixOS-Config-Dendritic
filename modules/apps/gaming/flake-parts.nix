@@ -7,5 +7,6 @@
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
     (config.factory.inclusionModules "gaming")
+    (config.factory.inclusionModules "steam")
   ];
 }

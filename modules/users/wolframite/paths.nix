@@ -1,6 +1,5 @@
 # Configuring user paths
 {...}: {
-  # TODO; Adjust to new projects settings in 26.05
   localConfig.users.wolframite.xdgDirs = {
     documents = "Documents";
     music = "Music";
@@ -10,14 +9,16 @@
     desktop = "Desktop";
     templates = "Templates";
     publicShare = "Shared/Public";
-    # projects = "Projects";
+    projects = "Projects";
   };
   flake.modules.homeManager.wolframite = {
     config,
     lib,
     pkgs,
     ...
-  }: {
+  }: let
+    flakeDir = "${config.xdg.userDirs.projects}/SystemConfigFlake";
+  in {
     config = lib.mkMerge [
       {
         # XDG paths
@@ -30,15 +31,16 @@
         };
         # Flake location
         home.sessionVariables = {
-          NH_FLAKE = "${config.home.homeDirectory}/Projects/SystemConfigFlake";
-          NH_OS_FLAKE = "${config.home.homeDirectory}/Projects/SystemConfigFlake";
+          NH_FLAKE = flakeDir;
+          NH_OS_FLAKE = flakeDir;
         };
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
           # TODO: Figure out a better solution for the android directory
           xdg.userDirs.extraConfig = {
-            XDG_PHONE_DIR = "${config.home.homeDirectory}/Shared/Android";
+            PHONE = "${config.home.homeDirectory}/Shared/Android";
+            FLAKE = flakeDir;
           };
           # Add the bookmarks to file browser(s)
           gtk.gtk3.bookmarks = [
@@ -47,7 +49,7 @@
             "file://${config.xdg.userDirs.pictures}"
             "file://${config.xdg.userDirs.videos}"
             "file://${config.xdg.userDirs.download}"
-            # "file://${config.xdg.userDirs.projects}"
+            "file://${config.xdg.userDirs.projects}"
           ];
 
           # Aliases to navigate quickly

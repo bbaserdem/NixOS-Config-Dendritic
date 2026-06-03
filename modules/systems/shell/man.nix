@@ -7,36 +7,55 @@
     };
 
     # Man page setup
-    shell = {pkgs, ...}: {
-      # Enable home-manager man page
-      manual.manpages.enable = true;
+    shell = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      config = lib.mkMerge [
+        {
+          # Enable home-manager man page
+          manual.manpages.enable = true;
 
-      programs = {
-        # Enable man pages
-        man = {
-          enable = true;
-          generateCaches = true;
-        };
+          programs = {
+            # Enable man pages
+            man.enable = true;
 
-        # Enable bat to be pager
-        bat = {
-          enable = true;
-          extraPackages = with pkgs.bat-extras; [
-            prettybat
-            batwatch
-            batpipe
-            batman
-            batgrep
-            batdiff
-          ];
-        };
-      };
+            # Enable bat to be pager
+            bat = {
+              enable = true;
+              extraPackages = with pkgs.bat-extras; [
+                prettybat
+                batwatch
+                batpipe
+                batman
+                batgrep
+                batdiff
+              ];
+            };
+          };
 
-      # Set bat to be the pager
-      home.sessionVariables = {
-        MANPAGER = "sh -c 'col -bx | bat --language=man --plain'";
-        MANROFFOPT = "-c";
-      };
+          # Set bat to be the pager
+          home.sessionVariables = {
+            MANPAGER = "sh -c 'col -bx | bat --language=man --plain'";
+            MANROFFOPT = "-c";
+          };
+        }
+        (
+          lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+            programs.man = {
+              package = pkgs.man;
+              generateCaches = true;
+            };
+          }
+        )
+        (
+          # GNU man dependency binaries don't work in darwin
+          lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+            programs.man.package = null;
+          }
+        )
+      ];
     };
   };
 }

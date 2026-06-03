@@ -1,8 +1,14 @@
-{inputs, ...}: {
+{
+  inputs,
+  config,
+  ...
+}: let
+  version = config.localConfig.nixVersion;
+in {
   # Stylix is system-wide theming tool
   # https://github.com/nix-community/stylix
   flake-file.inputs = {
-    # Stylix flake-file input is in modules/flake/nixpkgs.nix for easy update
+    stylix.url = "github:nix-community/stylix/release-${version}";
     base16.url = "github:SenchoPens/base16.nix";
     tinted-terminal = {
       url = "github:tinted-theming/tinted-terminal";

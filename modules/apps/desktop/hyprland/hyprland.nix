@@ -52,6 +52,8 @@
             {
               # Enable hyprland
               wayland.windowManager.hyprland = {
+                # TODO: Switch to lua config
+                configType = "hyprlang";
                 enable = true;
                 # Don't do systemd integration, we will do this ourselves
                 systemd.enable = false;

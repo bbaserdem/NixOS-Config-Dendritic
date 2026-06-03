@@ -1,27 +1,27 @@
 # Configuring the editor, using the neovim wrapper from this flake
 # Important; the name nvim is crucial to distinguish from the neovim wrapper
 {...}: {
-  flake.modules.homeManager.vscode = {
+  flake.modules.homeManager.vscodium = {
     pkgs,
     lib,
     ...
   }: {
     config = lib.mkMerge [
       {
-        programs.vscode = {
+        programs.vscodium = {
           enable = true;
         };
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-          programs.vscode = {
+          programs.vscodium = {
             package = pkgs.vscodium;
           };
         }
       )
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-          programs.vscode = {
+          programs.vscodium = {
             package = pkgs.vscodium-fhs;
           };
         }

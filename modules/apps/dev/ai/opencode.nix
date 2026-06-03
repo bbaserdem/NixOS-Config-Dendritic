@@ -40,14 +40,8 @@
           };
 
           # TODO; New options in 26.05
-          # commands = inputs.self + /assets/ai/commands;
-          commands = {
-            "_commit" = builtins.readFile (inputs.self + /assets/ai/commands/_commit.md);
-            "_rebase" = builtins.readFile (inputs.self + /assets/ai/commands/_rebase.md);
-            "_pr" = builtins.readFile (inputs.self + /assets/ai/commands/_pr.md);
-          };
-          # context = inputs.self + /assets/ai/AGENTS.md;
-          rules = inputs.self + /assets/ai/AGENTS.md;
+          commands = inputs.self + /assets/ai/commands;
+          context = inputs.self + /assets/ai/AGENTS.md;
         };
 
         # Disable auto-lsp downloads
@@ -61,11 +55,6 @@
         home.packages = [
           # inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.opencode-desktop
         ];
-
-        # TODO: 26.05 fixes this, fix this later
-        # Settings are not read from config.json, it's from opencode.json
-        # Use a symlink to fix this
-        xdg.configFile."opencode/opencode.json".source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/opencode/config.json";
       };
     };
   };

@@ -41,7 +41,7 @@
           services.displayManager.gdm.enable = lib.mkOverride 950 false;
           services.displayManager.sddm.enable = lib.mkOverride 950 false;
           programs.regreet.enable = lib.mkOverride 950 false;
-          # services.displayManager.plasma-login-manager = lib.mkOverride 950 false;
+          services.displayManager.plasma-login-manager.enable = lib.mkOverride 950 false;
         }
         # Configure enabled and other stuff
         (
@@ -90,7 +90,7 @@
         (
           lib.mkIf (cfg.name == "plm") {
             # TODO; 26.06 introduces this
-            # services.displayManager.plasma-login-manager = lib.mkOverride 900 true;
+            services.displayManager.plasma-login-manager.enable = lib.mkOverride 900 true;
           }
         )
       ];

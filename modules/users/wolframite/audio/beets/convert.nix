@@ -38,7 +38,7 @@
         };
         alternatives = {
           phone = {
-            directory = "${config.xdg.userDirs.extraConfig.XDG_PHONE_DIR}/Music";
+            directory = "${config.xdg.userDirs.extraConfig.PHONE}/Music";
             formats = "opus mp3 ogg";
             query = "phone:True";
             removable = false;

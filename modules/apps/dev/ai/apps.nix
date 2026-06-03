@@ -36,7 +36,7 @@
         programs.mcp.enable = true;
         # Harnesses
         home.packages = with pkgs.llm-agents; [
-          forge
+          forgecode
           droid
         ];
       };

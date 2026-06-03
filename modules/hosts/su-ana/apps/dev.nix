@@ -17,7 +17,7 @@
       # Editors
       nvim
       neovide
-      vscode
+      vscodium
       zed
     ];
   };

@@ -13,9 +13,10 @@
         wget
         curl
         dash
-        neofetch
         fd
         findutils
+        fastfetch
+        hyfetch
       ])
       ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
         kmon # Kernel module checker

@@ -8,8 +8,8 @@
   }: {
     config = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) (let
       # TODO: configure to use runapp instead of uwsm app, after 26.05 release
-      # runapp = "${pkgs.unstable.runapp}/bin/runapp";
       xdg-open = "${pkgs.xdg-utils}/bin/xdg-open";
+      runapp = "${pkgs.runapp}/bin/runapp";
       uwsm = "${pkgs.uwsm}/bin/uwsm";
       kitty = "${config.programs.kitty.package}/bin/kitty";
     in {
@@ -66,14 +66,14 @@
             stats.enable_gpu = true;
             directories = {
               right = {
-                directory1.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.documents}";
-                directory2.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.pictures}";
+                directory1.command = "${runapp} ${xdg-open} ${config.xdg.userDirs.documents}";
+                directory2.command = "${runapp} ${xdg-open} ${config.xdg.userDirs.pictures}";
               };
               left = {
                 # TODO: Adapt to new projects dir in 26.05
-                # directory3.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.extraConfig.XDG_PROJECTS_DIR}";
-                directory2.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.videos}";
-                directory1.command = "${uwsm} app -- ${xdg-open} ${config.xdg.userDirs.download}";
+                directory3.command = "${runapp} ${xdg-open} ${config.xdg.userDirs.projects}";
+                directory2.command = "${runapp} ${xdg-open} ${config.xdg.userDirs.videos}";
+                directory1.command = "${runapp} ${xdg-open} ${config.xdg.userDirs.download}";
               };
             };
           };

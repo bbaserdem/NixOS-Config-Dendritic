@@ -24,6 +24,7 @@
         noctalia-shell = "${config.programs.noctalia-shell.package}/bin/noctalia-shell";
         noctalia-lock = "${noctalia-shell} ipc call lockScreen lock";
         noctalia-session = "${noctalia-shell} ipc call sessionMenu toggle";
+        runapp = "${pkgs.runapp}/bin/runapp";
       in
         lib.mkMerge [
           {
@@ -54,7 +55,7 @@
               wayland.windowManager.hyprland.settings = {
                 # Launch at startup
                 exec-once = [
-                  "uwsm app -- ${noctalia-session}"
+                  "${runapp} ${noctalia-session}"
                 ];
                 # Register us as the power menu in hyprland
                 bindl = [

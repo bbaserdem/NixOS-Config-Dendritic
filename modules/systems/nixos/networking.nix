@@ -5,7 +5,7 @@
       # Monitoring tools
       nethogs # Per-process network usage
       iftop # Network bandwidth monitoring
-      nettools # Connection monitoring, <TODO> this is renamed to net-tools in unstable
+      net-tools # Connection monitoring
       tcpdump # Packet capture
 
       # Basic network utilities

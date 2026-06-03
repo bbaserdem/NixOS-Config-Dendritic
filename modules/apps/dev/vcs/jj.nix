@@ -3,12 +3,11 @@
   flake.modules.homeManager = {
     # Stylix theming for jjui
     stylix = {...}: {
-      # TODO: Not in release 25.11
-      # stylix.targets.jjui = {
-      #   enable = true;
-      #   colors.enable = true;
-      #   polarity.enable = true;
-      # };
+      stylix.targets.jjui = {
+        enable = true;
+        colors.enable = true;
+        polarity.enable = true;
+      };
     };
 
     # JJ module

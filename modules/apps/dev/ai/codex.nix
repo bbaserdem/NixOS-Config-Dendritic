@@ -3,7 +3,6 @@
   flake.modules = {
     darwin.ai = {...}: {
       homebrew.casks = [
-        # "codex"
         "codex-app"
       ];
     };
@@ -15,12 +14,10 @@
         settings = {
         };
 
-        # TODO: New options in 26.05
-        # enableMcpIntegration = true;
-        custom-instructions = builtins.readFile (inputs.self + /assets/ai/AGENTS.md);
-        # context = inputs.self + /assets/ai/AGENTS.md;
-        # rules = {};
-        # skills = {};
+        enableMcpIntegration = true;
+        context = inputs.self + /assets/ai/AGENTS.md;
+        rules = {};
+        skills = {};
       };
     };
   };

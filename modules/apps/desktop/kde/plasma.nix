@@ -32,15 +32,14 @@
 
     homeManager = {
       # Stylix integration for KDE
-      # TODO; Adapt to new stylix formalism in 26.05
       stylix = {...}: {
         stylix.targets.kde = {
           enable = true;
           decorations = "org.kde.breeze";
           useWallpaper = true;
-          # decorationTheme = "";
-          # applicationStyle = "default";
-          # widgetStyle = "Breeze";
+          decorationTheme = "";
+          applicationStyle = "default";
+          widgetStyle = "Breeze";
         };
       };
 

@@ -9,7 +9,8 @@
       docs
       obsidian
       office
-      zathura
+      # TODO: libfyaml broken on darwin atm
+      # zathura
     ];
   };
 }
