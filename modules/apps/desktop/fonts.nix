@@ -16,7 +16,6 @@
         caladea #   Office fonts alternative
         carlito #   Calibri/georgia alternative
         inconsolata # Monospace font, for prints
-        iosevka # Monospace font, for terminal mostly
         fira-code
         victor-mono
         noto-fonts
@@ -29,6 +28,7 @@
       ])
       ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
         # Broken on nix-darwin right now
+        iosevka # Monospace font, for terminal mostly
       ]));
   in {
     # Put fonts into darwin system (using nix-darwin)
@@ -37,6 +37,10 @@
       lib,
       ...
     }: {
+      # TODO: Iosevka compiles from source in darwin right now; fix later
+      homebrew.casks = [
+        "font-iosevka"
+      ];
       fonts.packages = fontPackages {inherit pkgs lib;};
     };
 

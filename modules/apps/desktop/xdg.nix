@@ -21,6 +21,7 @@
           xdg = {
             enable = true;
           };
+          home.preferXdgDirectories = true;
         }
         (
           lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) (

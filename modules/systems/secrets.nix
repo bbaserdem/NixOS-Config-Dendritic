@@ -16,7 +16,7 @@
         defaultSopsFile = inputs.self + /secrets/host/${config.networking.hostName}/secrets.yaml;
         age = {
           sshKeyPaths = [
-            "/etc/ssh/ssh_host_ed25519"
+            "/etc/ssh/ssh_host_ed25519_key"
           ];
           generateKey = false;
         };

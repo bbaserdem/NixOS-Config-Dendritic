@@ -19,11 +19,7 @@
       };
 
       # OpenCode setup
-      ai = {
-        config,
-        pkgs,
-        ...
-      }: {
+      ai = {pkgs, ...}: {
         # Enable opencode code config without installing it ourselves
         programs.opencode = {
           enable = true;
@@ -39,7 +35,6 @@
             lsp = true;
           };
 
-          # TODO; New options in 26.05
           commands = inputs.self + /assets/ai/commands;
           context = inputs.self + /assets/ai/AGENTS.md;
         };

@@ -27,23 +27,34 @@
               target = "kitty-base16";
               "check-parsed-config-yaml" = false;
             };
-          in {
-            # Override kitty settings from stylix
-            stylix.targets.kitty.fonts.override = {
-              monospace = {
-                name = "Iosevka Light";
-                package = pkgs.iosevka;
-              };
-              sizes.terminal = 13;
-            };
+          in (
+            lib.mkMerge [
+              {
+                # Override kitty settings from stylix
+                stylix.targets.kitty.fonts.override = {
+                  monospace = {
+                    name = "Iosevka Light";
+                    # TODO: In darwin, iosevka builds from source right now, fix later
+                    # package = pkgs.iosevka;
+                  };
+                  sizes.terminal = 13;
+                };
 
-            # Enable color switching by dropping theme files
-            xdg.configFile = {
-              "kitty/dark-theme.auto.conf".source = stylixKitty;
-              "kitty/light-theme.auto.conf".source = lightTheme;
-              "kitty/no-preference-theme.auto.conf".source = darkTheme;
-            };
-          }
+                # Enable color switching by dropping theme files
+                xdg.configFile = {
+                  "kitty/dark-theme.auto.conf".source = stylixKitty;
+                  "kitty/light-theme.auto.conf".source = lightTheme;
+                  "kitty/no-preference-theme.auto.conf".source = darkTheme;
+                };
+              }
+              (
+                # TODO: In darwin, iosevka builds from source right now, fix later
+                lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+                  stylix.targets.kitty.fonts.override.monospace.package = pkgs.iosevka;
+                }
+              )
+            ]
+          )
         )
       )
       {

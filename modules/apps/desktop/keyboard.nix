@@ -5,12 +5,12 @@
     darwin = {
       keyboard = {...}: {
         # TODO: nix-darwin stable has the module broken, do from brew for now
-        services.karabiner-elements = {
-          enable = true;
-        };
-        # homebrew.casks = [
-        #   "karabiner-elements"
-        # ];
+        # services.karabiner-elements = {
+        #   enable = true;
+        # };
+        homebrew.casks = [
+          "karabiner-elements"
+        ];
       };
     };
 

@@ -22,7 +22,8 @@
           autoUpdate = true;
           # On activation, uninstall casks that were installed outside nix
           # Leave associated files around, "zap" would remove the files too
-          cleanup = "uninstall";
+          # TODO: brew refuses to do cleanup w/out either force, force-cleanup or HOMEBREW_ASK
+          # cleanup = "uninstall";
           # Upgrade installed apps
           upgrade = true;
         };
