@@ -119,10 +119,15 @@
               pre-commit
               pre-commit-hook-ensure-sops
               gitleaks
+              # GitLab client
+              glab
+              # Forgejo/Gitea CLI
+              tea
             ];
           }
           (lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
             home.packages = with pkgs; [
+              # Github tooling
               gitg
               github-desktop
             ];

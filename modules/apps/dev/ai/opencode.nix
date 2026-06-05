@@ -25,7 +25,10 @@
           enable = true;
           package = pkgs.llm-agents.opencode;
           # Agentic setup
-          agents = {};
+          context = inputs.self + /assets/ai/AGENTS.md;
+          agents = inputs.self + /assets/ai/agents;
+          commands = inputs.self + /assets/ai/commands;
+          skills = inputs.self + /assets/ai/skills;
 
           enableMcpIntegration = true;
           settings = {
@@ -34,9 +37,6 @@
             snapshot = true;
             lsp = true;
           };
-
-          commands = inputs.self + /assets/ai/commands;
-          context = inputs.self + /assets/ai/AGENTS.md;
         };
 
         # Disable auto-lsp downloads

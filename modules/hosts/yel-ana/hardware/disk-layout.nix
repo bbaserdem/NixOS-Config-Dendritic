@@ -1,4 +1,4 @@
-# Su-ana disko config
+# Yel-Ana disko config
 {inputs, ...}: {
   flake = {
     modules.nixos.yel-ana = {...}: {
@@ -15,7 +15,7 @@
         # Put the keyfiles needed in /run/cryptsetup-keys.d/<name>.key
 
         # <name>            <device>                            <password>  <options>
-        Yel-Ana_Data        PARTLABEL=Crypt_Yel-Ana_Data        -           luks,timeout=180
+        Yel-Ana_Data        PARTLABEL=Crypt_Yel-Ana_Data        -           luks,fido2-device=auto,timeout=180
       '';
 
       # Extra fstab entries for filesystem ordering
@@ -72,9 +72,15 @@
                   additionalKeyFiles = [
                     "/tmp/Yel-Ana_Linux.key"
                   ];
+                  enrollFido2 = true;
+                  enrollRecovery = false;
                   extraFormatArgs = ["--label" "Crypt_Yel-Ana_Linux"];
                   settings = {
                     allowDiscards = true;
+                    crypttabExtraOpts = [
+                      "fido2-device=auto"
+                      "token-timeout=10"
+                    ];
                   };
                   content = {
                     # BTRFS system layout
@@ -135,9 +141,11 @@
                   type = "luks";
                   name = "Yel-Ana_Data";
                   initrdUnlock = false;
-                  passwordFile = "/tmp/Yel-Ana_Data.key";
+                  passwordFile = "/tmp/Yel-Ana.key";
                   additionalKeyFiles = ["/tmp/Yel-Ana_Data.key"];
                   extraFormatArgs = ["--label" "Crypt_Yel-Ana_Data"];
+                  enrollFido2 = true;
+                  enrollRecovery = false;
                   settings = {
                     allowDiscards = true;
                   };

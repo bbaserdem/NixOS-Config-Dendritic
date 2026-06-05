@@ -24,10 +24,10 @@
             lib.mkIf (config.programs.zsh.enable) {
               programs.zsh.initContent = lib.mkOrder 2000 ''
                 #--START--ZSH load TrueFoundry env vars
-                if [ -f '${config.sops.secrets."truefoundry/api".path}']; then
+                if [ -f '${config.sops.secrets."truefoundry/api".path}' ] ; then
                   export TFY_API_KEY="$(cat '${config.sops.secrets."truefoundry/api".path}')"
                 fi
-                if [ -f '${config.sops.secrets."truefoundry/url".path}']; then
+                if [ -f '${config.sops.secrets."truefoundry/url".path}' ] ; then
                   export TFY_GATEWAY_URL="$(cat '${config.sops.secrets."truefoundry/url".path}')"
                 fi
                 #--END--ZSH load TrueFoundry env vars
@@ -38,10 +38,10 @@
             lib.mkIf (config.programs.zsh.enable) {
               programs.bash.bashrcExtra = lib.mkOrder 2000 ''
                 #--START--BASH load TrueFoundry env vars
-                if [ -f '${config.sops.secrets."truefoundry/api".path}']; then
+                if [ -f '${config.sops.secrets."truefoundry/api".path}' ] ; then
                   export TFY_API_KEY="$(cat '${config.sops.secrets."truefoundry/api".path}')"
                 fi
-                if [ -f '${config.sops.secrets."truefoundry/url".path}']; then
+                if [ -f '${config.sops.secrets."truefoundry/url".path}' ] ; then
                   export TFY_GATEWAY_URL="$(cat '${config.sops.secrets."truefoundry/url".path}')"
                 fi
                 #--END--BASH load TrueFoundry env vars

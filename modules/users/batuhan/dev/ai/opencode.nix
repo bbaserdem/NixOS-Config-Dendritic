@@ -62,11 +62,11 @@
                   "claude-group/claude-haiku-4-5".name = "TFY: Claude Haiku 4.5";
                   "claude-group/claude-sonnet-4-6".name = "TFY: Claude Sonnet 4.6";
                   # Claude Pro
-                  "claude-pro-group/claude-haiku".name = "TFY: Claude Pro Haiku 4.5";
-                  "claude-pro-group/claude-sonnet".name = "TFY: Claude Pro Sonnet 4.6";
-                  "claude-pro-group/claude-opus".name = "TFY: Claude Pro Opus 4.8";
-                  "claude-group/claude-haiku".name = "TFY: Claude Pro Haiku 4.5";
-                  "claude-group/claude-sonnet".name = "TFY: Claude Pro Sonnet 4.6";
+                  # "claude-pro-group/claude-haiku".name = "TFY: Claude Pro Haiku 4.5";
+                  # "claude-pro-group/claude-sonnet".name = "TFY: Claude Pro Sonnet 4.6";
+                  # "claude-pro-group/claude-opus".name = "TFY: Claude Pro Opus 4.8";
+                  # "claude-group/claude-haiku".name = "TFY: Claude Pro Haiku 4.5";
+                  # "claude-group/claude-sonnet".name = "TFY: Claude Pro Sonnet 4.6";
                   # Gemini
                   "gemini-group/gemini-3.1-pro".name = "TFY: Gemini 3.1 Pro Preview";
                 };

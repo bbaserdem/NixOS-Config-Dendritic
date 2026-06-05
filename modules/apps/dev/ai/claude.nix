@@ -22,12 +22,14 @@
           includeCoAuthoredBy = false;
         };
 
-        # Toolkits
-        commandsDir = inputs.self + /assets/ai/commands;
-
-        configDir = "${config.xdg.configHome}/claude";
-        enableMcpIntegration = true;
+        # Agentic setup
         context = inputs.self + /assets/ai/AGENTS.md;
+        hooksDir = inputs.self + /assets/ai/claude/hooks;
+        agentsDir = inputs.self + /assets/ai/commands;
+        commandsDir = inputs.self + /assets/ai/commands;
+        rulesDir = inputs.self + /assets/ai/rules;
+
+        enableMcpIntegration = true;
       };
     };
   };
