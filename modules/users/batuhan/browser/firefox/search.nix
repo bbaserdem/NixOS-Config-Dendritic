@@ -1,141 +1,161 @@
-# Search engines for firefox
-{...}: {
-  flake.modules.homeManager.batuhan = {pkgs, ...}: {
-    programs.firefox.profiles.batuhan.search = {
-      # Default settings
-      default = "google";
-      privateDefault = "google";
-      force = true;
+# Configuring firefox search engines
+{config, ...}: {
+  localConfig.users.batuhan.firefox.global.search = let
+    version = config.localConfig.nixVersion;
+  in {
+    # Default to duck duck go, google is very AI now
+    default = "ddg";
+    privateDefault = "ddg";
+    force = true;
 
-      # Search engine list
-      engines = {
-        # Nixpkgs search
-        "Nix Packages ${pkgs.lib.trivial.codeName}" = {
-          urls = [
-            {
-              template = "https://search.nixos.org/packages";
-              params = [
-                {
-                  name = "type";
-                  value = "packages";
-                }
-                {
-                  name = "channel";
-                  value = pkgs.lib.trivial.release;
-                }
-                {
-                  name = "sort";
-                  value = "relevance";
-                }
-                {
-                  name = "query";
-                  value = "{searchTerms}";
-                }
-              ];
-            }
-          ];
-          icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-          definedAliases = ["@np"];
-        };
+    # Search providers
+    engines = {
+      # Builtin engines
+      amazondotcom-us.metaData = {
+        alias = "@a";
+        hidden = false;
+      };
 
-        # NixOS options search
-        "NixOS Options ${pkgs.lib.trivial.codeName}" = {
-          urls = [
-            {
-              template = "https://search.nixos.org/options";
-              params = [
-                {
-                  name = "type";
-                  value = "packages";
-                }
-                {
-                  name = "channel";
-                  value = pkgs.lib.trivial.release;
-                }
-                {
-                  name = "sort";
-                  value = "relevance";
-                }
-                {
-                  name = "query";
-                  value = "{searchTerms}";
-                }
-              ];
-            }
-          ];
-          icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-          definedAliases = ["@no"];
-        };
+      bing.metaData = {
+        alias = "@b";
+        hidden = true;
+      };
 
-        # NixOS wiki
-        "NixOS Wiki" = {
-          urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
-          iconUpdateUrl = "https://nixos.wiki/favicon.png";
-          updateInterval = 24 * 60 * 60 * 1000;
-          definedAliases = ["@nw"];
-        };
+      ddg.metaData = {
+        alias = "@d";
+        hidden = false;
+      };
 
-        # Home-Manager options
-        "Home Manager Options" = {
-          urls = [
-            {
-              template = "https://home-manager-options.extranix.com/";
-              params = [
-                {
-                  name = "query";
-                  value = "{searchTerms}";
-                }
-              ];
-            }
-          ];
-          icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-          definedAliases = ["@hm"];
-        };
+      wikipedia.metaData = {
+        alias = "@w";
+        hidden = false;
+      };
 
-        # Arch wiki
-        "Arch Wiki" = {
-          urls = [{template = "https://wiki.archlinux.org/index.php?search={searchTerms}";}];
-          iconUpdateUrl = "https://wiki.archlinux.org/favicon.ico";
-          updateInterval = 24 * 60 * 60 * 1000;
-          definedAliases = ["@aw"];
-        };
+      ebay.metaData = {
+        alias = "@eb";
+        hidden = true;
+      };
 
-        # Gentoo wiki
-        "Gentoo Wiki" = {
-          urls = [{template = "https://wiki.gentoo.org/?search={searchTerms}";}];
-          iconUpdateUrl = "https://wiki.gentoo.org/favicon.ico";
-          updateInterval = 24 * 60 * 60 * 1000;
-          definedAliases = ["@ge"];
-        };
+      ecosia.metaData = {
+        alias = "@ec";
+        hidden = false;
+      };
 
-        # Wikipedia
-        "Wikipedia" = {
-          urls = [
-            {
-              template = "https://en.wikipedia.org/w/index.php";
-              params = [
-                {
-                  name = "search";
-                  value = "{searchTerms}";
-                }
-              ];
-            }
-          ];
-          iconUpdateUrl = "https://en.wikipedia.org/favicon.ico";
-          updateInterval = 24 * 60 * 60 * 1000;
-          definedAliases = ["@wi"];
-        };
+      qwant.metaData = {
+        alias = "@qw";
+        hidden = false;
+      };
 
-        # Dotapedia
-        "Dotapedia" = {
-          urls = [{template = "https://liquipedia.net/dota2/index.php?search={searchTerms}";}];
-          iconUpdateUrl = "https://www.dota2.com/favicon.ico";
-          updateInterval = 24 * 60 * 60 * 1000;
-          definedAliases = ["@d2"];
-        };
+      reddit.metaData = {
+        alias = "@r";
+        hidden = false;
+      };
 
-        # Google search
-        "google".metaData.alias = "@g";
+      youtube.metaData = {
+        alias = "@y";
+        hidden = false;
+      };
+
+      # Other search engines
+      "Nix Packages ${version}" = {
+        urls = [
+          {
+            template = "https://search.nixos.org/packages";
+            params = [
+              {
+                name = "type";
+                value = "packages";
+              }
+              {
+                name = "channel";
+                value = version;
+              }
+              {
+                name = "sort";
+                value = "relevance";
+              }
+              {
+                name = "query";
+                value = "{searchTerms}";
+              }
+            ];
+          }
+        ];
+        icon = "https://nixos.org/favicon.png";
+        definedAliases = ["@np"];
+      };
+
+      "NixOS Options ${version}" = {
+        urls = [
+          {
+            template = "https://search.nixos.org/options";
+            params = [
+              {
+                name = "channel";
+                value = version;
+              }
+              {
+                name = "sort";
+                value = "relevance";
+              }
+              {
+                name = "query";
+                value = "{searchTerms}";
+              }
+            ];
+          }
+        ];
+        icon = "https://nixos.org/favicon.png";
+        definedAliases = ["@no"];
+      };
+
+      "Home Manager Options ${version}" = {
+        urls = [
+          {
+            template = "https://search.nixos.org/options";
+            params = [
+              {
+                name = "source";
+                value = "home_manager";
+              }
+              {
+                name = "channel";
+                value = version;
+              }
+              {
+                name = "sort";
+                value = "relevance";
+              }
+              {
+                name = "query";
+                value = "{searchTerms}";
+              }
+            ];
+          }
+        ];
+        icon = "https://nixos.org/favicon.png";
+        definedAliases = ["@hm"];
+      };
+
+      "NixOS Wiki" = {
+        urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
+        icon = "https://nixos.wiki/favicon.png";
+        updateInterval = 24 * 60 * 60 * 1000;
+        definedAliases = ["@nw"];
+      };
+
+      "Arch Wiki" = {
+        urls = [{template = "https://wiki.archlinux.org/index.php?search={searchTerms}";}];
+        icon = "https://wiki.archlinux.org/favicon.ico";
+        updateInterval = 24 * 60 * 60 * 1000;
+        definedAliases = ["@aw"];
+      };
+
+      "Gentoo Wiki" = {
+        urls = [{template = "https://wiki.gentoo.org/?search={searchTerms}";}];
+        icon = "https://wiki.gentoo.org/favicon.ico";
+        updateInterval = 24 * 60 * 60 * 1000;
+        definedAliases = ["@ge"];
       };
     };
   };

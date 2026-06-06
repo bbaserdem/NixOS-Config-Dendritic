@@ -53,6 +53,21 @@
       ];
       shellHook = ''
         # Node should be set in .envrc
+
+        # Create venv if it doesn't exist
+        if [ ! -d ".venv" ]; then
+          echo "Creating Python virtual environment with uv..."
+          uv venv
+        fi
+
+        # Activate the virtual environment
+        source .venv/bin/activate
+
+        # Sync dependencies if pyproject.toml exists
+        if [ -f "pyproject.toml" ]; then
+          echo "Syncing Python dependencies..."
+          uv sync --all-extras
+        fi
       '';
       # Setup nixd for this repo, not globally
       NIX_PATH = "nixpkgs=${inputs.nixpkgs}";

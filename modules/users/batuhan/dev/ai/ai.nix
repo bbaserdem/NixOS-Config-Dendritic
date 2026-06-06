@@ -3,7 +3,6 @@
   flake.modules.homeManager.batuhan = {
     lib,
     pkgs,
-    options,
     ...
   }: let
     spinnerText = builtins.readFile (inputs.self + /assets/wolframite/spinners.txt);
@@ -43,16 +42,6 @@
           };
         };
       }
-      (
-        lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) {
-          sops.secrets = let
-            cfg = {sopsFile = inputs.self + /secrets/user/secrets.yaml;};
-          in {
-            "truefoundry/api" = cfg;
-            "truefoundry/url" = cfg;
-          };
-        }
-      )
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
         }
