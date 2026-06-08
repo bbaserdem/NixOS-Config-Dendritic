@@ -52,7 +52,7 @@
     }: let
       # Load stylix colors if they are available
       stylixColors =
-        if (lib.hasAttrByPath ["stylix"] options.lib)
+        if (lib.hasAttrByPath ["lib" "stylix"] options)
         then
           (lib.filterAttrs (
               k: v: ((builtins.match "base0[0-9A-F]" k) != null)
