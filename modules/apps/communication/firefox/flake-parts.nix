@@ -5,6 +5,11 @@
     (lib.types.functionTo (lib.types.listOf lib.types.package))
   ];
 
+  settingsType = lib.types.oneOf [
+    (lib.types.attrsOf lib.types.anything)
+    (lib.types.functionTo (lib.types.attrsOf lib.types.anything))
+  ];
+
   extensionsType = lib.types.submodule {
     options = {
       force = lib.mkOption {
@@ -25,7 +30,7 @@
       };
 
       settings = lib.mkOption {
-        type = lib.types.attrsOf lib.types.anything;
+        type = settingsType;
         default = {};
         description = "Declarative per-extension settings keyed by extension ID.";
       };
@@ -67,6 +72,7 @@
   });
 
   profileType = lib.types.submodule ({...}: {
+    freeformType = lib.types.attrsOf lib.types.anything;
     options = {
       id = lib.mkOption {
         type = lib.types.nullOr lib.types.ints.unsigned;
@@ -80,7 +86,7 @@
       };
 
       settings = lib.mkOption {
-        type = lib.types.attrsOf lib.types.anything;
+        type = settingsType;
         default = {};
       };
 
@@ -105,7 +111,7 @@
     options = {
       global = {
         settings = lib.mkOption {
-          type = lib.types.attrsOf lib.types.anything;
+          type = settingsType;
           default = {};
         };
 

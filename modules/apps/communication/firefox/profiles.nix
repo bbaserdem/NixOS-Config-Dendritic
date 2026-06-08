@@ -12,19 +12,22 @@
     }: let
       firefox = userCfg.firefox;
 
-      resolvePackages = packages:
-        if lib.isFunction packages
-        then packages {inherit pkgs lib;}
-        else packages;
+      resolveAttrs = attrs:
+        if lib.isFunction attrs
+        then attrs {inherit pkgs lib;}
+        else attrs;
 
       mkExtensions = profile:
         (firefox.global.extensions // profile.extensions)
         // {
           packages =
-            (resolvePackages firefox.global.extensions.packages)
-            ++ (resolvePackages profile.extensions.packages);
+            (resolveAttrs firefox.global.extensions.packages)
+            ++ (resolveAttrs profile.extensions.packages);
 
-          settings = lib.recursiveUpdate firefox.global.extensions.settings profile.extensions.settings;
+          settings =
+            lib.recursiveUpdate
+            (resolveAttrs firefox.global.extensions.settings)
+            (resolveAttrs profile.extensions.settings);
         };
 
       mkProfile = index: profileItem: {
@@ -37,7 +40,10 @@
               then index
               else profileItem.value.id;
 
-            settings = lib.recursiveUpdate firefox.global.settings profileItem.value.settings;
+            settings =
+              lib.recursiveUpdate
+              (resolveAttrs firefox.global.settings)
+              (resolveAttrs profileItem.value.settings);
 
             search = lib.recursiveUpdate firefox.global.search profileItem.value.search;
 
@@ -48,7 +54,9 @@
       config = lib.mkMerge [
         {
           programs.firefox = {
-            nativeMessagingHosts = resolvePackages firefox.global.nativeMessagingHosts;
+            nativeMessagingHosts =
+              resolveAttrs
+              firefox.global.nativeMessagingHosts;
 
             profiles =
               firefox.profiles
@@ -57,8 +65,8 @@
               |> builtins.listToAttrs;
           };
         }
-
         (
+          # Dispatch profile names to stylix
           lib.optionalAttrs (lib.hasAttrByPath ["stylix"] options) {
             stylix.targets.firefox.profileNames =
               firefox.profiles
@@ -71,7 +79,7 @@
 in {
   config.flake.modules.homeManager =
     config.localConfig.users
-    |> lib.filterAttrs (_user: userCfg: (userCfg.firefox.profiles or {}) != {})
+    |> lib.filterAttrs (_user: userCfg: (userCfg.firefox or {}) != {})
     |> lib.mapAttrsToList mkUserModule
     |> lib.mkMerge;
 }

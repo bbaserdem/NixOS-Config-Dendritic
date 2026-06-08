@@ -21,14 +21,20 @@
     # Function to generate extensions
     extensions.packages = {pkgs, ...}:
       with pkgs.nur.repos.rycee.firefox-addons; [
+        # Steam
         augmented-steam
         protondb-for-steam
         steam-database
+        # Github
         catppuccin-web-file-icons
         enhanced-github
+        # Bandcamp
         batchcamp
+        # Twitch
         betterttv
-        castkodi
+        twitch-auto-points
+        twitch_5
+        # QoL
         h264ify
         private-grammar-checker-harper
         sponsorblock

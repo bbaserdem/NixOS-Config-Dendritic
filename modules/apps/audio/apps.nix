@@ -15,6 +15,8 @@
       audio = {...}: {
         homebrew = {
           casks = [
+            # Mask itunes
+            "music-decoy"
             "foobar2000"
           ];
         };
