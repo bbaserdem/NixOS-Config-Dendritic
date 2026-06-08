@@ -1,6 +1,10 @@
 # modules/wrappers/yazi/plugins.nix
 {...}: {
-  flake.wrappers.yazi = {pkgs, ...}: {
+  flake.wrappers.yazi = {
+    pkgs,
+    lib,
+    ...
+  }: {
     plugins = with pkgs.yaziPlugins; (lib.mkMerge [
       {
         # UI
