@@ -1,17 +1,16 @@
 # Claude code global setup
 {inputs, ...}: {
   flake.modules = {
-    darwin.ai = {...}: {
+    # Desktop app for darwin
+    darwin.ai-claude = {...}: {
       homebrew.casks = [
-        # "claude-code@latest"
+        # Pull the desktop app
         "claude"
       ];
     };
-    homeManager.ai = {
-      pkgs,
-      config,
-      ...
-    }: {
+
+    # Install claude-code
+    homeManager.ai-claude = {pkgs, ...}: {
       # Enable claude code config without installing it ourselves
       programs.claude-code = {
         enable = true;

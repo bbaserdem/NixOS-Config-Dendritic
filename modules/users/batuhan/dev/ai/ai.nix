@@ -26,9 +26,6 @@
                 "CONTEXT7_API_KEY" = "{env:CONTEXT7_API_KEY}";
               };
             };
-            playwright = {
-              command = "mcp-server-playwright";
-            };
           };
 
           # Claude code settings

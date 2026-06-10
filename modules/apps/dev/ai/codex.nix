@@ -1,12 +1,15 @@
 # Codex global setup
 {inputs, ...}: {
   flake.modules = {
-    darwin.ai = {...}: {
+    # Install desktop app in Darwin
+    darwin.ai-codex = {...}: {
       homebrew.casks = [
         "codex-app"
       ];
     };
-    homeManager.ai = {
+
+    # Codex install
+    homeManager.ai-codex = {
       pkgs,
       lib,
       ...

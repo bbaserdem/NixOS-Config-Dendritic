@@ -9,7 +9,6 @@
     (config.factory.inclusionModules "vcs")
     (config.factory.inclusionModules "docker")
     (config.factory.inclusionModules "virtualization")
-    (config.factory.inclusionModules "ai")
     (config.factory.inclusionModules "ghostty")
     (config.factory.inclusionModules "kitty")
   ];

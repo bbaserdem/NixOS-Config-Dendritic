@@ -5,7 +5,6 @@
 
     # Load modules for development
     imports = with inputs.self.modules.darwin; [
-      ai
       docker
       virtualization
       vcs
@@ -19,6 +18,13 @@
       neovide
       vscodium
       zed
+      # AI tools
+      ai
+      ai-claude
+      ai-codex
+      ai-opencode
+      ai-forgecode
+      ai-droid
     ];
   };
 }
