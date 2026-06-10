@@ -9,7 +9,7 @@
       TFY_API_KEY = "truefoundry/api";
       TFY_GATEWAY_URL = "truefoundry/url";
       OPENAI_API_KEY = "openai/api";
-      ANTHROPIC_API_KEY = "anthropic/api";
+      ANTHROPIC_API_KEY = "anthropic/api0";
       CURSOR_API_KEY = "cursor/api";
       CONTEXT7_API_KEY = "context7/api";
     };
