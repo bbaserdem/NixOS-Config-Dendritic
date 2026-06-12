@@ -26,10 +26,12 @@
             {
               url = "*";
               run = "mactag";
+              group = "mactag";
             }
             {
               url = "*/";
               run = "mactag";
+              group = "mactag";
             }
           ];
         }

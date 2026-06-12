@@ -24,36 +24,46 @@
         mgr.show_symlink = true;
         preview.wrap = "no";
 
-        opener = {
-          play = [
-            {
-              run = "mpv %s";
-              desc = "Play using mpv";
-              orphan = true;
+        opener = lib.mkMerge [
+          # We do conditional on pkgs; because for=linux/macos is not working properly
+          (
+            lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+              open = [
+                {
+                  run = "xdg-open %s";
+                  desc = "Open using XDG";
+                }
+              ];
             }
-          ];
+          )
+          (
+            lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+              open = [
+                {
+                  run = "open %s";
+                  desc = "Open using macOS";
+                }
+              ];
+            }
+          )
+          {
+            play = [
+              {
+                run = "mpv %s";
+                desc = "Play using mpv";
+                orphan = true;
+              }
+            ];
 
-          edit = [
-            {
-              run = "$EDITOR %s";
-              desc = "Edit file";
-              block = true;
-            }
-          ];
-
-          open = [
-            {
-              run = "xdg-open %s";
-              desc = "Open using XDG";
-              for = "linux";
-            }
-            {
-              run = "open %s";
-              desc = "Open using macOS";
-              for = "macos";
-            }
-          ];
-        };
+            edit = [
+              {
+                run = "$EDITOR %s";
+                desc = "Edit file";
+                block = true;
+              }
+            ];
+          }
+        ];
       };
 
       runtimePkgs = with pkgs;

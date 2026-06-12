@@ -24,17 +24,12 @@
         # Agentic setup
         context = inputs.self + /assets/ai/AGENTS.md;
         hooksDir = inputs.self + /assets/ai/claude/hooks;
-        agentsDir = inputs.self + /assets/ai/commands;
+        agentsDir = inputs.self + /assets/ai/agents;
         commandsDir = inputs.self + /assets/ai/commands;
         rulesDir = inputs.self + /assets/ai/rules;
 
         enableMcpIntegration = true;
       };
-
-      # Include our claude-statusline scripts
-      home.packages = with pkgs; [
-        local.claude-statusline
-      ];
     };
   };
 }

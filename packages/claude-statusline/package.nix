@@ -24,8 +24,8 @@ pkgs.stdenv.mkDerivation (
       mkdir -p $out/bin
 
       for script in *.sh; do
-        # Prefix claude-statusbar- and remove .sh extension for the executable name
-        targetName="claude-statusbar-''${script%.sh}"
+        # Prefix claude-statusline- and remove .sh extension for the executable name
+        targetName="claude-statusline-''${script%.sh}"
         cp "$script" "$out/bin/$targetName"
         chmod +x "$out/bin/$targetName"
       done
