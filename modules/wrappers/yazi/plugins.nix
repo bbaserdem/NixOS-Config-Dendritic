@@ -1,29 +1,33 @@
-# modules/wrappers/yazi/plugins.nix
+# Plugins for yazi
 {...}: {
   flake.wrappers.yazi = {
     pkgs,
     lib,
     ...
   }: {
-    plugins = with pkgs.yaziPlugins; (lib.mkMerge [
+    config = lib.mkMerge [
       {
-        # UI
-        git = git;
-        starship = starship;
-        split-tabs = split-tabs;
-        full-border = full-border;
-        # Behavior
-        smart-enter = smart-enter;
-        mount = mount;
-        smart-paste = smart-paste;
-        # Sessions persistence
-        projects = projects;
+        plugins = with pkgs.yaziPlugins; {
+          # UI
+          git = git;
+          starship = starship;
+          split-tabs = split-tabs;
+          full-border = full-border;
+          # Behavior
+          smart-enter = smart-enter;
+          mount = mount;
+          smart-paste = smart-paste;
+          # Sessions persistence
+          projects = projects;
+        };
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-          mactag = mactag;
+          plugins = with pkgs.yaziPlugins; {
+            mactag = mactag;
+          };
         }
       )
-    ]);
+    ];
   };
 }

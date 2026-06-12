@@ -27,7 +27,7 @@
         opener = {
           play = [
             {
-              run = "mpv \"$@\"";
+              run = "mpv %s";
               desc = "Play using mpv";
               orphan = true;
             }
@@ -35,7 +35,7 @@
 
           edit = [
             {
-              run = "$EDITOR \"$@\"";
+              run = "$EDITOR %s";
               desc = "Edit file";
               block = true;
             }
@@ -43,25 +43,38 @@
 
           open = [
             {
-              run = "xdg-open \"$@\"";
+              run = "xdg-open %s";
               desc = "Open using XDG";
               for = "linux";
+            }
+            {
+              run = "open %s";
+              desc = "Open using macOS";
+              for = "macos";
             }
           ];
         };
       };
 
-      runtimePkgs = with pkgs; [
-        fd
-        ripgrep
-        fzf
-        zoxide
-        jq
-        poppler
-        ffmpegthumbnailer
-        p7zip
-        ouch
-      ];
+      runtimePkgs = with pkgs;
+        [
+          fd
+          ripgrep
+          fzf
+          zoxide
+          jq
+          poppler
+          ffmpegthumbnailer
+          p7zip
+          ouch
+          starship
+          mpv
+        ]
+        ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+          udisks
+          util-linux
+          xdg-utils
+        ];
     };
   };
 }

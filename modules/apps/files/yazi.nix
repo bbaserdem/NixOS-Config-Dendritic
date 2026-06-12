@@ -1,49 +1,26 @@
 # Configuring yazi
 {...}: {
-  flake.modules.homeManager = {
-    # Stylix theming
-    stylix = {...}: {
-      stylix.targets.yazi = {
-        boldDirectory = true;
-        enable = true;
-      };
+  flake.modules = {
+    # Provide binary for mactag.yazi to work on mac
+    darwin.yazi = {...}: {
+      homebrew.brews = [
+        "tag"
+      ];
     };
 
-    # Yazi config
-    yazi = {...}: {
-      programs.yazi = {
-        enable = true;
-        settings = {
-          mgr = {
-            show_symlink = true;
-          };
-          preview = {
-            wrap = "no";
-          };
-          opener = {
-            play = [
-              {
-                run = "mpv \"$@\"";
-                desc = "Play using mpv";
-                orphan = true;
-              }
-            ];
-            edit = [
-              {
-                run = "$EDITOR \"$@\"";
-                desc = "Edit file";
-                block = true;
-              }
-            ];
-            open = [
-              {
-                run = "xdg-open \"$@\"";
-                desc = "Open using XDG";
-                for = "linux";
-              }
-            ];
-          };
+    # General dispatch module
+    homeManager = {
+      # Stylix theming
+      stylix = {...}: {
+        stylix.targets.yazi = {
+          boldDirectory = true;
+          enable = true;
         };
+      };
+
+      # Yazi config; rest is handled by the wrapper
+      yazi = {...}: {
+        programs.yazi.enable = true;
       };
     };
   };
