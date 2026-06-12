@@ -30,6 +30,11 @@
 
         enableMcpIntegration = true;
       };
+
+      # Include our claude-statusline scripts
+      home.packages = with pkgs; [
+        local.claude-statusline
+      ];
     };
   };
 }
