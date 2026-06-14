@@ -167,7 +167,7 @@ in {
               value =
                 if (userEnabled folder.user)
                 then {
-                  "${userXdgPath folder.user folder.xdgDir}" = {
+                  "${mkPath folder}" = {
                     d = {
                       user = folder.user;
                       group = userGroup folder.user;
@@ -176,7 +176,7 @@ in {
                     "A+".argument = "u:${syncUser}:rwX,m::rwX";
                     "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
                   };
-                  "${mkPath folder}".d = {
+                  "${userXdgPath folder.user folder.xdgDir}".d = {
                     user = folder.user;
                     group = userGroup folder.user;
                     mode = "0750";
@@ -195,12 +195,15 @@ in {
             enabledFolders
             |> lib.filterAttrs (_: folder: userEnabled folder.user)
             |> lib.mapAttrs' (name: folder: {
-              name = mkPath folder;
+              name = userXdgPath folder.user folder.xdgDir;
               value = {
-                device = userXdgPath folder.user folder.xdgDir;
+                device = mkPath folder;
                 fsType = "none";
                 options = ["bind" "nofail"];
-                depends = [(userHome folder.user)];
+                depends = [
+                  dataDir
+                  (userHome folder.user)
+                ];
               };
             });
         });

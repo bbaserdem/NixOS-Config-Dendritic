@@ -19,7 +19,7 @@
       '';
 
       # Extra fstab entries for filesystem ordering
-      # fileSystems."/home/wolframite".depends = ["/home"];
+      fileSystems."/home/wolframite".depends = ["/home"];
 
       # Sops secrets for key-file provisioning
       sops.secrets = {

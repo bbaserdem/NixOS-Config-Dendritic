@@ -32,14 +32,28 @@ in {
       nixos =
         {
           # Steam setup in linux
-          steam = {...}: {
+          steam = {lib, ...}: {
+            # Include hardware support for steam devices
+            hardware.steam-hardware.enable = true;
+
+            # Enable steam
             programs = {
-              # Enable steam
               steam = {
                 enable = true;
-                remotePlay.openFirewall = true;
+                extest.enable = true;
                 dedicatedServer.openFirewall = true;
-                gamescopeSession.enable = true;
+                # Enable a desktop session for steam
+                gamescopeSession = {
+                  enable = true;
+                };
+                # Enable network transfer of steamgames
+                localNetworkGameTransfers = {
+                  openFirewall = true;
+                };
+                # By default, don't enable remotePlay
+                remotePlay = {
+                  openFirewall = lib.mkOverride 1400 false;
+                };
               };
               # Enable gamescope: steam session
               gamescope = {
@@ -105,7 +119,12 @@ in {
                       device = "/opt/steam-common";
                       fsType = "none";
                       options = ["bind" "nofail"];
-                      depends = ["/opt/steam-common"];
+                      depends = [
+                        "/home"
+                        "${home}"
+                        "/opt"
+                        "/opt/steam-common"
+                      ];
                     };
                   }
                 )

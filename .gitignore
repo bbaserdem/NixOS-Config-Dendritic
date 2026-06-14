@@ -2,8 +2,10 @@
 # Nix Flake .gitignore
 # Comprehensive ignore patterns for nix system configuration development
 # =============================================================================
-# Git stuff
-/worktrees/
+
+# Git; don't ever ignore these
+!/.gitignore
+!/.gitattributes
 
 # =============================================================================
 # SECRETS & CREDENTIALS (CRITICAL - NEVER COMMIT)
@@ -19,9 +21,33 @@ secrets.json
 credentials.json
 
 # =============================================================================
+# PROJECT CONVENTIONS
+# =============================================================================
+# No directories or files with prefix _ are to be committed from root
+/_*
+# Safeguard for agents
+!AGENTS.md
+# Claude code; ignore local settings file
+.claude/settings.local.json
+# Codex, ignore full setting (no project/local seperation)
+.codex
+# Opencode, ignore full setting (no project/local seperation)
+.opencode
+/opencode.json
+# Forgecode, ignore full setting (no project/local seperation)
+.forge/.forge.toml
+# Droid, user local config
+.factory/settings.local.json
+# Any bmad stuff
+bmad-*
+# Git tooling
+worktrees
+worktrees/**
+
+# =============================================================================
 # NIX & DIRENV
 # =============================================================================
-!.envrc
+!/.envrc
 .direnv/
 result
 result-*
@@ -91,7 +117,6 @@ MANIFEST
 *.bak
 *.swp
 *.swo
-*~
 .tmp/
 temp/
 tmp/
@@ -99,18 +124,19 @@ tmp/
 # =============================================================================
 # TOOLS & EDITORS
 # =============================================================================
-
 # Vim
 *.swp
 *.swo
 *~
 .netrwhist
-
-# Quaestor
-.quaestor/
-
-# Claude
-.claude/settings.local.json
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # =============================================================================
 # OPERATING SYSTEM
@@ -129,7 +155,6 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
-
 # Windows
 Thumbs.db
 Thumbs.db:encryptable
@@ -144,25 +169,9 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
-
 # Linux
 *~
 .fuse_hidden*
 .directory
 .Trash-*
 .nfs*
-
-# =============================================================================
-# PROJECT SPECIFIC
-# =============================================================================
-# Add any project-specific ignores here
-# Environment variables
-.env
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?

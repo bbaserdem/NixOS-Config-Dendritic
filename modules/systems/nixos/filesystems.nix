@@ -6,10 +6,11 @@
       inputs.disko.nixosModules.disko
     ];
 
-    # Enable ZFS
-    boot.supportedFilesystems = [
-      "zfs"
-    ];
+    # Enable FUSE
+    programs.fuse = {
+      enable = true;
+      userAllowOther = true;
+    };
 
     # Packages handling filesystems
     environment.systemPackages = with pkgs; [
@@ -24,8 +25,8 @@
       btrfs-assistant
       btrfs-heatmap
       snapper
-      # ZFS management
-      zfs
+      # Encrypted fuse filesystems
+      gocryptfs
     ];
   };
 }

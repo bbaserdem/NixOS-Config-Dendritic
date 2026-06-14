@@ -1,30 +1,26 @@
-# Nix Flake
+# System Configuration Flake
 
-My nix system flake.
+My nix flake used to configure my computer systems.
+
+## Design
 
 - Uses flake-parts
 - Follows dendritic pattern
-- Using jj for vcs
+- Using jujutsu for vcs
 
-# Todo
+## Todo
 
-- [ ] Clean and setup secrets (user: beets)
-- [ ] Neovim dark/light mode auto-detect
-- [ ] Fix darwin UID issues (user: factory)
-- [ ] Darwin stable doesn't have shell integration options in 25.11
 - [ ] Neovim: setup localleader commands to render markdown.
-- [ ] Configure syncthing (import .stignore files to be managed by nix)
-- [ ] Finish personalized claude config
-- [ ] Add codecompanion to nvim wrapper
-- [ ] Setup individual theming for each host
-- [ ] Test if kitty theme importer is working
+- [ ] Hyprland: migrate to lua
 - [ ] Configure joey's user
-- [ ] Import desktop, display manager config
-- [ ] Import grub config
 - [ ] Fix polkit issues in hyprland
 - [ ] Test nixos modules on laptop
+- [ ] Remove nofail mount options after confirming mounts etc. work
+- [ ] Redo beets library organization
 
-# Development
+## Development
+
+WIP; the guidelines have not been followed, but hoping to adopt soon.
 
 - Each host gets their own named branch after hostname.
 - Each host specific changes happens on their branch
@@ -32,3 +28,9 @@ My nix system flake.
 - Once development is stable, main branch is moved to the new change.
 - Each host should be rebasing on the main branch before developing.
 - Once host changes are stable, they should merge onto main.
+
+## AI Disclaimer
+
+I maintain that this repo does not contain any code written by AI.
+I do, however, use AI tools for design discussions, debugging and research.
+This does include copying code blocks from chats, but AI is not allowed to do any direct edits.

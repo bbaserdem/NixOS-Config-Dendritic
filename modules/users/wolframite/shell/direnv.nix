@@ -10,7 +10,7 @@
       prefix = [
         (
           if (pkgs.stdenv.hostPlatform.isLinux)
-          then config.xdg.userDirs.extraConfig.XDG_PROJECTS_DIR
+          then config.xdg.userDirs.projects
           else "${config.home.homeDirectory}/Projects"
         )
       ];

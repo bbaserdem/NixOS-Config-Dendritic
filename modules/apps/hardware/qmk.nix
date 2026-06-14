@@ -3,6 +3,7 @@
   flake.modules.nixos.qmk = {...}: {
     hardware.keyboard.qmk = {
       enable = true;
+      keychronSupport = true;
     };
   };
 }

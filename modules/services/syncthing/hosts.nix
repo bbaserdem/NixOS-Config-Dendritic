@@ -18,7 +18,7 @@ in {
       in {
         services.syncthing.settings.devices =
           cfg.hosts
-          |> lib.filterAttrs (name: host: ((host.id != "") && (name != (config.networking.hostName ? null))))
+          |> lib.filterAttrs (name: host: ((host.id != "") && (name != config.networking.hostName)))
           |> lib.mapAttrs (name: host: {
             id = host.id;
           });

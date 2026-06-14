@@ -1,15 +1,21 @@
 # Filesystem settings
 {inputs, ...}: {
-  flake.modules.darwin.macos = {
+  flake.modules.darwin.macos = {pkgs, ...}: {
     imports = [
       inputs.self.modules.generic.filesystems
     ];
 
-    # Additionale support; ZFS
-    homebrew = {
-      casks = [
-        "openzfs"
-        "macfuse"
+    config = {
+      # Additionale support; ZFS
+      homebrew = {
+        casks = [
+          "macfuse"
+        ];
+      };
+
+      # Install fuse filesystem packages
+      environment.systemPackages = with pkgs; [
+        gocryptfs
       ];
     };
   };

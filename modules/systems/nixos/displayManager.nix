@@ -89,7 +89,6 @@
         )
         (
           lib.mkIf (cfg.name == "plm") {
-            # TODO; 26.06 introduces this
             services.displayManager.plasma-login-manager.enable = lib.mkOverride 900 true;
           }
         )
