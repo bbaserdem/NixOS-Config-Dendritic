@@ -47,9 +47,6 @@
         (
           lib.mkIf (cfg.name == "gdm") {
             services.displayManager.gdm.enable = lib.mkOverride 900 true;
-            services.displayManager.gdm = {
-              wayland = true;
-            };
           }
         )
         (

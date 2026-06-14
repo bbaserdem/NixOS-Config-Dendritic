@@ -16,7 +16,6 @@
           # Behavior
           smart-enter = smart-enter;
           mount = mount;
-          smart-paste = smart-paste;
           # Sessions persistence
           projects = projects;
         };

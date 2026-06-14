@@ -10,6 +10,7 @@ My nix flake used to configure my computer systems.
 
 ## Todo
 
+- [ ] Kayra: LiveUSB iso.
 - [ ] Neovim: setup localleader commands to render markdown.
 - [ ] Hyprland: migrate to lua
 - [ ] Configure joey's user

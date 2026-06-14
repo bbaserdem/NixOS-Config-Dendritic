@@ -6,7 +6,7 @@
     ];
 
     config = {
-      # Additionale support; ZFS
+      # Additionale support
       homebrew = {
         casks = [
           "macfuse"

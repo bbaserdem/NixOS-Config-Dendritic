@@ -1,5 +1,16 @@
 # Flake development devshell
 {inputs, ...}: {
+  # Multi-boot system
+  flake-file.inputs = {
+    multios-usb = {
+      url = "github:Mexit/MultiOS-USB";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
+    };
+  };
+
   perSystem = {
     pkgs,
     lib,
@@ -41,6 +52,8 @@
           lib.optionals (pkgs.stdenv.hostPlatform.isLinux) (with pkgs; [
             # Sandboxing for agents
             bubblewrap
+            # MultiOS-USB binary creation
+            inputs.multios-usb.packages.${pkgs.stdenv.hostPlatform.system}.default
           ])
         );
     };

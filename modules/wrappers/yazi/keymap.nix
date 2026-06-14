@@ -14,11 +14,6 @@
             run = "plugin smart-enter";
             desc = "Enter directory or open file";
           }
-          {
-            on = "p";
-            run = "plugin smart-paste";
-            desc = "Paste into hovered directory or CWD";
-          }
           # Mounting
           {
             on = "M";
