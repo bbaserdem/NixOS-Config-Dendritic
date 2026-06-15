@@ -3,6 +3,7 @@
   flake.modules.nixos.kayra = {
     modulesPath,
     pkgs,
+    lib,
     ...
   }: {
     # System configuration
@@ -79,8 +80,20 @@
 
       # User passwords
       users.users = {
-        root.password = "nixos";
-        sbp.password = "nixos";
+        root = {
+          hashedPassword = lib.mkForce null;
+          hashedPasswordFile = lib.mkForce null;
+          initialPassword = lib.mkForce null;
+          initialHashedPassword = lib.mkForce null;
+          password = lib.mkForce "nixos";
+        };
+        sbp = {
+          hashedPassword = lib.mkForce null;
+          hashedPasswordFile = lib.mkForce null;
+          initialPassword = lib.mkForce null;
+          initialHashedPassword = lib.mkForce null;
+          password = lib.mkForce "nixos";
+        };
       };
 
       # From installation-cd-graphical-gnome
