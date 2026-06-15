@@ -1,6 +1,10 @@
 # Kayra; live-usb configuration
 {inputs, ...}: {
-  flake.modules.nixos.kayra = {modulesPath, ...}: {
+  flake.modules.nixos.kayra = {
+    modulesPath,
+    pkgs,
+    ...
+  }: {
     # System configuration
 
     # Load modules that configure the system
@@ -77,6 +81,18 @@
           user = "sbp";
         };
       };
+
+      # Useful tools to have on a live-usb
+      environment.systemPackages = with pkgs; [
+        # System tooling
+        nixos-anywhere
+        disko
+        # Encryption
+        sops
+        ssh-to-age
+        age
+        mkpasswd
+      ];
     };
   };
 }

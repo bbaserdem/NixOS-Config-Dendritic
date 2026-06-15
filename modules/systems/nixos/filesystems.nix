@@ -35,6 +35,7 @@
         snapper
         # Encrypted fuse filesystems
         gocryptfs
+        cryptsetup
       ];
     };
   };
