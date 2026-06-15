@@ -57,6 +57,21 @@
         configurationName = "Kayra";
       };
 
+      boot.initrd = {
+        systemd.enable = lib.mkForce false;
+        supportedFilesystems = {
+          exfat = true;
+          vfat = true;
+          ext4 = true;
+        };
+        availableKernelModules = [
+          "exfat"
+          "uas"
+          "usb_storage"
+          "sd_mod"
+        ];
+      };
+
       # Gnome; power management wants ppd
       local.powerManagement.backend = "ppd";
 
