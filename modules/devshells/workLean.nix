@@ -18,7 +18,7 @@
           # Project environment
           bun
           elan
-          postgresql
+          postgresql_18
           awscli2
           # Tooling for agents
           ripgrep

@@ -50,7 +50,8 @@
     config = {
       # Iso file settings; defineds in iso-image.nix
       isoImage = {
-        compressImage = true;
+        # Need the raw iso
+        compressImage = false;
         edition = "Kayra";
         configurationName = "Kayra";
       };
@@ -65,13 +66,22 @@
       # WARNING: this is dangerous for systems
       # outside the installation-cd and shouldn't
       # be used anywhere else.
-      security.polkit.extraConfig = ''
-        polkit.addRule(function(action, subject) {
-          if (subject.isInGroup("wheel")) {
-            return polkit.Result.YES;
-          }
-        });
-      '';
+      security = {
+        sudo.wheelNeedsPassword = false;
+        polkit.extraConfig = ''
+          polkit.addRule(function(action, subject) {
+            if (subject.isInGroup("wheel")) {
+              return polkit.Result.YES;
+            }
+          });
+        '';
+      };
+
+      # User passwords
+      users.users = {
+        root.password = "nixos";
+        sbp.password = "nixos";
+      };
 
       # From installation-cd-graphical-gnome
       services.displayManager = {
