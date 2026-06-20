@@ -1,4 +1,26 @@
-# Configuration Flake
+# Introduction
 
-This is my flake with my system configuration, across different hosts.
-Keeping a running documentation to codify my organizational behavior.
+This is documentation for my computers and systems in general.
+Documentation includes this flake, how I use software etc.
+
+# Plans
+
+Running checklist for todo items.
+
+### Chores
+
+- [ ] Reorganize modules into features and aspects, work `import-tree` for multiple, and custom, directories.
+- [ ] Set up picture organization
+- [ ] Set up video organization
+- [ ] Redo beets setup, and synching layout.
+
+### Fixed dependent on upstream
+
+- [ ] Firefox new profiles
+- [ ] Syncthing REST api key decleration.
+
+### To add in the future
+
+- [Shoko](https://docs.shokoanime.com/): Anime organizer
+- [Atui](https://atuin.sh/): Shell history backup and search
+- [linkding](https://linkding.link/): Self hosted bookmark manager

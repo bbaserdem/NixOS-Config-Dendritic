@@ -40,10 +40,24 @@ A rundown is as following
 
 ### Key Storage
 
-SSH keys are kept on a LUKS encrypted storage hard drive.
-The SSH keys for each host is kept under a directory `SSH/<hostname>`
+SSH keys are kept on a `gocrypt` encrypted storage hard drive.
+The SSH keys for each host is kept under a directory `<Vault>/Systems/<hostname>`
 This is made so that `nixos-anywhere` can point to one extra file to deploy.
 This makes it so that `sops-nix` will work to deploy secrets immediately.
+
+## LUKS
+
+For LUKS, `sops-nix` dispatches key files needed to boot at boot time.
+The proper files get decrypted, and exposed in the `/run/cryptsetup-keys.d/<container>.key`.
+The same files could be created at `/etc` but creating them in `/run` is safer by generation on tmpfs.
+Besides that, disk generation (`disko`) should handle creating the LUKS containers.
+
+The way a LUKS partition is set up is; there will always be a passphrase.
+There will always also be a keyfile, generated with random bytes;
+
+```
+dd bs=512 count=4 if=/dev/random iflag=fullblock of=<container>.key
+```
 
 ## SOPS
 
@@ -57,6 +71,26 @@ Each user will have two keys in `~/.config/sops/age/keys.txt`;
 
 The GPG setup involves a master key, then 3 subkeys.
 This key is kept on a YubiKey drive.
+
+### Setup
+
+#### Yubikey Import
+
+Setup is simple, this repo should have the `assets/public.asc`.
+That's the public GPG key block.
+
+```
+# Import public key
+gpg --import <flake>/assets/public.asc
+# Make the card learn the key
+gpg --card-status
+# Set trust to ultimate
+gpg --edit-key <FINGERPRINT>
+trust
+5
+y
+save
+```
 
 ### Generation
 
@@ -92,7 +126,7 @@ gpg --pinentry-mode=loopback --expert --edit-key $KEY_FPR
 gpg --list-secret-keys --with-subkey-fingerprints --keyid-format long $KEY_FPR
 ```
 
-### Backup
+#### Backup
 
 Before doing any YubiKey operations, the keys should be backed up to offline media.
 
@@ -117,7 +151,7 @@ gpg --import-ownertrust ownertrust.txt
 ```
 
 
-### YubiKey
+#### YubiKey
 
 First, if it's first time using YubiKey, set it up
 

@@ -10,7 +10,6 @@
     (config.factory.inclusionModules "keepassxc")
     (config.factory.inclusionModules "pass")
     (config.factory.inclusionModules "polkit")
-    (config.factory.inclusionModules "ssh")
     (config.factory.inclusionModules "yubikey")
   ];
 }

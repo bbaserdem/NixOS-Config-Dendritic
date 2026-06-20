@@ -1,1 +1,0 @@
-# macOS with nix-darwin

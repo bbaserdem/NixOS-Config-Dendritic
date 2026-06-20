@@ -1,4 +1,4 @@
-# SSH common config
+# SSH usage local config
 {...}: {
   flake.modules = {
     # Home config for ssh

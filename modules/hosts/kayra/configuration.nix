@@ -58,6 +58,10 @@
       };
 
       boot.initrd = {
+        # MultiOS-USB requires a /boot/grub/loopback.cfg file to auto-launch iso
+        # However, NixOS doesn't generate this unless systemd initrd is disabled
+        # loopback.cfg is slated as deprecated, and will be removed in 26.11
+        # TODO; find a way to future-proof this
         systemd.enable = lib.mkForce false;
         supportedFilesystems = {
           exfat = true;
