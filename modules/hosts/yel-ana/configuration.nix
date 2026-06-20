@@ -12,5 +12,10 @@
       nginx
       samba
     ];
+
+    config = {
+      # We are a desktop computer
+      services.avahi.publish.workstation = true;
+    };
   };
 }

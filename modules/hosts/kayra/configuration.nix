@@ -18,6 +18,9 @@
       stylix
       gnome
       shell
+      # Access
+      avahi
+      ssh
       # Desktop
       fonts
       keyboard
@@ -97,7 +100,7 @@
         '';
       };
 
-      # User passwords
+      # User passwords; just force defaults
       users.users = {
         root = {
           hashedPassword = lib.mkForce null;
@@ -115,6 +118,13 @@
         };
       };
 
+      # Enable ssh root login, and deploy authorized keys
+      services.openssh.settings.PermitRootLogin = lib.mkForce "prohibit-password";
+      users.users.root.openssh.authorizedKeys.keyFiles = [
+        (inputs.self + /assets/kayra-ssh.pub)
+      ];
+      services.fail2ban.enable = lib.mkForce false;
+
       # From installation-cd-graphical-gnome
       services.displayManager = {
         gdm.autoSuspend = false;
@@ -125,16 +135,21 @@
       };
 
       # Useful tools to have on a live-usb
-      environment.systemPackages = with pkgs; [
-        # System tooling
-        nixos-anywhere
-        disko
-        # Encryption
-        sops
-        ssh-to-age
-        age
-        mkpasswd
-      ];
+      environment.systemPackages =
+        (with pkgs; [
+          # System tooling
+          nixos-anywhere
+          # Encryption
+          sops
+          ssh-to-age
+          age
+          mkpasswd
+        ])
+        ++ (with inputs.disko.packages.${pkgs.stdenv.hostPlatform.system}; [
+          disko
+          disko-doc
+          disko-install
+        ]);
     };
   };
 }

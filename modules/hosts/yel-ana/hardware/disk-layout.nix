@@ -15,7 +15,7 @@
         # Put the keyfiles needed in /run/cryptsetup-keys.d/<name>.key
 
         # <name>            <device>                            <password>  <options>
-        Yel-Ana_Data        PARTLABEL=Crypt_Yel-Ana_Data        -           luks,fido2-device=auto,timeout=180
+        Yel-Ana_Data        PARTLABEL=Crypt_Yel-Ana_Data        -           luks,timeout=180
       '';
 
       # Extra fstab entries for filesystem ordering
@@ -72,15 +72,15 @@
                   additionalKeyFiles = [
                     "/tmp/Yel-Ana_Linux.key"
                   ];
-                  enrollFido2 = false;
-                  enrollRecovery = false;
+                  # enrollFido2 = false;
+                  # enrollRecovery = false;
                   extraFormatArgs = ["--label" "Crypt_Yel-Ana_Linux"];
                   settings = {
                     allowDiscards = true;
-                    crypttabExtraOpts = [
-                      "fido2-device=auto"
-                      "token-timeout=10"
-                    ];
+                    # crypttabExtraOpts = [
+                    #   "fido2-device=auto"
+                    #   "token-timeout=10"
+                    # ];
                   };
                   content = {
                     # BTRFS system layout
@@ -144,8 +144,8 @@
                   passwordFile = "/tmp/Yel-Ana.key";
                   additionalKeyFiles = ["/tmp/Yel-Ana_Data.key"];
                   extraFormatArgs = ["--label" "Crypt_Yel-Ana_Data"];
-                  enrollFido2 = false;
-                  enrollRecovery = false;
+                  # enrollFido2 = false;
+                  # enrollRecovery = false;
                   settings = {
                     allowDiscards = true;
                   };

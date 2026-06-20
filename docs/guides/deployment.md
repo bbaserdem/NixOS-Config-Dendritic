@@ -66,7 +66,7 @@ and `kayra` should have the proper tools pre-installed to perform this;
 ```
 udisksctl mount --block-device=/dev/<usb-device>
 mkdir _crypt
-gocryptfs -ro allow_other /run/media/sbp/<Device>/KeyVault _crypt
+gocryptfs -ro -allow_other /run/media/sbp/<Device>/KeyVault _crypt
 ```
 
 > [!NOTE]
@@ -89,11 +89,12 @@ Check if the specified disk in the configuration exists.
 
 > [!CAUTION]
 > *Optional* & ***DESTRUCTIVE***; test out whether disko works by writing disko.
-> Command is `disko --mode disko --flake .#<hostname>`
+> Command is `sudo disko --mode destroy,format,mount --flake .#<hostname>`
+> Can also add `--dry-mount` flag to test operations.
 
 ### Install
 
-Run the `disko-install` command.
+Run either the `disko-install` command;
 
 ```
 sudo disko-install \
@@ -104,12 +105,25 @@ sudo disko-install \
 
 > [!TIP]
 > There is a `--dry-run` flag to check operations before starting.
+> For doing dry run, if getting out of space error, increase tmpfs size;
+> `sudo mount -o remount,size=24G /nix/.rw-store`
+> (Here, 24G is a suggestion)
 
 > [!TIP]
 > There is a `--write-efi-boot-entries` flag to create boot entries.
 
 > [!IMPORTANT]
 > The `--disk` argument needs to be repeated for each configured disk.
+
+> [!NOTE]
+> There might not be enough RAM; liveiso exposes 50% of RAM as store space
+> and disko-install tries to build the full closure on disk first.
+> In this case, might just want to mount with disko, and install with nixos-install.
+> (Keys need to be copied manually in this case)
+> `sudo disko --mode mount --flake .#<hostname>`, then
+> `sudo cp -a _crypt/Systems/<hostname>/. /mnt/`, then
+> `sudo nixos-install --root /mnt --flake .#yel-ana --no-channel-copy --no-root-password --no-write-lock-file`
+> (The `initrdUnlock = false` partitions need to be manually opened.)
 
 ---
 
