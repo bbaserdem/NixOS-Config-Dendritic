@@ -12,7 +12,7 @@ Running checklist for todo items.
 - [ ] Reorganize modules into features and aspects, work `import-tree` for multiple, and custom, directories.
 - [ ] Set up picture organization
 - [ ] Set up video organization
-- [ ] Redo beets setup, and synching layout.
+- [ ] Redo beets setup, do customization into a plugin package, and synching layout.
 - [ ] Change live usb setup, migrate from multios-usb to something else if can.
 
 ### Fixed dependent on upstream

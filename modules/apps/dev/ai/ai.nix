@@ -11,9 +11,23 @@
         };
       };
 
-      homeManager.ai = {...}: {
+      homeManager.ai = {pkgs, ...}: let
+        nixosMcp = pkgs.unstable.mcp-nixos;
+      in {
         # Global MCP config
-        programs.mcp.enable = true;
+        programs.mcp = {
+          enable = true;
+          # Globally enabled MCP servers
+          servers = {
+            nix = {
+              command = "${nixosMcp}/bin/mcp-nixos";
+            };
+          };
+        };
+        # Install MCP server
+        home.packages = [
+          nixosMcp
+        ];
       };
     };
   };

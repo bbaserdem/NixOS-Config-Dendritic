@@ -9,6 +9,8 @@ There are two ways for installing NixOS;
 MacOS doesn't really let you install it through `nix`,
 but it can be [configured with `nix-darwin`](#darwin-nix-setup).
 
+After deployment, [post-installation](#post-installation) steps should be followed.
+
 ---
 
 ## Install NixOS locally with `disko-install` {: #disko-install}
@@ -52,7 +54,7 @@ flake-sync
 cd-flake
 ```
 
-> {!IMPORTANT}
+> [!IMPORTANT]
 > From now on, the workflow assumes you are inside the flake directory.
 > Adjust accordingly.
 
@@ -64,7 +66,7 @@ and `kayra` should have the proper tools pre-installed to perform this;
 ```
 udisksctl mount --block-device=/dev/<usb-device>
 mkdir _crypt
-gocryptfs /run/media/sbp/<Device>/KeyVault _crypt
+gocryptfs -ro allow_other /run/media/sbp/<Device>/KeyVault _crypt
 ```
 
 > [!NOTE]
@@ -72,19 +74,21 @@ gocryptfs /run/media/sbp/<Device>/KeyVault _crypt
 
 ### Setup for LUKS
 
-Put the needed LUKS key files in `/tmp`, and create a passphrase file `/tmp/<HostName>.key`.
-Disko expects the LUKS information in this location.
+Put the needed LUKS key files in `/tmp`.
+The key files should be in `_crypt/LUKS/<HostName>_<Disk>.key`
+Create a passphrase file `/tmp/<HostName>.key`, for the manual passwords.
+Disko expects the LUKS information from these locations.
 
 > [!TIP]
-> Check the flake for the `disko` config for which files are needed.
-> Should be pretty intuitive though.
+> Check the flake for the `disko` config for which files are needed,
+> but this should be pretty intuitive already.
 
 ### Confirm setup
 
 Check if the specified disk in the configuration exists.
 
 > [!CAUTION]
-> *Optional* & ***DESTRUCTIVE***; test out whether disko works.
+> *Optional* & ***DESTRUCTIVE***; test out whether disko works by writing disko.
 > Command is `disko --mode disko --flake .#<hostname>`
 
 ### Install
@@ -94,12 +98,15 @@ Run the `disko-install` command.
 ```
 sudo disko-install \
   --flake .#<hostname> \
-  --extra-files _crypt/Systems/<hostname>
+  --extra-files "_crypt/Systems/<hostname>/." "/" \
   --disk Linux /dev/...
 ```
 
 > [!TIP]
-> There is a `--dry-run` command to check operations before starting.
+> There is a `--dry-run` flag to check operations before starting.
+
+> [!TIP]
+> There is a `--write-efi-boot-entries` flag to create boot entries.
 
 > [!IMPORTANT]
 > The `--disk` argument needs to be repeated for each configured disk.
@@ -115,3 +122,12 @@ TODO: Do this part
 ## Set MacOS with `nix-darwin` {: #darwin-nix-setup}
 
 TODO: Do this part
+
+---
+
+## Post Installation Steps {: #post-installation}
+
+TODO: Do this part
+
+- Backup LUKS headers.
+- Insert yubikey and run `gpg --card-status` for GPG keys.

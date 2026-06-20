@@ -72,7 +72,7 @@
                   additionalKeyFiles = [
                     "/tmp/Yel-Ana_Linux.key"
                   ];
-                  enrollFido2 = true;
+                  enrollFido2 = false;
                   enrollRecovery = false;
                   extraFormatArgs = ["--label" "Crypt_Yel-Ana_Linux"];
                   settings = {
@@ -144,7 +144,7 @@
                   passwordFile = "/tmp/Yel-Ana.key";
                   additionalKeyFiles = ["/tmp/Yel-Ana_Data.key"];
                   extraFormatArgs = ["--label" "Crypt_Yel-Ana_Data"];
-                  enrollFido2 = true;
+                  enrollFido2 = false;
                   enrollRecovery = false;
                   settings = {
                     allowDiscards = true;
