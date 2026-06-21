@@ -2,7 +2,8 @@
 {...}: {
   flake.modules.homeManager.wolframite = {pkgs, ...}: {
     home.packages = with pkgs; [
-      local."iosevka/wolframite"
+      # Taxes memory too much to build
+      # local."iosevka/wolframite"
     ];
   };
 }
