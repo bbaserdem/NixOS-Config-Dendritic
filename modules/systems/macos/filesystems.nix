@@ -16,6 +16,7 @@
       # Install fuse filesystem packages
       environment.systemPackages = with pkgs; [
         gocryptfs
+        ext4fuse
       ];
     };
   };

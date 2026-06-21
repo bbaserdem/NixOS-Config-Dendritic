@@ -40,6 +40,10 @@ in {
                 inherit user group;
                 mode = "0600";
               };
+              "${home}/.config".d = {
+                inherit user group;
+                mode = "0700";
+              };
               "${home}/.config/sops".d = {
                 inherit user group;
                 mode = "0700";

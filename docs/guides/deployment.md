@@ -35,6 +35,7 @@ The steps are;
 > Switching to an impermanent setup where the OS is kept on the usb,
 > and loaded into RAM would be a more maintainable (and secret deployable) solution.
 > This would also enable LUKS encryption, so we could deploy secrets here as well.
+> Also need to set up copytoram to the live isos so they are hotplugabble.
 
 ### Boot into live environment
 [^note]: As of now, the live environment is supplied by
@@ -64,7 +65,7 @@ The USB used for the installation should have a `gocryptfs` encrypted folder,
 and `kayra` should have the proper tools pre-installed to perform this;
 
 ```
-udisksctl mount --block-device=/dev/<usb-device>
+udisksctl mount --block-device=/dev/<usb-device-partition>
 mkdir _crypt
 gocryptfs -ro -allow_other /run/media/sbp/<Device>/KeyVault _crypt
 ```
@@ -100,6 +101,7 @@ Run either the `disko-install` command;
 sudo disko-install \
   --flake .#<hostname> \
   --extra-files "_crypt/Systems/<hostname>/." "/" \
+  --write-efi-boot-entries \
   --disk Linux /dev/...
 ```
 
@@ -110,7 +112,8 @@ sudo disko-install \
 > (Here, 24G is a suggestion)
 
 > [!TIP]
-> There is a `--write-efi-boot-entries` flag to create boot entries.
+> There is a `--write-efi-boot-entries` flag to create boot entries,
+> or omit if not wanted.
 
 > [!IMPORTANT]
 > The `--disk` argument needs to be repeated for each configured disk.
@@ -129,7 +132,69 @@ sudo disko-install \
 
 ## Install NixOS remotely using `nixos-anywhere` {: #nixos-anywhere}
 
-TODO: Do this part
+`kayra` and `mergen` are the live environments that allow remote access to hardware.
+First step is getting the drive that can boot into it;
+discussed in [the previous section](#disko-install).
+
+Then a layout of the steps are;
+
+1) Boot into live environment, and connect to internet.
+2) Prepare controller machine environment
+3) Install remotely
+
+### Boot into live environment and connect to network
+
+Should be pretty straightforward for this step.
+This is done on the host machine; this has to happen here.
+
+### Prepare controller machine environment
+
+This should more or less be set up at the user `wolframite`.
+For machines not already setup with this user; this would basically be;
+
+- Local clone the flake repo
+- Grab the ssh private key to the liveiso
+- Load the encrypted keyvault with `gocryptfs`
+
+> [!IMPORTANT]
+> From now on, the workflow assumes you are inside the flake directory,
+> and the keyvault is opened to `_crypt`
+> Adjust accordingly.
+
+### Install Remotely
+
+The command to issue in the dispatcher system is;
+
+```
+nixos-anywhere \
+    --flake .#<hostname> \
+    --target-host "<liveiso>" \
+    --build-on auto
+    --phases kexec.disko,install \
+    --disko-mode disko \
+    --no-disko-deps \
+    --extra-files "_crypt/Systems/<hostname>" \
+    --disk-encryption-keys "/tmp/<HostName>_<Disk>.key" "_crypt/LUKS/<HostName>_<Disk>.key"
+    
+```
+
+> [!IMPORTANT]
+> The `--disk-encryption-keys` flag needs to issued multiple times for each
+> key file disko expects.
+
+> [!TIP]
+> For getting the ssh key, the public.asc in repo assets can be used to register
+> the GPG keys from yubikey, which should allow decrypting the private ssh
+> key from the SOPS files.
+> This will need to use `--target-host root@<liveiso>.local -i <private-key>`
+> instead of the `--target-host <liveiso>` stanza.
+
+> [!TIP]
+> If disko already ran, can change the flag to `--disko-mode mount`
+
+> [!TIP]
+> `--build-on remote` builds the system on the live-usb, useful to skip cross-compilation.
+> `--build-on local` builds the system on the local machine, might be nice to specify.
 
 ---
 
@@ -141,7 +206,13 @@ TODO: Do this part
 
 ## Post Installation Steps {: #post-installation}
 
+Some setup after deployment might be necessary.
+This is a list of post-install steps to follow.
+
+### Backup LUKS headers
+
 TODO: Do this part
 
-- Backup LUKS headers.
-- Insert yubikey and run `gpg --card-status` for GPG keys.
+### Register user GPG key with YubiKey
+
+Insert yubikey, and run `gpg --card-status` as user for the GPG keys.

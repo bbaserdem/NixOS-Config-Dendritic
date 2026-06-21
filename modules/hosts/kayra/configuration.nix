@@ -31,7 +31,6 @@
       # Tooling
       networkmanager
       yubikey
-      ssh
       gpg
       polkit
       vcs
