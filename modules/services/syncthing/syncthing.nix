@@ -8,11 +8,11 @@
     !/Stignore
     !/Stignore/*
 
-    // Don't track thumbnaails
+    // Do not track thumbnaails
     .thumbnails
     .thumbnails/**
 
-    // Don't track any VCS
+    // Do not track any VCS
     (?d).git
     (?d).gitmodules
     (?d).jj
