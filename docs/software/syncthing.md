@@ -4,6 +4,9 @@ Syncthing setup across all using computers.
 
 My syncthing setup is meant to be used across different hosts and computers.
 
+> [!WARNING]
+> Ignore patterns, due to how nixos works, can't have apostrophes (stupid)
+
 ## TODO
 
 - [*] dataDir = "/home/syncthing"

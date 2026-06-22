@@ -216,3 +216,9 @@ TODO: Do this part
 ### Register user GPG key with YubiKey
 
 Insert yubikey, and run `gpg --card-status` as user for the GPG keys.
+
+### User Setup
+
+If applicable, following steps will onboard a user to user the computer;
+
+- Log in to Mozilla Sync

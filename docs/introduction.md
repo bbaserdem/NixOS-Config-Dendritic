@@ -9,6 +9,8 @@ Running checklist for todo items.
 
 ### Chores
 
+- [ ] Switch the ignorepattern usage to dropping .stignore files with nixos syncthing module
+- [ ] Profile pictures in assets; and make them visible in general
 - [ ] Reorganize modules into features and aspects, work `import-tree` for multiple, and custom, directories.
 - [ ] Set up picture organization
 - [ ] Set up video organization
@@ -20,6 +22,7 @@ Running checklist for todo items.
 - [ ] Fix hyprsplit not building with new hyprland
 - [ ] Redo hyprland config in lua
 - [ ] Redo hyprsplitmonitors config in lua; or migrate to new tool.
+- [ ] Maybe configure so framebuffer and terminal apps/prompt look good
 
 ### Fixed dependent on upstream
 

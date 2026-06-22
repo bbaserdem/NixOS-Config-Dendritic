@@ -15,6 +15,12 @@
         ];
 
         services.nginx.virtualHosts."syncthing.localhost" = {
+          listen = [
+            {
+              addr = "127.0.0.1";
+              port = 80;
+            }
+          ];
           locations."/" = {
             proxyPass = "http://${config.services.syncthing.guiAddress}";
             proxyWebsockets = true;

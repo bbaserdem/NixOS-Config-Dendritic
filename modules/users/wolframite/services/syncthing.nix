@@ -22,7 +22,7 @@
             // Zoom deposits files here, do not track
             /Zoom
 
-            // Don't track auxillary latex files
+            // Do not track auxillary latex files
             (?d)*.aux
             (?d)*.bbl
             (?d)*.bcl
