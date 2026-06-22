@@ -16,6 +16,7 @@
       nix
       homebrew
       homeManager
+      shell
     ];
 
     config = {

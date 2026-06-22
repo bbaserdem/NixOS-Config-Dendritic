@@ -8,7 +8,6 @@
       docker
       virtualization
       vcs
-      shell
       # Languages
       node
       python
