@@ -158,6 +158,7 @@ in {
                 path = mkPath folder;
                 devices = lib.filter (host: host != hostName) folder.hosts;
                 ignorePatterns = lib.splitString "\n" (mkIgnoreText hostName folder);
+                copyOwnershipFromParent = true;
               };
             });
 
