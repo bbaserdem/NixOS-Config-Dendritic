@@ -32,7 +32,7 @@
                   # User directory specification
                   userDirs = {
                     enable = true;
-                    createDirectories = false; # Should be handled ourselves
+                    createDirectories = true;
                   };
                   # Autostart in linux
                   autostart = {

@@ -123,6 +123,8 @@
         (inputs.self + /assets/kayra-ssh.pub)
       ];
       services.fail2ban.enable = lib.mkForce false;
+      # Root shell must be bash for nixos-anywhere
+      users.users.root.shell = lib.mkForce pkgs.bashInteractive;
 
       # From installation-cd-graphical-gnome
       services.displayManager = {

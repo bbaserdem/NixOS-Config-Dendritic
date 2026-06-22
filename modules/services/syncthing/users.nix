@@ -146,6 +146,7 @@ in {
           or (throw "localConfig.users.${user}.xdgDirs.${xdgDir} is needed for syncthing module")
           );
           userXdgPath = user: xdgDir: "${userHome user}/${userXdgRelPath user xdgDir}";
+          mkPathUser = user: "${dataDir}/${capitalize user}";
           mkPath = folder: "${dataDir}/${capitalize folder.user}/${capitalize folder.xdgDir}";
         in {
           services.syncthing.settings.folders =
@@ -159,37 +160,74 @@ in {
                 ignorePatterns = lib.splitString "\n" (mkIgnoreText hostName folder);
               };
             });
+
           # Provision folder permissions
-          systemd.tmpfiles.settings =
-            enabledFolders
-            |> lib.mapAttrs' (name: folder: {
-              name = "35-syncthing-xdg-${name}";
-              value =
-                if (userEnabled folder.user)
-                then {
-                  "${mkPath folder}" = {
-                    d = {
-                      user = folder.user;
-                      group = userGroup folder.user;
-                      mode = "0750";
+          systemd.tmpfiles.settings = lib.mkMerge (
+            (
+              # Parent folder dispatch (result is a list of attrsets)
+              enabledFolders
+              |> lib.mapAttrsToList (_: folder: folder.user)
+              |> lib.unique
+              |> map (
+                user: {
+                  "34-syncthing-namespace-${user}" =
+                    if (userEnabled user)
+                    then {
+                      "${mkPathUser user}" = {
+                        d = {
+                          user = user;
+                          group = userGroup user;
+                          mode = "0750";
+                        };
+                        "A+".argument = "u:${syncUser}:rwX,m::rwX";
+                        "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
+                      };
+                    }
+                    else {
+                      "${mkPathUser user}".d = {
+                        user = syncUser;
+                        group = syncGroup;
+                        mode = "0750";
+                      };
                     };
-                    "A+".argument = "u:${syncUser}:rwX,m::rwX";
-                    "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
-                  };
-                  "${userXdgPath folder.user folder.xdgDir}".d = {
-                    user = folder.user;
-                    group = userGroup folder.user;
-                    mode = "0750";
-                  };
                 }
-                else {
-                  "${mkPath folder}".d = {
-                    user = syncUser;
-                    group = syncGroup;
-                    mode = "0750";
-                  };
-                };
-            });
+              )
+            )
+            ++ [
+              (
+                # XDG folders
+                enabledFolders
+                |> lib.mapAttrs' (name: folder: {
+                  name = "35-syncthing-xdg-${name}";
+                  value =
+                    if (userEnabled folder.user)
+                    then {
+                      "${mkPath folder}" = {
+                        d = {
+                          user = folder.user;
+                          group = userGroup folder.user;
+                          mode = "0750";
+                        };
+                        "A+".argument = "u:${syncUser}:rwX,m::rwX";
+                        "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
+                      };
+                      "${userXdgPath folder.user folder.xdgDir}".d = {
+                        user = folder.user;
+                        group = userGroup folder.user;
+                        mode = "0750";
+                      };
+                    }
+                    else {
+                      "${mkPath folder}".d = {
+                        user = syncUser;
+                        group = syncGroup;
+                        mode = "0750";
+                      };
+                    };
+                })
+              )
+            ]
+          );
           # Provision bind mounts
           fileSystems =
             enabledFolders

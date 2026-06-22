@@ -22,7 +22,7 @@
         (
           lib.optionalAttrs (lib.hasAttrByPath ["sops" "secrets"] options) (
             let
-              unitName = "samba-user-${user}.service";
+              unitName = "samba-user-${user}";
             in {
               # Load samba secret from global config
               sops.secrets."samba/${user}" = {
@@ -64,7 +64,27 @@
                 if s == ""
                 then ""
                 else (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (builtins.stringLength s) s);
+              home = config.users.users.${user}.home;
               sharePath = config.home-manager.users."${user}".xdg.userDirs.publicShare;
+              relativeSharePath =
+                if lib.hasPrefix "${home}/" sharePath
+                then lib.removePrefix "${home}/" sharePath
+                else throw "Samba public share path '${sharePath}' not under ~:${home}";
+              shareParts = lib.filter (part: part != "") (lib.splitString "/" relativeSharePath);
+              shareParentParts =
+                if builtins.length shareParts <= 1
+                then []
+                else lib.init shareParts;
+              shareParentPaths =
+                lib.imap1 (
+                  i: _: "${home}/${lib.concatStringsSep "/" (lib.take i shareParentParts)}"
+                )
+                shareParentParts;
+              parentMode = "0750";
+              shareMode =
+                if readOnly
+                then "0755"
+                else "0775";
               shareName = "${user}@${config.networking.hostName}-public";
               sharePretty = "${capitalize user}'s public share on ${config.networking.hostName}";
               yesNo = v:
@@ -74,13 +94,23 @@
               group = config.users.users."${user}".group;
             in {
               # Make sure file exists with proper permissions
+              # Create parent directory hierarchy
+              systemd.tmpfiles.settings."29-samba-public-parents-${user}" = (
+                lib.listToAttrs (
+                  map (path:
+                    lib.nameValuePair path {
+                      d = {
+                        inherit user group;
+                        mode = parentMode;
+                      };
+                    })
+                  shareParentPaths
+                )
+              );
+              # Set permissions of the terminal share directory
               systemd.tmpfiles.settings."30-samba-public-${user}"."${sharePath}".d = {
-                user = user;
-                group = group;
-                mode =
-                  if readOnly
-                  then "0755"
-                  else "0775";
+                inherit user group;
+                mode = shareMode;
               };
               # Create samba share
               services.samba.settings.${shareName} =
