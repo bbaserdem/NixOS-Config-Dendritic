@@ -28,6 +28,9 @@ local M = {
             "goimports",
             "gofmt",
           },
+          markdown = {
+            "prettier",
+          },
           nix = {
             "alejandra",
           },
@@ -76,7 +79,7 @@ local M = {
         python = { "ruff" },
         -- lua = { "luacheck" }, -- Not working for some reason
         latex = { "chktex" },
-        markdown = { "vale" },
+        -- markdown = { "vale" },
       }
 
       -- Create a linting auto command

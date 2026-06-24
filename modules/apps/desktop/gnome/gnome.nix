@@ -21,27 +21,32 @@
           desktopManager.gnome.enable = true;
           # Some gnome services
           gnome = {
+            # Core modules that is useful to have
             at-spi2-core.enable = true;
             core-apps.enable = true;
             core-developer-tools.enable = true;
             core-os-services.enable = true;
             core-shell.enable = true;
-            evolution-data-server.enable = lib.mkForce false;
-            games.enable = false;
-            gcr-ssh-agent.enable = false;
             glib-networking.enable = true;
-            gnome-browser-connector.enable = true;
-            gnome-initial-setup.enable = false;
-            gnome-keyring.enable = false;
-            gnome-online-accounts.enable = false;
-            gnome-remote-desktop.enable = true;
+            gnome-keyring.enable = true;
             gnome-settings-daemon.enable = true;
-            gnome-software.enable = false;
-            gnome-user-share.enable = false;
-            localsearch.enable = false;
-            rygel.enable = false;
+            # Integrate with external accounts; and internal tooling
+            gnome-online-accounts.enable = true;
+            evolution-data-server.enable = true;
+            gnome-browser-connector.enable = true;
+            # Local indexing
+            localsearch.enable = true;
+            tinysparql.enable = true;
             sushi.enable = true;
-            tinysparql.enable = false;
+            # Content streaming
+            gnome-remote-desktop.enable = true; # only wayland rdp afaik
+            rygel.enable = lib.mkDefault false; # Stream to local media broadcasting
+            # Unneeded fluff
+            games.enable = false;
+            gnome-initial-setup.enable = false;
+            gcr-ssh-agent.enable = false; # We use gpg-agent as the ssh-agent
+            gnome-user-share.enable = false; # We use samba for file sharing
+            gnome-software.enable = false; # No flatpak/imperative mutation
           };
         };
 
@@ -99,21 +104,9 @@
         ...
       }: {
         config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-          # Some gnome extensions
+          # Enable gnome shell
           programs.gnome-shell = {
             enable = true;
-            extensions = with pkgs.gnomeExtensions; [
-              # Status tray
-              {package = appindicator;}
-              # Battery of wireless devices shown
-              {package = wireless-hid;}
-              # Menu for removable drives
-              {package = removable-drive-menu;}
-              # Shows system resources
-              {package = system-monitor;}
-              # Clipboard
-              {package = clipboard-indicator;}
-            ];
           };
         };
       };
