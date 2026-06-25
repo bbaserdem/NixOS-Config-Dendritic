@@ -1,0 +1,36 @@
+[project]
+name = "beets-wolframite"
+version = "0.1.0"
+description = "Personal beets plugin"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = [
+    "beets>=2.11",
+    "mediafile>=0.13",
+    "mutagen>=1.47",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.15",
+    "ty",
+]
+
+[build-system]
+requires = ["uv_build>=0.10,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "beetsplug.wolframite"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ty]
+
+[tool.ty.src]
+include = ["src/**/*.py", "tests/**/*.py"]
+respect-ignore-files = true

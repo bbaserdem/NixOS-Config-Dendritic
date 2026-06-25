@@ -45,6 +45,8 @@
         hosts = syncHosts;
         ignore = {
           global = ''
+            // We manage this file decleratively
+            /.mpdignore
           '';
           hosts = {
             su-ana = ''

@@ -11,7 +11,7 @@
     srcDir =
       if pkgs.stdenv.hostPlatform.isLinux
       then config.xdg.userDirs.music
-      else "${config.home.homeDirectory}/Media/Music";
+      else "${config.home.homeDirectory}/Music";
   in {
     config = lib.mkMerge [
       {
@@ -19,7 +19,7 @@
         services = {
           mpd = {
             musicDirectory = srcDir;
-            playlistDirectory = "${srcDir}/Playlists";
+            playlistDirectory = "${srcDir}";
             network = {
               listenAddress = "localhost";
               port = 6600;
@@ -28,12 +28,11 @@
         };
       }
       (
-        lib.optionalAttrs (lib.hasAttrByPath ["sops" "secrets"] options)
+        lib.optionalAttrs (lib.hasAttrByPath ["sops"] options)
         {
-          # Load secret key
-          sops.secrets."listenbrainz" = {};
           # Listenbrainz credentials
-          services.listenbrainz-mpd.settings.submission.token_file = config.sops.secrets."listenbrainz".path;
+          services.listenbrainz-mpd.settings.submission.token_file =
+            config.sops.secrets."musicbrainz/listenbrainz-token".path;
         }
       )
     ];

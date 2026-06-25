@@ -1,34 +1,72 @@
 # Musicbrainz configuration for beets
-#
 {...}: {
-  flake.modules.homeManager.wolframite = {config, ...}: {
-    # Pull our musicbrainz password from encrypted secret
-    #sops.secrets.musicbrainz = {};
-
-    programs.beets.settings = {
-      plugins = [
-        "musicbrainz"
-        "mbcollection"
-        "mbsync"
-      ];
-      musicbrainz = {
-        searchlimit = 10;
-        extra_tags = [
-          "year"
-          "catalognum"
-          "country"
-          "media"
-          "label"
-        ];
-        genre = true;
-        external_ids = {
-          discogs = "yes";
-          bandcamp = "yes";
-          deezer = "yes";
+  flake.modules.homeManager.wolframite = {
+    config,
+    lib,
+    options,
+    ...
+  }: {
+    config = lib.mkMerge [
+      {
+        programs.beets.settings = {
+          plugins = [
+            "musicbrainz"
+            "mbcollection"
+            "mbsync"
+            "listenbrainz"
+          ];
+          # MusicBrainz import settings
+          musicbrainz = {
+            search_limit = 10;
+            extra_tags = [
+              "year"
+              "catalognum"
+              "country"
+              "media"
+              "label"
+            ];
+            genres = true;
+            external_ids = {
+              discogs = true;
+              bandcamp = true;
+            };
+          };
+          # Collection upload settings
+          mbcollection = {
+            auto = false;
+            remove = false;
+          };
         };
-        user = "silverbluep";
-        #pass = "!include ${config.sops.secrets.musicbrainz.path}";
-      };
-    };
+      }
+      (
+        # Musicbrainz credentials to be merged to the main config
+        lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) (let
+          yamlName = "beets-musicbrainz-credentials.yaml";
+        in {
+          # Create yaml file
+          sops.templates."${yamlName}" = {
+            mode = "0400";
+            content = ''
+              listenbrainz:
+                username: |-
+                  ${config.sops.placeholder."musicbrainz/user"}
+                token: |-
+                  ${config.sops.placeholder."musicbrainz/listenbrainz-token"}
+              musicbrainz:
+                user: |-
+                  ${config.sops.placeholder."musicbrainz/user"}
+                email: |-
+                  ${config.sops.placeholder."musicbrainz/email"}
+                pass: |-
+                  ${config.sops.placeholder."musicbrainz/pass"}
+            '';
+          };
+          # Import yaml file in beets config
+          programs.beets.settings.include = [
+            config.sops.templates."${yamlName}".path
+          ];
+        })
+      )
+    ];
   };
 }

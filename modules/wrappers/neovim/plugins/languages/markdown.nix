@@ -12,7 +12,7 @@
         nvim-treesitter-parsers.markdown_inline
       ];
       runtimePackages = with pkgs.unstable; [
-        vale # Linter
+        prettier # Used for markdown formatting
         glow # Markdown typesetter for terminal
         mdformat # Markdown formatter
         python3Packages.pylatexenc # Render latex eqns

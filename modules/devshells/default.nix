@@ -33,13 +33,20 @@
           # Node for plugins and tooling
           nodejs-slim
           pnpm
-          # Python for running scripts
+          # Python for running scripts and building local packages
           (
             python3.withPackages (p:
               with p; [
                 pyyaml
+                beets-minimal
+                mediafile
+                mutagen
+                pytest
               ])
           )
+          uv
+          ruff
+          ty
           # Tooling for agents
           ripgrep
           shellcheck

@@ -46,7 +46,7 @@ local M = {
         },
         -- Default options
         default_format_opts = {
-          lsp_format = "fallback",
+          lsp_format = "first",
         },
         -- Formatter specific options go into the ftplugin
         -- Format on save
