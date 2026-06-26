@@ -59,7 +59,7 @@ The config is split between various files;
 - `package.nix`: Package definition with overrides of custom packages.
 - `playlists.nix`: Configuration for smart playlist generation.
 - `convert.nix`: File conversion plugin settings.
-Links the local audio scripts to beets, so they are used for transcoding.
+Links the local audio script (`audman`) to beets, so they are used for transcoding.
 
 ## Tags
 
@@ -134,3 +134,4 @@ The plugin defines some custom functions;
 ### Hooks
 
 - `field_translations`; Define translations that will normalize tags at import time.
+- `alternatives`; Hooks into `beet-alternatives` to produce playlist copies.

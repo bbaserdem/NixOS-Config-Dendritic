@@ -26,7 +26,7 @@
       };
 
       # Importer options
-      ignore_hidden = false;
+      ignore_hidden = true;
       ignore = [
         ".*"
         "*~"

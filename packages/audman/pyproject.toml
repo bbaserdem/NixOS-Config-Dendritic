@@ -1,0 +1,30 @@
+[project]
+name = "audman"
+version = "0.1.0"
+description = "Personal audio conversion manager"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = [
+  "typer>=0.15",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "ruff>=0.15",
+]
+
+[project.scripts]
+audman = "audman.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.10,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "audman"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"

@@ -28,8 +28,12 @@
             format = "opus";
             formats = {
               opus = {
-                command = "${pkgs.local.audio-scripts}/bin/audio-convert2opus $source $dest";
+                command = "${pkgs.local.audman}/bin/audman convert lossy --single --input-file $source --output-file $dest";
                 extension = "opus";
+              };
+              flac = {
+                command = "${pkgs.local.audman}/bin/audman convert lossless --single --input-file $source --output-file $dest";
+                extension = "flac";
               };
             };
           };

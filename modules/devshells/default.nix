@@ -42,6 +42,7 @@
                 mediafile
                 mutagen
                 pytest
+                typer
               ])
           )
           uv
