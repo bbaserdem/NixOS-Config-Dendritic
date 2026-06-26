@@ -15,9 +15,9 @@
         cautious = true;
         sources = [
           "filesystem"
-          "coverart: release"
+          {coverart = "release";}
           "itunes"
-          "coverart: releasegroup"
+          {coverart = "releasegroup";}
           "albumart"
           "amazon"
           "*"

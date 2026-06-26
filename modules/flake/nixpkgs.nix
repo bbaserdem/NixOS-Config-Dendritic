@@ -76,7 +76,8 @@ in {
       overlays = [
         inputs.self.overlays.additions
         inputs.self.overlays.modifications
-        inputs.self.overlays.unstable-packages
+        inputs.self.overlays.unstablePackages
+        inputs.self.overlays.localPythonPackages
         inputs.nur.overlays.default
       ];
     };
@@ -92,10 +93,13 @@ in {
 
       # Unstable overlay to add unstable pkgs to pkgs.unstable
       overlays = {
-        unstable-packages = final: prev: {
+        unstablePackages = final: prev: {
           unstable = import inputs.nixpkgs-unstable {
             system = final.stdenv.hostPlatform.system;
             config = final.config;
+            overlays = [
+              inputs.self.overlays.localPythonPackages
+            ];
           };
         };
       };

@@ -34,6 +34,7 @@
           nvd
           sops
           nix-diff
+          nix-weather
         ];
       };
     };

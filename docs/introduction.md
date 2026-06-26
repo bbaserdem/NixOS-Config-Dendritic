@@ -19,7 +19,6 @@ Running checklist for todo items.
 - [ ] Migrate data from PC to laptop.
 - [ ] Import wifi configs to sops
 - [ ] Switch the ignorepattern usage to dropping .stignore files with nixos syncthing module.
-- [ ] Redo beets setup, do customization into a plugin package, and synching layout.
 - [ ] Change live usb setup, migrate from multios-usb to something else if can, and clean up.
 - [ ] Install better GPU and migrate yertengri.
 - [ ] Setup firewalld

@@ -79,7 +79,8 @@
       replaygain = {
         auto = true;
         backend = "ffmpeg";
-        peak = true;
+        # Not boolean, either "true" or "peak"
+        peak = "true";
         overwrite = false;
       };
 

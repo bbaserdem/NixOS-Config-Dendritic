@@ -1,7 +1,7 @@
 # Audio settings
 {...}: {
   flake.modules = {
-    nixos.sound = {...}: {
+    nixos.sound = {lib, ...}: {
       # Using PipeWire as the sound server conflicts with PulseAudio.
       # This option requires `hardware.pulseaudio.enable` to be set to false.
       services.pulseaudio.enable = false;
@@ -14,7 +14,9 @@
         pulse.enable = true;
         alsa = {
           enable = true;
-          support32Bit = true;
+          # Causes openblas builds on i686-linux
+          # Don't need this, unless someone else sets it
+          support32Bit = lib.mkOverride 1400 false;
         };
         jack.enable = true;
 

@@ -32,6 +32,9 @@
         "*~"
         "System Volume Information"
         "lost+found"
+        "Staging"
+        "Sort"
+        "Unsorted"
       ];
       threaded = true;
       import = {

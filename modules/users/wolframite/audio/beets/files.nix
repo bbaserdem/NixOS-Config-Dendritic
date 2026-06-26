@@ -10,6 +10,7 @@
     programs.beets.settings = {
       # Main options
       directory = config.services.mpd.musicDirectory;
+      library = "${config.xdg.dataHome}/beets/library.db";
       plugins = [
         "albumtypes"
         "the"

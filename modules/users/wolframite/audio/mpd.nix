@@ -35,6 +35,22 @@
             config.sops.secrets."musicbrainz/listenbrainz-token".path;
         }
       )
+      (
+        let
+          homeDir = config.home.homeDirectory;
+          mpdDir = config.services.mpd.musicDirectory;
+        in
+          # Dispatch .mpdignore file
+          (
+            lib.mkIf (lib.hasPrefix "${homeDir}/" mpdDir) {
+              home.file."${lib.removePrefix "${homeDir}/" mpdDir}/.mpdignore".text = ''
+                Staging
+                Sort
+                Unsorted
+              '';
+            }
+          )
+      )
     ];
   };
 }

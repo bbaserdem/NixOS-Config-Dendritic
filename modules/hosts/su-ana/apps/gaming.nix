@@ -5,9 +5,9 @@
 
     # Load modules that configure the system
     imports = with inputs.self.modules.darwin; [
-      # Games
-      gaming
-      steam
+      # Games, actually not needed here
+      # gaming
+      # steam
     ];
   };
 }

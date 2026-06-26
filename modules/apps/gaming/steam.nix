@@ -96,39 +96,34 @@ in {
                 };
               };
             in {
-              config = lib.mkMerge [
-                {
-                  # Add user to gaming group
-                  users.users.${user}.extraGroups = [
-                    config.users.groups.games.name
+              config = lib.mkIf (config.programs.steam.enable or false) {
+                # Add user to gaming group
+                users.users.${user}.extraGroups = [
+                  config.users.groups.games.name
+                ];
+
+                # Create the file hierarchy if non-existent
+                systemd.tmpfiles.settings."25-steam-${user}" = {
+                  "${home}/.local" = dispatchCfg;
+                  "${home}/.local/share" = dispatchCfg;
+                  "${home}/.local/share/Steam" = dispatchCfg;
+                  "${home}/.local/share/Steam/steamapps" = dispatchCfg;
+                  "${home}/.local/share/Steam/steamapps/common" = dispatchCfg;
+                };
+
+                # Create the bind mount to the common directory
+                fileSystems."${home}/.local/share/Steam/steamapps/common" = {
+                  device = "/opt/steam-common";
+                  fsType = "none";
+                  options = ["bind" "nofail"];
+                  depends = [
+                    "/home"
+                    "${home}"
+                    "/opt"
+                    "/opt/steam-common"
                   ];
-                }
-                (
-                  # Create home bind mount for this user
-                  lib.mkIf (config.programs.steam.enable or false) {
-                    # Create the file hierarchy if non-existent
-                    systemd.tmpfiles.settings."25-steam-${user}" = {
-                      "${home}/.local" = dispatchCfg;
-                      "${home}/.local/share" = dispatchCfg;
-                      "${home}/.local/share/Steam" = dispatchCfg;
-                      "${home}/.local/share/Steam/steamapps" = dispatchCfg;
-                      "${home}/.local/share/Steam/steamapps/common" = dispatchCfg;
-                    };
-                    # Create the bind mount to the common directory
-                    fileSystems."${home}/.local/share/Steam/steamapps/common" = {
-                      device = "/opt/steam-common";
-                      fsType = "none";
-                      options = ["bind" "nofail"];
-                      depends = [
-                        "/home"
-                        "${home}"
-                        "/opt"
-                        "/opt/steam-common"
-                      ];
-                    };
-                  }
-                )
-              ];
+                };
+              };
             };
           })
         );

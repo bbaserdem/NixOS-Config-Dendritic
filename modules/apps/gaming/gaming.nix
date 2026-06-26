@@ -19,10 +19,13 @@
           };
         };
       };
-      # Add udev rules for gaming devices
-      services.udev.packages = with pkgs; [
-        game-devices-udev-rules
-      ];
+
+      services = {
+        # Add udev rules for gaming devices
+        udev.packages = with pkgs; [
+          game-devices-udev-rules
+        ];
+      };
 
       # Need some userspace tools
       environment.systemPackages = with pkgs; [

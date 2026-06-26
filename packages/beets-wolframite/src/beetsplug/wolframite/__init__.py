@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+from beets.library import Album
 from beets.plugins import BeetsPlugin
 
 from . import alternatives, fields, playlist, templates, translate
@@ -27,6 +28,7 @@ class WolframitePlugin(BeetsPlugin):
             self._record_alternatives_update,
         )
         self.register_listener("cli_exit", self._sync_alternatives_playlists)
+        self.register_listener("database_change", self._sync_album_fields_to_items)
 
         # Custom fields registered as tags
         fields.register_media_fields(self)
@@ -46,7 +48,10 @@ class WolframitePlugin(BeetsPlugin):
 
     # Custom workflow
     def commands(self):
-        return playlist.commands(self)
+        return [
+            *playlist.commands(self),
+            *fields.commands(),
+        ]
 
     # The translation method
     def _apply_field_translations(self, session, task) -> None:
@@ -57,3 +62,8 @@ class WolframitePlugin(BeetsPlugin):
 
     def _sync_alternatives_playlists(self, lib) -> None:
         alternatives.sync_updated_collections(self, lib, self._updated_alternatives)
+
+    def _sync_album_fields_to_items(self, _lib, model) -> None:
+        if not isinstance(model, Album):
+            return
+        fields.sync_album_fields_to_items(model, set(model._dirty))

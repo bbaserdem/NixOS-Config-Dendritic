@@ -71,8 +71,8 @@
               ]
             ))
           ) {
-            home.file."${lib.removePrefix "${homeDir}/" musicDir}/.mpdignore".text = ''
-              Lossy
+            home.file."${lib.removePrefix "${homeDir}/" musicDir}/Lossy/.mpdignore".text = ''
+              *
             '';
           }
       )

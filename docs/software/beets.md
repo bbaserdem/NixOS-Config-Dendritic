@@ -40,10 +40,6 @@ The only usecase I had for database sync\ing is made obsolete with
 being able to dispatch secrets selectively to beets.
 Enables using listenbrainz play count syncing, so db syncing is moot.
 
-# Todo
-
-- [ ] Change convert command to new script; convert all lossless to flac with max compression.
-
 ## Organization
 
 Most of the beets config lies inside the configuration of user `wolframite`.
