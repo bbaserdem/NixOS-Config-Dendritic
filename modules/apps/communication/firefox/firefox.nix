@@ -18,14 +18,21 @@
         lib,
         ...
       }: {
-        # Use firefox-bin in the package
         config = lib.mkMerge [
           {
-            programs.firefox = {
-              enable = true;
-              package = pkgs.firefox;
-            };
+            programs.firefox.enable = true;
           }
+          (
+            lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+              programs.firefox.package = pkgs.firefox;
+            }
+          )
+          (
+            # TODO: REmove this quickfix; firefox-unwrapped hydra failure 27-06-2026
+            lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+              programs.firefox.package = pkgs.firefox-bin;
+            }
+          )
         ];
       };
     };

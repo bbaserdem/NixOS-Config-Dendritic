@@ -31,9 +31,9 @@
         lib.optionalAttrs (lib.hasAttrByPath ["sops" "secrets"] options)
         {
           # Load secret key
-          sops.secrets."listenbrainz" = {};
+          sops.secrets."musicbrainz/listenbrainz-token" = {};
           # Listenbrainz credentials
-          services.listenbrainz-mpd.settings.submission.token_file = config.sops.secrets."listenbrainz".path;
+          services.listenbrainz-mpd.settings.submission.token_file = config.sops.secrets."musicbrainz/listenbrainz-token".path;
         }
       )
     ];

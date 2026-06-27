@@ -20,6 +20,7 @@
       # AI tools
       ai
       ai-claude
+      ai-codegraph
       ai-codex
       ai-opencode
       ai-forgecode
