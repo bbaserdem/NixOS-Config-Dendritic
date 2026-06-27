@@ -5,7 +5,7 @@
     lib,
     ...
   }: {
-    # Load chaotic modules
+    # Load chaotic modules for cachyos kernel
     imports = with inputs.chaotic.nixosModules; [
       nyx-cache
       nyx-overlay

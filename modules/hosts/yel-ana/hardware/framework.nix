@@ -1,76 +1,47 @@
-# Su-ana hardware config related to frame.work laptop
+# Su-ana: frame.work laptop hardware config
 {inputs, ...}: {
-  flake.modules.nixos.yel-ana = {pkgs, ...}: {
+  flake.modules.nixos.yel-ana = {
+    pkgs,
+    lib,
+    options,
+    ...
+  }: {
     # Import hardware optimizations
     imports = [
       inputs.hardware.nixosModules.framework-13-7040-amd
     ];
 
-    config = {
-      # Framework is optimized for ppd, use that for default for now
-      local.powerManagement.backend = "ppd";
+    config = lib.mkMerge [
+      (
+        # We have integrated GPU; use the CPU voxtype backend by default
+        lib.optionalAttrs (lib.hasAttrByPath ["programs" "voxtype"] options) {
+          programs.voxtype = pkgs.voxtype;
+        }
+      )
+      {
+        # Framework is optimized for ppd, use that for default for now
+        local.powerManagement.backend = "ppd";
 
-      # Explicitly disable fingerprint; enabled by default by nixos-hardware
-      services.fprintd.enable = false;
+        # Explicitly disable fingerprint; enabled by default by framework module
+        services.fprintd.enable = false;
 
-      # Framework specific audio enhancement
-      hardware.framework.laptop13.audioEnhancement.enable = true;
+        # Framework specific audio enhancement
+        hardware.framework.laptop13.audioEnhancement.enable = true;
 
-      # Framework battery health; even when it's really bad right now
-      systemd.services.framework-charge-limit = {
-        description = "Set Framework battery charge limit";
-        wantedBy = ["multi-user.target"];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.framework-tool}/bin/framework_tool --charge-limit 80";
-          RemainAfterExit = true;
-        };
-      };
-
-      # Fan control module
-      hardware.fw-fanctrl = {
-        enable = true;
-        config = {
-          defaultStrategy = "medium";
-          strategyOnDischarging = "lazy";
-          strategies = {
-            "lazy" = {
-              fanSpeedUpdateFrequency = 5;
-              movingAverageInterval = 30;
-              speedCurve = [
-                {
-                  temp = 0;
-                  speed = 15;
-                }
-                {
-                  temp = 50;
-                  speed = 15;
-                }
-                {
-                  temp = 65;
-                  speed = 25;
-                }
-                {
-                  temp = 70;
-                  speed = 35;
-                }
-                {
-                  temp = 75;
-                  speed = 50;
-                }
-                {
-                  temp = 85;
-                  speed = 100;
-                }
-              ];
-            };
+        # Framework battery health (my battery is pretty bad; but couldn't hurt)
+        systemd.services.framework-charge-limit = {
+          description = "Set Framework battery charge limit";
+          wantedBy = ["multi-user.target"];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.framework-tool}/bin/framework_tool --charge-limit 80";
+            RemainAfterExit = true;
           };
         };
-      };
 
-      # A systemd bug?
-      # TODO: IF everything works without this, remove it.
-      # systemd.services.systemd-logind.environment."SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK" = "1";
-    };
+        # TODO: IF everything works without this, remove it.
+        # systemd.services.systemd-logind.environment."SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK" = "1";
+      }
+    ];
   };
 }

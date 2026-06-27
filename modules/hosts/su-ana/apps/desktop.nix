@@ -10,6 +10,7 @@
       keyboard
       language
       stylix
+      voxtype
     ];
   };
 }

@@ -15,5 +15,6 @@
     (config.factory.inclusionModules "qt")
     (config.factory.inclusionModules "xdg")
     (config.factory.inclusionModules "waylandShell")
+    (config.factory.inclusionModules "voxtype")
   ];
 }

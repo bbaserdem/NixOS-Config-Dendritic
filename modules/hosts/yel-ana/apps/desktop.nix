@@ -14,6 +14,7 @@
       language
       qt
       xdg
+      voxtype
     ];
   };
 }

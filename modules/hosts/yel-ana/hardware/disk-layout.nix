@@ -60,7 +60,33 @@
                 };
               };
 
-              # 2 - OS Partition, with BTRFS subvolumes
+              # 2 - Encrypted swap partition
+              Crypt_Swap = {
+                size = "40G";
+                label = "Crypt_Yel-Ana_Swap";
+                priority = 200;
+                content = {
+                  type = "luks";
+                  name = "Yel-Ana_Swap";
+                  initrdUnlock = true;
+                  passwordFile = "/tmp/Yel-Ana.key";
+                  additionalKeyFiles = ["/tmp/Yel-Ana_Swap.key"];
+                  extraFormatArgs = ["--label" "Crypt_Yel-Ana_Swap"];
+                  settings = {
+                    allowDiscards = true;
+                    crypttabExtraOpts = [
+                      "password-cache=yes"
+                    ];
+                  };
+                  content = {
+                    type = "swap";
+                    resumeDevice = true;
+                    discardPolicy = "both";
+                  };
+                };
+              };
+
+              # 3 - OS Partition, with BTRFS subvolumes
               Crypt_Linux = {
                 size = "350G";
                 label = "Crypt_Yel-Ana_Linux";
@@ -128,10 +154,9 @@
                 };
               };
 
-              # 3 - Data partition, ext4 at /home
+              # 4 - Data partition, ext4 at /home
               Crypt_Data = {
                 size = "100%";
-                end = "-40G";
                 label = "Crypt_Yel-Ana_Data";
                 priority = 2000;
                 # LUKS encryption
@@ -155,32 +180,6 @@
                   };
                 };
               };
-
-              # 4 - Encrypted swap partition
-              # Crypt_Swap = {
-              #   size = "100%";
-              #   label = "Crypt_Yel-Ana_Swap";
-              #   priority = 3000;
-              #   content = {
-              #     type = "luks";
-              #     name = "Yel-Ana_Swap";
-              #     initrdUnlock = true;
-              #     passwordFile = "/tmp/Yel-Ana.key";
-              #     additionalKeyFiles = ["/tmp/Yel-Ana_Swap.key"];
-              #     extraFormatArgs = ["--label" "Crypt_Yel-Ana_Swap"];
-              #     settings = {
-              #       allowDiscards = true;
-              #       crypttabExtraOpts = [
-              #         "password-cache=yes"
-              #       ];
-              #     };
-              #     content = {
-              #       type = "swap";
-              #       resumeDevice = true;
-              #       discardPolicy = "both";
-              #     };
-              #   };
-              # };
 
               # End of the main disk
             };

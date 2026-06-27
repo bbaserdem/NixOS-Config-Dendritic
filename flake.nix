@@ -89,6 +89,10 @@
       url = "github:tinted-theming/tinted-terminal";
       flake = false;
     };
+    voxtype = {
+      url = "github:peteonrails/voxtype";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     wrappers = {
       url = "github:BirdeeHub/nix-wrapper-modules";
       inputs.nixpkgs.follows = "nixpkgs";
