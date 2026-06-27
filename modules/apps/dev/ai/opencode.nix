@@ -3,8 +3,8 @@
   flake.modules = {
     # Install opencode through brew, but we will punt this in favor of  flake for now
     darwin.ai = {
-      homebrew.brews = [
-        # "opencode"
+      homebrew.casks = [
+        "opencode-desktop"
       ];
     };
 

@@ -7,6 +7,11 @@
         "codex-app"
       ];
     };
+    darwin.ai-chatgpt = {...}: {
+      homebrew.casks = [
+        "chatgpt"
+      ];
+    };
 
     # Codex install
     homeManager.ai-codex = {

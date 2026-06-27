@@ -22,6 +22,7 @@
   flake.modules = lib.foldl lib.recursiveUpdate {} [
     (config.factory.inclusionModules "ai")
     (config.factory.inclusionModules "ai-claude")
+    (config.factory.inclusionModules "ai-chatgpt")
     (config.factory.inclusionModules "ai-codegraph")
     (config.factory.inclusionModules "ai-codex")
     (config.factory.inclusionModules "ai-opencode")

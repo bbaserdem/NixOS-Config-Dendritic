@@ -15,16 +15,12 @@
       # Editors
       nvim
       neovide
-      vscodium
-      zed
       # AI tools
       ai
       ai-claude
+      ai-chatgpt
       ai-codegraph
-      ai-codex
       ai-opencode
-      ai-forgecode
-      ai-droid
     ];
   };
 }

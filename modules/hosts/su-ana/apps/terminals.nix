@@ -7,7 +7,6 @@
     imports = with inputs.self.modules.darwin; [
       # Terminals
       ghostty
-      kitty
     ];
   };
 }

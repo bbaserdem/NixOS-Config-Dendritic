@@ -12,5 +12,8 @@
     (config.factory.inclusionModules "firefox")
     (config.factory.inclusionModules "discord")
     (config.factory.inclusionModules "remmina")
+    (config.factory.inclusionModules "zoom")
+    (config.factory.inclusionModules "slack")
+    (config.factory.inclusionModules "signal")
   ];
 }

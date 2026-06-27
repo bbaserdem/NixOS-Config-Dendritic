@@ -28,6 +28,7 @@
         {app = "/System/Applications/System Settings.app/";}
         {app = "/System/Applications/Utilities/Activity Monitor.app/";}
         {app = "/Applications/WorkSmart.app/";}
+        {app = "/Applications/Nessie.app/";}
         {app = "${hmDir}/KeePassXC.app/";}
         {spacer = {small = true;};}
         # Media
@@ -35,7 +36,6 @@
         {app = "/Applications/swmpc.app/";}
         {app = "/Applications/VLC.app/";}
         {app = "/Applications/OBS.app/";}
-        {app = "/Applications/Steam.app/";}
         {spacer = {small = true;};}
         # Documents
         {app = "${hmDir}/Obsidian.app/";}
@@ -46,6 +46,7 @@
         # Internet
         {app = "/System/Applications/Mail.app/";}
         {app = "${hmDir}/Slack.app/";}
+        {app = "${hmDir}/zoom.us.app/";}
         {app = "/Applications/Google Chrome.app/";}
         {app = "/Applications/Chromium.app/";}
         {app = "${hmDir}/Firefox.app/";}
@@ -53,14 +54,14 @@
         {spacer = {small = true;};}
         # Dev
         {app = "/Applications/GitHub Desktop.app/";}
-        {app = "${hmDir}/kitty.app/";}
         {app = "/Applications/Ghostty.app/";}
         {app = "${hmDir}/OrbStack.app/";}
         {app = "${hmDir}/UTM.app/";}
         {spacer = {small = true;};}
         # AI
         {app = "/Applications/Claude.app/";}
-        {app = "/Applications/Codex.app/";}
+        {app = "/Applications/OpenCode.app/";}
+        {app = "/Applications/ChatGPT.app/";}
       ];
     };
   };

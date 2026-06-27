@@ -6,8 +6,6 @@
     # Load modules that configure the system
     imports = with inputs.self.modules.darwin; [
       # Image suite
-      image
-      blender
     ];
   };
 }
