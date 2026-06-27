@@ -22,6 +22,8 @@
       fileSystems."/home/wolframite".depends = ["/home"];
 
       # Sops secrets for key-file provisioning
+      # No sops-guards; CANNOT boot without secrets provisioning
+      # so hard fail if sops-nix not loaded
       sops.secrets = {
         crypt-data = {
           sopsFile = inputs.self + /secrets/host/yel-ana/Yel-Ana_Data.key;
@@ -111,11 +113,6 @@
                         mountpoint = "/var/lib/portables";
                         mountOptions = ["compress=zstd" "noatime"];
                       };
-                      "/@nixos-swap" = {
-                        mountpoint = "/swap";
-                        mountOptions = ["noatime"];
-                        swap.swapfile.size = "32G";
-                      };
                       "/@user-wolframite" = {
                         mountpoint = "/home/wolframite";
                         mountOptions = ["compress=zstd" "strictatime" "lazytime"];
@@ -134,6 +131,7 @@
               # 3 - Data partition, ext4 at /home
               Crypt_Data = {
                 size = "100%";
+                end = "-40G";
                 label = "Crypt_Yel-Ana_Data";
                 priority = 2000;
                 # LUKS encryption
@@ -157,6 +155,32 @@
                   };
                 };
               };
+
+              # 4 - Encrypted swap partition
+              # Crypt_Swap = {
+              #   size = "100%";
+              #   label = "Crypt_Yel-Ana_Swap";
+              #   priority = 3000;
+              #   content = {
+              #     type = "luks";
+              #     name = "Yel-Ana_Swap";
+              #     initrdUnlock = true;
+              #     passwordFile = "/tmp/Yel-Ana.key";
+              #     additionalKeyFiles = ["/tmp/Yel-Ana_Swap.key"];
+              #     extraFormatArgs = ["--label" "Crypt_Yel-Ana_Swap"];
+              #     settings = {
+              #       allowDiscards = true;
+              #       crypttabExtraOpts = [
+              #         "password-cache=yes"
+              #       ];
+              #     };
+              #     content = {
+              #       type = "swap";
+              #       resumeDevice = true;
+              #       discardPolicy = "both";
+              #     };
+              #   };
+              # };
 
               # End of the main disk
             };

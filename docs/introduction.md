@@ -9,12 +9,13 @@ Running checklist for todo items.
 
 ### Chores
 
-- [ ] Check out facter
+- [ ] Fix keepassxc workflow
+- [ ] Mimetypes in linux
+- [ ] Resize yel-ana redo disk partitioning
+- [ ] Voxtype on linux and macos
 - [ ] Build transmission/deluge with vpn container/vm.
 - [ ] Profile pictures in assets; and make them visible in general (render in sddm)
-- [ ] Syncthing; explore module to see if we can just serve syncthing.localhost directly.
 - [ ] Neovim; add toggle for markdown rendering; it's so annoying.
-- [ ] Neovim; nvim-lint vale requires a .vale.ini file, global is fine
 - [ ] Neovim; warnings and problems in linux; check it out.
 - [ ] Migrate data from PC to laptop.
 - [ ] Import wifi configs to sops

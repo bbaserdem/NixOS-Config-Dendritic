@@ -1,11 +1,6 @@
 # Su-ana hardware config related to frame.work laptop
 {inputs, ...}: {
-  flake.modules.nixos.yel-ana = {
-    config,
-    lib,
-    options,
-    ...
-  }: {
+  flake.modules.nixos.yel-ana = {pkgs, ...}: {
     # Import hardware optimizations
     imports = [
       inputs.hardware.nixosModules.framework-13-7040-amd
@@ -14,6 +9,23 @@
     config = {
       # Framework is optimized for ppd, use that for default for now
       local.powerManagement.backend = "ppd";
+
+      # Explicitly disable fingerprint; enabled by default by nixos-hardware
+      services.fprintd.enable = false;
+
+      # Framework specific audio enhancement
+      hardware.framework.laptop13.audioEnhancement.enable = true;
+
+      # Framework battery health; even when it's really bad right now
+      systemd.services.framework-charge-limit = {
+        description = "Set Framework battery charge limit";
+        wantedBy = ["multi-user.target"];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.framework-tool}/bin/framework_tool --charge-limit 80";
+          RemainAfterExit = true;
+        };
+      };
 
       # Fan control module
       hardware.fw-fanctrl = {
@@ -56,17 +68,9 @@
         };
       };
 
-      boot = {
-        kernelModules = [
-          "framework-laptop-kmod"
-        ];
-        extraModulePackages = with config.boot.kernelPackages; [
-          framework-laptop-kmod
-        ];
-      };
-
       # A systemd bug?
-      systemd.services.systemd-logind.environment."SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK" = "1";
+      # TODO: IF everything works without this, remove it.
+      # systemd.services.systemd-logind.environment."SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK" = "1";
     };
   };
 }
