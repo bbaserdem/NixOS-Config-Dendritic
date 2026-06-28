@@ -12,7 +12,7 @@ Running checklist for todo items.
 - [ ] Fix keepassxc workflow
 - [ ] Mimetypes in linux
 - [ ] Resize yel-ana redo disk partitioning
-- [ ] Voxtype on linux and macos
+- [ ] Whisper in macos
 - [ ] Build transmission/deluge with vpn container/vm.
 - [ ] Profile pictures in assets; and make them visible in general (render in sddm)
 - [ ] Neovim; add toggle for markdown rendering; it's so annoying.

@@ -6,7 +6,11 @@
       config,
       lib,
       ...
-    }: {
+    }: let
+      inHome = path: lib.hasPrefix "${config.home.homeDirectory}/" path;
+      relativeParent = path:
+        lib.removePrefix "${config.home.homeDirectory}/" (builtins.dirOf path);
+    in {
       config = lib.mkMerge [
         {
           # Enable beets in userspace
@@ -39,17 +43,13 @@
         )
         # Create log/cache paths if we can
         (
-          lib.mkIf
-          (lib.hasPrefix "${config.home.homeDirectory}/" config.programs.beets.settings.import.log)
-          {
-            home.file."${lib.removePrefix "${config.home.homeDirectory}/" config.programs.beets.settings.import.log}/.keep".text = "";
+          lib.mkIf (inHome config.programs.beets.settings.import.log) {
+            home.file."${relativeParent config.programs.beets.settings.import.log}/.keep".text = "";
           }
         )
         (
-          lib.mkIf
-          (lib.hasPrefix "${config.home.homeDirectory}/" config.programs.beets.settings.library)
-          {
-            home.file."${lib.removePrefix "${config.home.homeDirectory}/" config.programs.beets.settings.library}/.keep".text = "";
+          lib.mkIf (inHome config.programs.beets.settings.library) {
+            home.file."${relativeParent config.programs.beets.settings.library}/.keep".text = "";
           }
         )
       ];

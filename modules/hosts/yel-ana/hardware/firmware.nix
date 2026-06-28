@@ -6,11 +6,15 @@
     ...
   }: {
     # Load chaotic modules for cachyos kernel
-    imports = with inputs.chaotic.nixosModules; [
-      nyx-cache
-      nyx-overlay
-      nyx-registry
-    ];
+    imports =
+      (with inputs.chaotic.nixosModules; [
+        nyx-cache
+        nyx-overlay
+        nyx-registry
+      ])
+      ++ (with inputs.self.modules.nixos; [
+        nixos-vulkan
+      ]);
 
     config = {
       # System behavior
@@ -22,7 +26,7 @@
       };
 
       # Use latest kernel by default
-      boot. kernelPackages = pkgs.linuxPackages_latest;
+      boot.kernelPackages = pkgs.linuxPackages_latest;
 
       # Additional kernels to test
       specialisation =

@@ -53,7 +53,6 @@
       # Set locale
       language = {
         base = "en_US.UTF-8";
-        collate = "tr_TR.UTF-8";
         name = "tr_TR.UTF-8";
       };
     };

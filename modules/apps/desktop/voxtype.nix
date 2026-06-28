@@ -21,10 +21,14 @@
       ];
 
       config = {
-        programs.voxtype = {
-          enable = true;
-          # Fetch from nixpkgs
-          package = lib.mkOverride 1400 pkgs.voxtype;
+        programs = {
+          # Voxtype, default package
+          voxtype = {
+            enable = true;
+            package = lib.mkOverride 1400 pkgs.voxtype;
+          };
+          # Need ydotool for copy/paste
+          ydotool.enable = lib.mkDefault true;
         };
       };
     };
@@ -65,14 +69,65 @@
                 }
               )
               {
-                # Config
+                # Configuring the service
                 programs.voxtype = {
                   enable = true;
+
                   # Enable the systemd service
                   service.enable = true;
+
                   # Global settings;
-                  settings = {};
+                  settings = {
+                    # Hotkey should be set at desktop level; don't do evdev
+                    hotkey.enabled = false;
+                    # It's better to track status with state file
+                    state_file = "auto";
+
+                    # Output settings
+                    output = {
+                      mode = "paste";
+                      paste_keys = "shift+insert";
+                      restore_clipboard = true;
+                      fallback_to_clipboard = true;
+                      notification = {
+                        on_recording_start = false;
+                        on_recording_stop = false;
+                        on_transcription = true;
+                      };
+                      driver_order = [
+                        "wtype"
+                        "dotool"
+                        "ydotool"
+                        "clipboard"
+                      ];
+                    };
+
+                    # Text settings
+                    text = {
+                      spoken_punctuation = true;
+                    };
+
+                    # Visualization settings
+                    osd = {
+                      enabled = true;
+                      frontend = "native";
+                      # For quickshell OSD
+                      layout = "compact";
+                      # For native/gtk
+                      width_px = 500;
+                      height_px = 64;
+                      position = "bottom-center";
+                      top_margin = 0.85;
+                      opacity = 0.9;
+                      waveform_gain = 10.0;
+                    };
+                  };
                 };
+
+                home.packages = [
+                  inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.osd-native
+                  # inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.osd-gtk4
+                ];
               }
             ]
           )

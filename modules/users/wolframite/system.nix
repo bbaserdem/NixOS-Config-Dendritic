@@ -14,11 +14,13 @@ in {
       # System settings for user
       users.users."${userName}" = {
         description = "Batuhan Başerdem";
-        # Add this user to theese additional groups
+        # Add this user to these additional groups
         extraGroups = [
           "docker"
           "libvirtd"
           "libvirtd-qemu"
+          "uinput"
+          "ydotool"
         ];
       };
     };
