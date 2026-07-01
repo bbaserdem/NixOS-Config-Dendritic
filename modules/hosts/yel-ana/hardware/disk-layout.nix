@@ -12,25 +12,15 @@
         # Configuration for encrypted block devices.
         # See crypttab(5) for details.
 
-        # Put the keyfiles needed in /run/cryptsetup-keys.d/<name>.key
+        # Put the keyfiles needed in /etc/cryptsetup-keys.d/<name>.key
 
         # <name>            <device>                            <password>  <options>
         Yel-Ana_Data        PARTLABEL=Crypt_Yel-Ana_Data        -           luks,timeout=180
       '';
 
       # Extra fstab entries for filesystem ordering
+      # TODO: Try without this to see if it work
       fileSystems."/home/wolframite".depends = ["/home"];
-
-      # Sops secrets for key-file provisioning
-      # No sops-guards; CANNOT boot without secrets provisioning
-      # so hard fail if sops-nix not loaded
-      sops.secrets = {
-        crypt-data = {
-          sopsFile = inputs.self + /secrets/host/yel-ana/Yel-Ana_Data.key;
-          format = "binary";
-          path = "/run/cryptsetup-keys.d/Yel-Ana_Data.key";
-        };
-      };
     };
 
     # Disk setup

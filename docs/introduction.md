@@ -15,7 +15,6 @@ Running checklist for todo items.
 - [ ] Build transmission/deluge with vpn container/vm.
 - [ ] Neovim; add toggle for markdown rendering; it's so annoying.
 - [ ] Neovim; warnings and problems in linux; check it out.
-- [ ] Import wifi configs to sops
 - [ ] Switch the ignorepattern usage to dropping .stignore files with nixos syncthing module.
 - [ ] Change live usb setup, migrate from multios-usb to something else if can, and clean up.
 - [ ] Install better GPU and migrate yertengri.

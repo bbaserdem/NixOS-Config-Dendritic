@@ -27,8 +27,8 @@
         inputs.sops-nix.nixosModules.sops
       ];
       sops = {
-        # Messes with timing for decryption
-        useSystemdActivation = false;
+        # Use systemd for decryption
+        useSystemdActivation = true;
       };
     };
     darwin.secrets = {...}: {

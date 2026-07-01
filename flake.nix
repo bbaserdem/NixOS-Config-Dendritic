@@ -30,7 +30,10 @@
     import-tree.url = "github:denful/import-tree";
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
     multios-usb = {
       url = "github:Mexit/MultiOS-USB";

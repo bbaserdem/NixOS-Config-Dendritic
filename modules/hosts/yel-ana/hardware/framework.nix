@@ -26,9 +26,6 @@
           RemainAfterExit = true;
         };
       };
-
-      # TODO: IF everything works without this, remove it.
-      # systemd.services.systemd-logind.environment."SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK" = "1";
     };
   };
 }

@@ -6,9 +6,10 @@
       #---System modules
       secrets
       stylix
+      #---Utility modules
+      utility-networkmanager
       #---Services
       avahi
-      networkmanager
       nginx
       samba
     ];

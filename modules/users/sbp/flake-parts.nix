@@ -3,5 +3,6 @@
   localConfig.users.sbp = {
     admin = true;
     nixTrusted = true;
+    nm-user = true;
   };
 }

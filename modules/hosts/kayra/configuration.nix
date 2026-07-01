@@ -29,7 +29,7 @@
       qt
       xdg
       # Tooling
-      networkmanager
+      utility-networkmanager
       yubikey
       gpg
       polkit

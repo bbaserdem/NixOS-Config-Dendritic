@@ -2,9 +2,19 @@
 {inputs, ...}: let
   userName = "wolframite";
 in {
-  flake.modules = {
-    # Modules population for system settings
+  # User setup
+  localConfig.users."${userName}" = {
+    admin = true;
+    nixTrusted = true;
+    steamShare = true;
+    profile = {
+      global = "wolframite_lensa";
+      yel-ana = "wolframite_headshot";
+    };
+  };
 
+  # Modules population for system settings
+  flake.modules = {
     # Nixos module settings
     nixos."${userName}" = {...}: {
       # Nixos modules to load with this user enabled
