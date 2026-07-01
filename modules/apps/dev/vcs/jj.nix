@@ -16,6 +16,11 @@
         # Main jujutsu tool
         jujutsu = {
           enable = true;
+          settings = {
+            snapshot = {
+              max-new-file-size = "25MiB";
+            };
+          };
         };
 
         # TUI for jujutsu

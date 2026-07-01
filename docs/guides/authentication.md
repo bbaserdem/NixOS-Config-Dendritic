@@ -79,6 +79,19 @@ In the vault, the `Keys/<hostname>` folder mimics the full filesystem layout.
 There is also a global GPG key (kept on a [yubikey](#yubikey))
 that can be used for SOPS decryption.
 
+### SOPS usage
+
+General usage is simple; `sops` reads keys from the canonical location;
+which is `~/.config/sops/age/keys.txt` and uses keys there to decrypt files.
+
+For text files, it's enough to edit them with the `sops <file>` command.
+
+For binary files; use sops directly to produce a binary file;
+
+```
+sops -e <filepath> > <destination>.bin
+```
+
 
 
 ---
