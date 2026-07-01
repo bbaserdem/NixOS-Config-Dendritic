@@ -18,6 +18,7 @@
           # Globally enabled MCP servers
           servers = {
             nix = {
+              enabled = true;
               command = "${pkgs.unstable.mcp-nixos}/bin/mcp-nixos";
             };
           };

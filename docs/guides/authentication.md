@@ -1,31 +1,20 @@
 # Authentication
 
-Various authentication methods across many tools, their usage is displayed here.
+Various encryption and authentication methods I employ, their usage is documented here.
 
-## TODO
+A global implementation I use is that I have a USB flash drive with a `gocryptfs`
+vault that holds backup keys.
 
-- [ ] GPG keys setup
-- [ ] LUKS layout
-
-## SSH
-
-Command to generate key;
-
-```
-ssh-keygen -t ed25519 -N "" -f /path/to/key
-```
-
-### Layout
-
-Authentication files exist on multiple different directories.
-A rundown is as following
+The filetree in the USB looks like the following;
 
 ```
 /
 ├── etc/
-│   └── ssh/
-│       ├── ssh_host_ed25519_key
-│       └── ssh_host_ed25519_key.pub
+│   ├── ssh/
+│   │   ├── ssh_host_ed25519_key
+│   │   └── ssh_host_ed25519_key.pub
+│   └── cryptsetup-keys.d/
+│       └── <HostName>_<PartLabel>.key
 └── ~/
     ├── .ssh/
     │   ├── id_ed25519
@@ -35,49 +24,127 @@ A rundown is as following
     │   ├── ...
     │   └── config
     └── .config/sops/age
-            └── keys.txt                # Age key for specific user: sops-nix
+            └── keys.txt
 ```
 
-### Key Storage
 
-SSH keys are kept on a `gocrypt` encrypted storage hard drive.
-The SSH keys for each host is kept under a directory `<Vault>/Systems/<hostname>`
-This is made so that `nixos-anywhere` can point to one extra file to deploy.
-This makes it so that `sops-nix` will work to deploy secrets immediately.
+
+## TODO
+
+- [ ] GPG keys setup
+- [ ] LUKS layout
+
+
+
+---
+
+## SOPS
+
+SOPS is used with `sops-nix` to provision secrets using `nix`.
+
+> ![WARNING]
+> sops-nix nixos module can use two backends for secrets deployment.
+> Can use an activation script which happens during Stage 2 (initrd)
+> and runs before Stage 3 (system given over to systemd).
+> It can also use a systemd unit (`sops.useSystemdActivation = true;`)
+> but this means that secrets are decrypted during Stage 3.
+> Unlocking containers happens in stage 2; which means that using the systemd
+> deployment cannot be used to deploy LUKS keyfiles.
+> (Not even through the /etc/cryptsetup-keys.d path since the secret symlinks
+> targets don't exist yet.)
+>
+> The systemd version is thus switched off, but it auto-enables if
+> either sysusers or userborn is enabled.
+> We may need to employ different unlock methods for LUKS independent of SOPS.
+> Either put the keyfile raw in cryptsetup-keys.d or use cached passwords.
+
+### Keys Setup
+
+There are two locations needed; one for darwin/nixos activation, and one for home-manager.
+When these files exist on the filesystem, sops activation succeeds.
+
+For host level secrets, the `SSH` backend is used.
+The canonical host ssh key location is used; `/etc/ssh/ssh_host_ed25519_key`.
+These secrets are meant to be host-specific.
+
+For each user, we have two **age** keys in `~/.config/sops/age/keys.txt`.
+
+- Their own age key. (Pure age)
+- The specific host's *derived* age key, from `/etc/ssh/ssh_host_ed25519_key`.
+(So that we can edit secrets to a specific host.)
+
+These keys are dispatched during [deployment](./deployment.md).
+In the vault, the `Keys/<hostname>` folder mimics the full filesystem layout.
+
+There is also a global GPG key (kept on a [yubikey](#yubikey))
+that can be used for SOPS decryption.
+
+
+
+---
+
+## SSH
+
+SSH access to various host and services.
+
+Command to generate key is;
+
+```
+ssh-keygen -t ed25519 -N "" -f /path/to/key
+```
+
+### Providers
+
+TODO: Figure out how ssh-agent works
+
+### Host Access
+
+In order to access certain hosts on the local network,
+some cross-host ssh keys are dispatched with `sops-nix`.
+This allows things such as remote deployment.
+
+
+
+---
 
 ## LUKS
 
 For LUKS, `sops-nix` dispatches key files needed to boot at boot time.
 The proper files get decrypted, and exposed in the `/run/cryptsetup-keys.d/<container>.key`.
+
 The same files could be created at `/etc` but creating them in `/run` is safer by generation on tmpfs.
 Besides that, disk generation (`disko`) should handle creating the LUKS containers.
 
+### Container setup
+
+> TODO: Document this
+
 The way a LUKS partition is set up is; there will always be a passphrase.
-There will always also be a keyfile, generated with random bytes;
+There will always also be a keyfile, generated with random bytes.
 
 ```
 dd bs=512 count=4 if=/dev/random iflag=fullblock of=<container>.key
 ```
 
-## SOPS
 
-SOPS is mainly used with `sops-nix` to provision secrets using `nix`.
-Each user will have two keys in `~/.config/sops/age/keys.txt`;
-
-- Their own age key
-- Their host's derived age key from `/etc/ssh/ssh_host_ed25519_key`.
+---
 
 ## GPG
 
+I have one GPG key.
 The GPG setup involves a master key, then 3 subkeys.
 This key is kept on a YubiKey drive.
 
+### GPG Agent
+
+> TODO: Figure out GPG agent backend/setup
+
 ### Setup
 
-#### Yubikey Import
+`assets/public.asc` is available in this repo, and dispatched to users' configs.
+That's the public GPG key block, safe to share.
 
-Setup is simple, this repo should have the `assets/public.asc`.
-That's the public GPG key block.
+To mark the key as FIDO supplied though, there needs to be a registry;
 
 ```
 # Import public key
@@ -92,7 +159,9 @@ y
 save
 ```
 
-### Generation
+### GPG Key Generation
+
+The process to generate the keys is documented here.
 
 (It's nice to create an empty GPG home to avoid confusion, but not necessary.)
 The generation workflow is the following;
@@ -150,7 +219,6 @@ gpg --import secret-subkeys.asc
 gpg --import-ownertrust ownertrust.txt
 ```
 
-
 #### YubiKey
 
 First, if it's first time using YubiKey, set it up
@@ -202,4 +270,11 @@ quit
 gpg --list-secret-keys
 ```
 
-## Passwords - KeepassXC
+
+---
+
+## KeepassXC
+
+For password management, `kbdx` vaults with `keepassxc` is used across computers.
+
+> TODO: Setup key management organization and complete this.

@@ -10,9 +10,16 @@ Each machine is referred to as a `host`.
 Hosts can have flake outputs defined for them.
 This flake has helper functions to build outputs for configurations.
 
+
+
+---
+
+
+
 ## Design Principles
 
 This flake uses several principles for controlling the outputs.
+
 
 ### Dendritic Pattern
 
@@ -46,16 +53,16 @@ These modules are, most commonly but not limited to, `nixos`, `homeManager` and 
 So, in summation, a *feature* is a collection of *aspects*,
 which for each *context* expose a `flake-parts module`.
 
+
 ### Classes
 
-While not made explicit in this flake (yet),
-I have organized *features* into several **classes**.
-These are explained in detail in [the modules file hierarchy](###modules).
+I personall organized *features* into several **classes**.
 
 - **Systems**: Flake outputs; mostly configurations output by this flake.
-- **Applications**: Programs that can be setup for personal use.
-- **Services**: Programs that are serving functions beyond the scope of the system they are contained in.
+- **Applications**: Programs that can be setup for one on one interactive use.
+- **Services**: Programs that are serving functions, not direct point of contact they are contained in.
 - **Interfaces**: Entry points, containing personalizations. (Hosts and users)
+
 
 ### Local Configuration (as the upstream fixed point)
 
@@ -82,7 +89,16 @@ My solution isolates implementation to each *feature*,
 while *factory functions* distribute implementation across features.
 Downside is more complexity in nix code, but helps me learn functional programming so `¯\_(ツ)_/¯`.
 
+Documented [here](./config.md).
+
+
+
+---
+
+
+
 ## Folder Hierarchy
+
 
 ### Root
 
@@ -96,6 +112,7 @@ The root of this repo contains;
 
 Contains documentation for entire system management.
 
+
 ### Secrets
 
 SOPS encrypted secrets live in this directory.
@@ -103,75 +120,84 @@ Each host gets their own `secrets.yaml` file, along with a shared across hosts f
 It's laid out the same for each user.
 The sops files can be reached with `inputs.self + /secrets/...;`.
 
+
 ### Packages
 
 This is where package outputs of this flake live.
 Uses [pkgs-by-name-for-flake-parts](github.com/drupol/pkgs-by-name-for-flake-parts) to export packages.
 The packages are available inside the flake in the `pkgs.local` namespace.
 
+
 ### Modules
 
 Where the main bulk of the flake configuration lives.
-This directory is roughly hierarchical;
 
-#### modules/flake
 
-Where the `flake-parts` and main inputs definition lives.
-It's the entry point of the flake, any meta tools for organizing is defined here.
 
-#### modules/hosts
+---
 
-Where host configuration resides.
-Each host gets their own folder, and the entry points are here.
 
-#### modules/apps
 
-Modules for installing programs into the system.
-Most nixos and darwin variants install the programs to shared home-manager space,
-and do global configuration for them.
-These modules are meant to be generic between users.
-User specific configuration happens in users' spaces.
+## Modules
 
-#### modules/wrappers
+Modules are the bulk of this flake.
+This flake generates many `flake-parts.modules`.
+These modules are meant to be invoked into **interfaces**;
+which essentially means they are going into the `imports` list
+of a host or a users' configuration.
 
-Programs that use [nix-wrapper-modules](github.com/birdee/nix-wrapper-modules) to configure them.
-Useful for programs that have complex configuration options.
 
-#### modules/systems
+### System Modules
 
-Configuration for specific systems that this flake can be deployed upon.
-Contains configuration for frameworks shared between these systems as well.
+System modules, naming convention prefixes them with `system-`.
 
-#### modules/users
+The **system** class refers to either a specific flake output,
+or any `feature` that is cross cutting the entirety of the flake.
 
-User configurations live here, along with helper config dispatchers for users.
-Each user exports modules with it's user name, which contains their personal config.
+These should be composable with each other for the most part.
 
-When putting configuration, it's useful to put enable guards liberally;
-since the user module can be dispatched to multiple machines that might or might not have certain features.
 
-#### modules/devshells
+- `system-nixos`: User-facing NixOS instance, configures a full system.
+- `system-vm[-<amd/arm>]`: Virtual NixOS image generation.
+- `system-macos`: Nix Darwin configuration system.
+- `system-hm`: Home Manager configuration (for standalone usage).
+- `system-homeManager`: Home Manager configuration for controlling nixos/macos users.
+- `system-shell`: Shell environment setup.
+- `system-nix`: Nix daemon configuration
+- `system-sops`: Framework for dispatching secrets across flake outputs.
+- `system-stylix`: Unified styling configuration framework.
 
-DevShell's provided by this flake.
-For my programming projects; this is meant to serve devshells for development.
 
-Keeping dev shells central helps with deduplication of packages across devshells.
-Working with other people also becomes more conveniont,
-repos don't need to have nix files in them, reducing friction.
-(This workflow works with untracked .envrc to initialize the devshells.)
+### Application Modules
 
-Downside is, it's hard to get direnv to realize upstream changes in devShells if they are remote.
-Either file reference to the local instance is used;
-or use these commands to force a refresh;
+Application modules, naming convention should prefix with `app-`.
 
-```
-nix develop --refresh github:bbaserdem/NixOS-Config-Dendritic#default
-nix develop --refresh --option tarball-ttl 0 github:bbaserdem/NixOS-Config-Dendritic#default -c true
-```
+The modules set up specific apps.
 
-#### modules/templates
+Then there are bundles too; they can use a naming convention `apps-<bundle>[-<variant>]`
 
-Templates provided by this flake.
-Could be for anything, for now contains starter templates for coding projects.
-These are prefixed with an underscore to prevent potential nix files from being loaded by this flake.
-Since .gitignore files in templates might ignore other files, all files here have to be force-added.
+- `apps-music-full`: Entire music application suite
+- `apps-music-mpd`: Bundle of apps that setup local mpd.
+- `apps-music-curator`: Bundle of apps used to manage music library.
+- `apps-docs-base`: A quick app list for basic document functionality
+- `apps-docs-full`: Full document management bundle.
+
+
+### Service Modules
+
+Service modules, service to be served from a host; naming prefix is `service-`.
+
+
+### Host Modules
+
+Host modules, naming prefix is `host-`.
+
+
+### User Modules
+
+User modules, naming prefix is `user-`.
+Complex setup of a user should be collected under `user-<user>-<feature>`
+
+
+
+

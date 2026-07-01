@@ -13,6 +13,7 @@
     programs.mcp.servers.codegraph = {
       type = "stdio";
       command = codegraph-bin;
+      enabled = false;
       args = [
         "serve"
         "--mcp"

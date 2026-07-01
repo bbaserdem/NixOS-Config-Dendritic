@@ -26,6 +26,10 @@
       imports = [
         inputs.sops-nix.nixosModules.sops
       ];
+      sops = {
+        # Messes with timing for decryption
+        useSystemdActivation = false;
+      };
     };
     darwin.secrets = {...}: {
       imports = [

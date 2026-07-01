@@ -18,6 +18,11 @@
     config = {
       hardware.enableRedistributableFirmware = true;
 
+      # Enable udev
+      services.udev = {
+        enable = true;
+      };
+
       # Hardware utilities
       environment.systemPackages = with pkgs; [
         pciutils

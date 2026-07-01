@@ -36,6 +36,15 @@
             share = "auto";
             snapshot = true;
             lsp = true;
+
+            # Configure permissions for reading nix store
+            permissions = {
+              external_directory."/nix/**" = "allow";
+              read."/nix/**" = "allow";
+              glob."/nix/**" = "allow";
+              grep."/nix/**" = "allow";
+              edit."/nix/**" = "deny";
+            };
           };
         };
 

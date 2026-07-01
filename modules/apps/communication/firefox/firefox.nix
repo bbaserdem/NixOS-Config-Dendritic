@@ -28,9 +28,8 @@
             }
           )
           (
-            # TODO: REmove this quickfix; firefox-unwrapped hydra failure 27-06-2026
             lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-              programs.firefox.package = pkgs.firefox-bin;
+              programs.firefox.package = pkgs.firefox;
             }
           )
         ];

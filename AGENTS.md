@@ -14,6 +14,9 @@ Do not interact with git commands; this repo uses jujutsu for version control.
 Do not use shell commands as a workaround for editing files.
 If a change is needed, explain the intended change and just provide code example in the chat.
 
+Unless directed to work on a specific host, check current host name and assume you are
+working on a host with configuration entry point at `modules/hosts/<hostname>`.
+
 ## Architecture
 
 - This repo uses `flake-parts`.

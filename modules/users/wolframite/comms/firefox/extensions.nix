@@ -24,7 +24,6 @@
       with pkgs;
         [
           tridactyl-native
-          keepassxc
         ]
         ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
           gnome-browser-connector

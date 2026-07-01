@@ -9,15 +9,13 @@ Running checklist for todo items.
 
 ### Chores
 
-- [ ] Fix keepassxc workflow
+- [ ] In-line qmk setup here maybe?
+- [ ] Networking, and get a good setup going.
 - [ ] Mimetypes in linux
-- [ ] Resize yel-ana redo disk partitioning
-- [ ] Whisper in macos
 - [ ] Build transmission/deluge with vpn container/vm.
 - [ ] Profile pictures in assets; and make them visible in general (render in sddm)
 - [ ] Neovim; add toggle for markdown rendering; it's so annoying.
 - [ ] Neovim; warnings and problems in linux; check it out.
-- [ ] Migrate data from PC to laptop.
 - [ ] Import wifi configs to sops
 - [ ] Switch the ignorepattern usage to dropping .stignore files with nixos syncthing module.
 - [ ] Change live usb setup, migrate from multios-usb to something else if can, and clean up.
@@ -61,3 +59,4 @@ Some other tools recommended are mediaelch for tagging, shoko for anime, stash f
 - [Shoko](https://docs.shokoanime.com/): Anime organizer
 - [Atui](https://atuin.sh/): Shell history backup and search
 - [linkding](https://linkding.link/): Self hosted bookmark manager
+- [kavita](https://www.kavitareader.com/): Book reader ???

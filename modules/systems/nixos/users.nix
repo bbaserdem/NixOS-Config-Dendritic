@@ -1,0 +1,7 @@
+# Nixos; general users related settings.
+{...}: {
+  flake.modules.nixos.nixos = {...}: {
+    # System bus service for account management
+    services.accounts-daemon.enable = true;
+  };
+}
