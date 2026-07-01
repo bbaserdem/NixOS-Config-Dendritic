@@ -7,7 +7,9 @@
       options,
       pkgs,
       ...
-    }: {
+    }: let
+      configurationLimit = 10;
+    in {
       # Allow hosts to determine the bootloader to use
       options = {
         local.boot = {
@@ -58,6 +60,7 @@
               {
                 # Grub settings
                 boot.loader.grub = {
+                  inherit configurationLimit;
                   enable = true;
                   efiSupport = true;
                   useOSProber = true;
@@ -85,6 +88,7 @@
             # Not used, but can switch to in the future
             boot.loader.systemd-boot = {
               enable = true;
+              inherit configurationLimit;
               edk2-uefi-shell = {
                 enable = true;
                 sortKey = "y_edk2-uefi-shell";
@@ -97,7 +101,6 @@
                 enable = true;
                 sortKey = "x_netbookxyz";
               };
-              configurationLimit = 10;
             };
           }
         )

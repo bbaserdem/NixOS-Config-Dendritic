@@ -72,7 +72,10 @@
             lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
               # We install from nixpkgs
               programs.nixcord.legcord = {
-                package = pkgs.unstable.legcord;
+                package = pkgs.unstable.legcord.override {
+                  # Hardcoded pnpm marked unstable, override with new version
+                  pnpm_10_29_2 = pkgs.unstable.pnpm_10;
+                };
                 installPackage = true;
               };
             }

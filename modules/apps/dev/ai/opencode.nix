@@ -38,7 +38,7 @@
             lsp = true;
 
             # Configure permissions for reading nix store
-            permissions = {
+            permission = {
               external_directory."/nix/**" = "allow";
               read."/nix/**" = "allow";
               glob."/nix/**" = "allow";

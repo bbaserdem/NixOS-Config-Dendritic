@@ -13,7 +13,6 @@ Running checklist for todo items.
 - [ ] Networking, and get a good setup going.
 - [ ] Mimetypes in linux
 - [ ] Build transmission/deluge with vpn container/vm.
-- [ ] Profile pictures in assets; and make them visible in general (render in sddm)
 - [ ] Neovim; add toggle for markdown rendering; it's so annoying.
 - [ ] Neovim; warnings and problems in linux; check it out.
 - [ ] Import wifi configs to sops

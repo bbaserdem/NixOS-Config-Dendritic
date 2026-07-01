@@ -58,61 +58,61 @@ in {
               sopsPath = "/var/lib/AccountsService/icons/${user}";
             in {
               config =
-                lib.optionalAttrs (
-                  (lib.hasAttrByPath ["sops"] options)
-                  && (profileName != null)
-                ) {
-                  # Load the secret file
-                  sops.secrets.${sopsName} = {
-                    format = "binary";
-                    sopsFile = sopsFile;
-                    owner = "root";
-                    group = "root";
-                    mode = "0444";
-                    path = sopsPath;
-                  };
-
-                  systemd.services."accountsservice-avatar-${user}" = {
-                    description = "Set AccountsService profile picture for ${user}";
-
-                    wantedBy = ["graphical.target"];
-                    before = ["display-manager.service"];
-                    # useSystmedActivation will produce sops-install-secrets.service
-                    # But we have it disabled due to incompatibility with cryptsetup decryption
-                    after = [
-                      "accounts-daemon.service"
-                      # "sops-install-secrets.service"
-                    ];
-                    requires = [
-                      "accounts-daemon.service"
-                      # "sops-install-secrets.service"
-                    ];
-
-                    restartTriggers = [config.sops.secrets.${sopsName}.sopsFileHash];
-
-                    path = [
-                      pkgs.coreutils
-                      pkgs.dbus
-                    ];
-
-                    serviceConfig = {
-                      Type = "oneshot";
-                      RemainAfterExit = true;
+                lib.optionalAttrs
+                (lib.hasAttrByPath ["sops"] options) (
+                  lib.mkIf (profileName != null) {
+                    # Load the secret file
+                    sops.secrets.${sopsName} = {
+                      format = "binary";
+                      sopsFile = sopsFile;
+                      owner = "root";
+                      group = "root";
+                      mode = "0444";
+                      path = sopsPath;
                     };
 
-                    script = ''
-                      uid="$(id -u ${lib.escapeShellArg user})"
+                    systemd.services."accountsservice-avatar-${user}" = {
+                      description = "Set AccountsService profile picture for ${user}";
 
-                      dbus-send --system \
-                        --dest=org.freedesktop.Accounts \
-                        --type=method_call \
-                        --print-reply \
-                        "/org/freedesktop/Accounts/User$uid" \
-                        org.freedesktop.Accounts.User.SetIconFile \
-                        string:${lib.escapeShellArg sopsPath}
-                    '';
-                  };
-                };
+                      wantedBy = ["graphical.target"];
+                      before = ["display-manager.service"];
+                      # useSystmedActivation will produce sops-install-secrets.service
+                      # But we have it disabled due to incompatibility with cryptsetup decryption
+                      after = [
+                        "accounts-daemon.service"
+                        # "sops-install-secrets.service"
+                      ];
+                      requires = [
+                        "accounts-daemon.service"
+                        # "sops-install-secrets.service"
+                      ];
+
+                      restartTriggers = [config.sops.secrets.${sopsName}.sopsFileHash];
+
+                      path = [
+                        pkgs.coreutils
+                        pkgs.dbus
+                      ];
+
+                      serviceConfig = {
+                        Type = "oneshot";
+                        RemainAfterExit = true;
+                      };
+
+                      script = ''
+                        uid="$(id -u ${lib.escapeShellArg user})"
+
+                        dbus-send --system \
+                          --dest=org.freedesktop.Accounts \
+                          --type=method_call \
+                          --print-reply \
+                          "/org/freedesktop/Accounts/User$uid" \
+                          org.freedesktop.Accounts.User.SetIconFile \
+                          string:${lib.escapeShellArg sopsPath}
+                      '';
+                    };
+                  }
+                );
             }
           )
         )

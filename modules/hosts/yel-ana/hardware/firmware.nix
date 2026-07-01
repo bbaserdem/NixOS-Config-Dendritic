@@ -23,29 +23,22 @@
         kernel.sysctl."vm.swappiness" = 0;
         # Virtualization kernel module, for cross comp
         kernelModules = ["kvm-amd"];
+        kernelParams = ["amd_pstate=active"];
       };
 
-      # Use latest kernel by default
-      boot.kernelPackages = pkgs.linuxPackages_latest;
+      # Use cachyos kernel
+      boot.kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
 
       # Additional kernels to test
-      specialisation =
-        [
-          "zen"
-          "xanmod_latest"
-          "cachyos-lto-znver4"
-        ]
-        |> map (kernel:
-          lib.nameValuePair "kernel-${kernel}" {
-            configuration = {
-              pkgs,
-              lib,
-              ...
-            }: {
-              boot.kernelPackages = lib.mkForce pkgs.${"linuxPackages_${kernel}"};
-            };
-          })
-        |> builtins.listToAttrs;
+      specialisation."Fallback Kernel" = {
+        configuration = {
+          pkgs,
+          lib,
+          ...
+        }: {
+          boot.kernelPackages = lib.mkOverride 900 pkgs.linuxPackages_latest;
+        };
+      };
     };
   };
 }
