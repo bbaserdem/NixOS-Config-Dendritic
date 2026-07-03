@@ -16,6 +16,20 @@
         icon = "dollar";
         color = "green";
       };
+
+      explicit = {
+        name = "Porn";
+        id = 3;
+        icon = "pet";
+        color = "red";
+      };
+
+      work = {
+        name = "Work";
+        id = 4;
+        icon = "briefcase";
+        color = "yellow";
+      };
     };
 
     # Function to generate extensions

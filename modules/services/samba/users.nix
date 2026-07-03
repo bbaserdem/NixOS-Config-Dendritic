@@ -62,7 +62,7 @@
             let
               home = config.users.users.${user}.home;
               sharePath = config.home-manager.users."${user}".xdg.userDirs.publicShare;
-              shareWalk = lib.init (inputs.self.lib.walkToDir home sharePath);
+              shareWalk = inputs.self.lib.walkToDir home sharePath;
               shareParentPaths =
                 if shareWalk == []
                 then []
