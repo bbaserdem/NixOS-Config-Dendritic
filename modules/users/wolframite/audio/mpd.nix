@@ -1,5 +1,5 @@
 # Configuring MPD for wolframite
-{...}: {
+{inputs, ...}: {
   flake.modules.homeManager.wolframite = {
     pkgs,
     config,
@@ -43,7 +43,7 @@
           # Dispatch .mpdignore file
           (
             lib.mkIf (lib.hasPrefix "${homeDir}/" mpdDir) {
-              home.file."${lib.removePrefix "${homeDir}/" mpdDir}/.mpdignore".text = ''
+              home.file."${inputs.self.lib.stripRootDir homeDir mpdDir}/.mpdignore".text = ''
                 Staging
                 Sort
                 Unsorted

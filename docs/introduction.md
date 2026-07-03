@@ -11,10 +11,7 @@ Running checklist for todo items.
 
 - [ ] In-line qmk setup here maybe?
 - [ ] Networking, and get a good setup going.
-- [ ] Mimetypes in linux
 - [ ] Build transmission/deluge with vpn container/vm.
-- [ ] Neovim; add toggle for markdown rendering; it's so annoying.
-- [ ] Neovim; warnings and problems in linux; check it out.
 - [ ] Switch the ignorepattern usage to dropping .stignore files with nixos syncthing module.
 - [ ] Change live usb setup, migrate from multios-usb to something else if can, and clean up.
 - [ ] Install better GPU and migrate yertengri.

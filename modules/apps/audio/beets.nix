@@ -1,5 +1,5 @@
 # Enabling beets
-{...}: {
+{inputs, ...}: {
   flake.modules = {
     homeManager.beets = {
       pkgs,
@@ -9,7 +9,7 @@
     }: let
       inHome = path: lib.hasPrefix "${config.home.homeDirectory}/" path;
       relativeParent = path:
-        lib.removePrefix "${config.home.homeDirectory}/" (builtins.dirOf path);
+        inputs.self.lib.stripRootDir config.home.homeDirectory (builtins.dirOf path);
     in {
       config = lib.mkMerge [
         {

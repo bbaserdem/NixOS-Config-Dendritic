@@ -1,5 +1,6 @@
 # Create syncthing folder configuration from global config
 {
+  inputs,
   config,
   lib,
   ...
@@ -13,11 +14,6 @@
     ${folder.ignore.global}
     ${folder.ignore.hosts.${hostName} or ""}
   '';
-  # Helper function to prettyfy labels
-  capitalize = s:
-    if s == ""
-    then ""
-    else (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (builtins.stringLength s) s);
 in {
   config.flake.modules = {
     # Folder generation modules
@@ -33,7 +29,7 @@ in {
             path = lib.mkOverride 1400 "~/Syncthing/${name}"; # Placeholder path
             devices = lib.mkDefault folder.hosts;
             id = name;
-            label = lib.mkDefault (capitalize name);
+            label = lib.mkDefault (inputs.self.lib.capitalize name);
           };
         });
     };
@@ -89,7 +85,7 @@ in {
       syncGroup = config.services.syncthing.group;
       dataDir = config.services.syncthing.dataDir;
       # Function for folder path
-      mkNixosPath = name: folder: "${dataDir}/${capitalize name}";
+      mkNixosPath = name: folder: "${dataDir}/${inputs.self.lib.capitalize name}";
       # Check owner existence
       ownerExists = owner:
         (owner != null)

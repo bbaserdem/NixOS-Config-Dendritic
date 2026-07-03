@@ -35,6 +35,9 @@
         value =
           profileItem.value
           // {
+            name = profileItem.value.name or profileItem.name;
+            path = profileItem.value.path or profileItem.name;
+
             id =
               if profileItem.value.id == null
               then index
@@ -46,7 +49,6 @@
               (resolveAttrs profileItem.value.settings);
 
             search = lib.recursiveUpdate firefox.global.search profileItem.value.search;
-
             extensions = mkExtensions profileItem.value;
           };
       };

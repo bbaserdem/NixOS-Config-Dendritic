@@ -7,6 +7,8 @@ local M = {
     event = { "BufWritePre" },
     cmd = {
       "ConformInfo",
+      "ConformToggle",
+      "ConformToggle!",
     },
     on_require = "conform",
     after = function(plugin)
@@ -61,6 +63,20 @@ local M = {
             lsp_format = "fallback",
           }
         end,
+      })
+
+      -- Register command to disable conform
+      vim.api.nvim_creat_user_command("ConformToggle", function(args)
+        if args.bang then
+          vim.b.disable_autoformat = not (vim.b.disable_autoformat or false)
+          print("Buffer autoformat " .. (vim.b.disable_autoformat and "disabled" or "enabled"))
+        else
+          vim.g.disable_autoformat = not (vim.g.disable_autoformat or false)
+          print("Global autoformat " .. (vim.g.disable_autoformat and "disabled" or "enabled"))
+        end
+      end, {
+        desc = "Toggle autoformat-on-save",
+        bang = true,
       })
     end,
   },

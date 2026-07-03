@@ -1,6 +1,6 @@
 # Filetype conversion plugins
 # Allows for auto-changing tags
-{...}: {
+{inputs, ...}: {
   flake.modules.homeManager.wolframite = {
     pkgs,
     config,
@@ -71,7 +71,7 @@
               ]
             ))
           ) {
-            home.file."${lib.removePrefix "${homeDir}/" musicDir}/Lossy/.mpdignore".text = ''
+            home.file."${inputs.self.lib.stripRootDir homeDir musicDir}/Lossy/.mpdignore".text = ''
               *
             '';
           }

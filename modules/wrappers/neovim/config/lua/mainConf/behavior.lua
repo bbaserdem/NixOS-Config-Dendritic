@@ -30,14 +30,17 @@ vim.opt.listchars = {
   nbsp = "␣",
 }
 
--- Highlight on yank
-local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
-vim.api.nvim_create_autocmd("TextYankPost", {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+-- Highlight on text operations
+local highlight_group = vim.api.nvim_create_augroup("TextOpHighlight", { clear = true })
+vim.api.nvim_create_autocmd({ "TextYankPost", "TextPutPost" }, {
   group = highlight_group,
   pattern = "*",
+  callback = function()
+    vim.hl.hl_op({
+      higroup = "Visual",
+      timeout = 300,
+    })
+  end,
 })
 
 --[[
