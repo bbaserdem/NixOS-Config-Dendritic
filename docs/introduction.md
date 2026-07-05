@@ -9,12 +9,16 @@ Running checklist for todo items.
 
 ### Chores
 
+- [ ] Install better GPU and migrate yertengri.
+- [ ] Setup od-ata.
+- [ ] Migrate passwords to keepassxc
+- [ ] Setup erlik with nix-on-droid.
+- [ ] Do syncthing and file settings for android.
 - [ ] In-line qmk setup here maybe?
 - [ ] Networking, and get a good setup going.
 - [ ] Build transmission/deluge with vpn container/vm.
 - [ ] Switch the ignorepattern usage to dropping .stignore files with nixos syncthing module.
 - [ ] Change live usb setup, migrate from multios-usb to something else if can, and clean up.
-- [ ] Install better GPU and migrate yertengri.
 - [ ] Setup firewalld
 - [ ] Redo hyprland config in lua
 - [ ] Fix hyprsplit not building with new hyprland

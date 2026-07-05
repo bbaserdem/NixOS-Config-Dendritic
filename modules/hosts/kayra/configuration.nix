@@ -120,7 +120,7 @@
       # Enable ssh root login, and deploy authorized keys
       services.openssh.settings.PermitRootLogin = lib.mkForce "prohibit-password";
       users.users.root.openssh.authorizedKeys.keyFiles = [
-        (inputs.self + /assets/kayra-ssh.pub)
+        (inputs.self + /assets/kayra_ssh.pub)
       ];
       services.fail2ban.enable = lib.mkForce false;
       # Root shell must be bash for nixos-anywhere

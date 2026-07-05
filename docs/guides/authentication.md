@@ -27,14 +27,10 @@ The filetree in the USB looks like the following;
             └── keys.txt
 ```
 
-
-
 ## TODO
 
 - [ ] GPG keys setup
 - [ ] LUKS layout
-
-
 
 ---
 
@@ -42,7 +38,7 @@ The filetree in the USB looks like the following;
 
 SOPS is used with `sops-nix` to provision secrets using `nix`.
 
-> ![WARNING]
+> [!WARNING]
 > sops-nix nixos module can use two backends for secrets deployment.
 > Can use an activation script which happens during Stage 2 (initrd)
 > and runs before Stage 3 (system given over to systemd).
@@ -53,10 +49,7 @@ SOPS is used with `sops-nix` to provision secrets using `nix`.
 > (Not even through the /etc/cryptsetup-keys.d path since the secret symlinks
 > targets don't exist yet.)
 >
-> The systemd version is thus switched off, but it auto-enables if
-> either sysusers or userborn is enabled.
-> We may need to employ different unlock methods for LUKS independent of SOPS.
-> Either put the keyfile raw in cryptsetup-keys.d or use cached passwords.
+> This was resolved by deploying the decryption keys to `/etc/cryptsetup-keys.d/`.
 
 ### Keys Setup
 
@@ -70,8 +63,8 @@ These secrets are meant to be host-specific.
 For each user, we have two **age** keys in `~/.config/sops/age/keys.txt`.
 
 - Their own age key. (Pure age)
-- The specific host's *derived* age key, from `/etc/ssh/ssh_host_ed25519_key`.
-(So that we can edit secrets to a specific host.)
+- The specific host's _derived_ age key, from `/etc/ssh/ssh_host_ed25519_key`.
+  (So that we can edit secrets to a specific host.)
 
 These keys are dispatched during [deployment](./deployment.md).
 In the vault, the `Keys/<hostname>` folder mimics the full filesystem layout.
@@ -92,9 +85,26 @@ For binary files; use sops directly to produce a binary file;
 sops -e <filepath> > <destination>.bin
 ```
 
-
-
 ---
+
+## AGE
+
+Age keys are used for sops.
+
+To generate an age key;
+
+```
+age-keygen -o ~/.config/sops/age/keys.txt
+```
+
+Public age key will be printed on the terminal, secret key will be generated.
+
+To get the associated age key of an ssh key;
+
+```
+nix run nixpkgs#ssh-to-age -- -private-key -i <path-to-key>
+nix run nixpkgs#ssh-to-age -- -i <path-to-key>.pub
+```
 
 ## SSH
 
@@ -116,8 +126,6 @@ In order to access certain hosts on the local network,
 some cross-host ssh keys are dispatched with `sops-nix`.
 This allows things such as remote deployment.
 
-
-
 ---
 
 ## LUKS
@@ -138,7 +146,6 @@ There will always also be a keyfile, generated with random bytes.
 ```
 dd bs=512 count=4 if=/dev/random iflag=fullblock of=<container>.key
 ```
-
 
 ---
 
@@ -247,7 +254,6 @@ passwd
 
 Then with the YubiKey plugged in, transfer the subkeys
 
-
 ```
 gpg --pinentry-mode=loopbock --edit-key $KEY_FPR
 key
@@ -255,7 +261,7 @@ key
 # 1 is the signing subkey, select and send (check for asterisk)
 # It will first ask for gpg key passphrase, then the admin password for the yubikey
 key <A> # Select the S subkey
-keytocard 
+keytocard
 1 # 1 is the signature slot
 key <A> # Deselect the S subkey
 key <B> # Select the E subkey
@@ -282,7 +288,6 @@ fetch
 quit
 gpg --list-secret-keys
 ```
-
 
 ---
 

@@ -40,7 +40,7 @@
             sushi.enable = true;
             # Content streaming
             gnome-remote-desktop.enable = true; # only wayland rdp afaik
-            rygel.enable = lib.mkDefault false; # Stream to local media broadcasting
+            rygel.enable = lib.mkForce false; # Stream to local media broadcasting
             # Unneeded fluff
             games.enable = false;
             gnome-initial-setup.enable = false;

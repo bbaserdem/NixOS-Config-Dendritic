@@ -4,6 +4,8 @@ keys:
   - &user_wolframite  age1kef20n2n6cgs4rrv76zwg50q0y8xqzpce69twyrrsct6v63cqplqf297my
   - &host_su-ana      age1trtaqq9n93gck0gh4ew3ms6unu9qqd34yekhlla0ldn8mygjw46qnspvz5
   - &host_yel-ana     age1ndu9qtzt0ywu992jwquadut0y7szflzz33atrqggunsr6kmk3ees0h2wep
+  - &host_yertengri   age10kl02ftg67e050tudrlemt2h9c5xcs90m0hhzkuvqw87s68r3e6saxy29s
+  - &host_od-ata      age1pvnj5qfh3a6e7qh5t5v8aj95qc8q9tsesdn7r29q9t85sezeduhqnw08d5
 creation_rules:
   #---GLOBAL---#
   # Everyone
@@ -13,6 +15,8 @@ creation_rules:
       - *user_wolframite
       - *host_su-ana
       - *host_yel-ana
+      - *host_yertengri
+      - *host_od-ata
       pgp:
       - *admin-pgp
   # Users
@@ -28,6 +32,8 @@ creation_rules:
     - age:
       - *host_su-ana
       - *host_yel-ana
+      - *host_yertengri
+      - *host_od-ata
       pgp:
       - *admin-pgp
     # Each user's keys
@@ -48,5 +54,17 @@ creation_rules:
     key_groups:
     - age:
       - *host_yel-ana
+      pgp:
+      - *admin-pgp
+  - path_regex: ^secrets/host/yertengri/[^/]+\.(yaml|json|key|bin)$
+    key_groups:
+    - age:
+      - *host_yertengri
+      pgp:
+      - *admin-pgp
+  - path_regex: ^secrets/host/od-ata/[^/]+\.(yaml|json|key|bin)$
+    key_groups:
+    - age:
+      - *host_od-ata
       pgp:
       - *admin-pgp

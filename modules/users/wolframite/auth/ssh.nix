@@ -46,6 +46,11 @@
               path = "${config.home.homeDirectory}/.ssh/id_ed25519_MERGEN";
               mode = "0600";
             };
+            "ssh/od-ata" = {
+              sopsFile = inputs.self + /secrets/user/secrets.yaml;
+              path = "${config.home.homeDirectory}/.ssh/id_ed25519_OD-ATA";
+              mode = "0600";
+            };
           };
           # Put the keys in the SSH configuration
           programs.ssh.settings = {
@@ -59,6 +64,12 @@
               user = "root";
               hostname = "mergen.local";
               IdentityFile = "${config.sops.secrets."ssh/mergen".path}";
+              identitiesOnly = true;
+            };
+            "od-ata" = {
+              user = "wolframite";
+              hostname = "od-ata.local";
+              IdentityFile = "${config.sops.secrets."ssh/od-ata".path}";
               identitiesOnly = true;
             };
           };

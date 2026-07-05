@@ -42,7 +42,7 @@
         };
       };
       music = {
-        hosts = syncHosts;
+        hosts = syncHosts ++ ["yertengri" "od-ata"];
         ignore = {
           global = ''
             // We manage the mpd ignore file decleratively

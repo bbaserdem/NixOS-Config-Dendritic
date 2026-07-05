@@ -1,5 +1,5 @@
 # Od Ana
 
-*Od Ana; goddess of fire and marriage, referred to as queen of fire.*
+_Od Ana; goddess of fire and marriage, referred to as queen of fire._
 
-**Od Ana** is my raspberry pi, acting as a VPN to connect to my home network.
+**Od Ana** is to serve a network NAS service.
