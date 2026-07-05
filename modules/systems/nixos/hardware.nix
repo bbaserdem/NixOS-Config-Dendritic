@@ -6,15 +6,7 @@
   };
 
   # Common hardware configuration to dispatch
-  flake.modules.nixos.nixos = {
-    modulesPath,
-    pkgs,
-    ...
-  }: {
-    imports = [
-      (modulesPath + "/installer/scan/not-detected.nix")
-    ];
-
+  flake.modules.nixos.nixos = {pkgs, ...}: {
     config = {
       hardware.enableRedistributableFirmware = true;
 

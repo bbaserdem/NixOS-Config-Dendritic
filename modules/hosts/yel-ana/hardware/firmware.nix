@@ -1,10 +1,6 @@
 # Su-ana firmware configuration
 {inputs, ...}: {
-  flake.modules.nixos.yel-ana = {
-    pkgs,
-    lib,
-    ...
-  }: {
+  flake.modules.nixos.yel-ana = {pkgs, ...}: {
     # Load chaotic modules for cachyos kernel
     imports =
       (with inputs.chaotic.nixosModules; [

@@ -20,6 +20,9 @@ in {
         # <name>              <device>                            <password>  <options>
         ${namePretty}_Data    PARTLABEL=Crypt_${namePretty}_Data  -           luks,timeout=180
       '';
+
+      # Enable swap compression
+      zramSwap.enable = true;
     };
 
     # Disk setup
