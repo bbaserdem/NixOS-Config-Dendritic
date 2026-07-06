@@ -9,9 +9,9 @@
     config = lib.mkMerge [
       {
         local.displayManager = {
-          name = "sddm";
+          name = "gdm";
           config = {
-            # For sddm astronaut theme
+            # For sddm themes, if we ever want to switch.
             embeddedTheme = "cyberpunk";
             # For catppuccin
             flavor = "frappe";

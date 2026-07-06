@@ -40,7 +40,7 @@
   - [📝 Neovim](software/neovim.md)
   - [🪨 Obsidian](software/obsidian.md)
   - [🏴‍☠️ Torrenting & Usenet](software/piracy.md)
-  - [🫜 Firefox](software/beets.md)
+  - [🫜 Firefox](software/firefox.md)
 - [🛜 Services](software/services.md)
   - [🔄 Syncthing](software/syncthing.md)
   - [📎 Paperless-ngx](software/paperless.md)
