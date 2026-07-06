@@ -17,7 +17,8 @@
     (?d).gitmodules
     (?d).jj
 
-    // OS Junk
+    // OS Junk, trash directories
+    .Trash-*
     (?d).DS_Store
     .localized
   '';
@@ -70,6 +71,15 @@
           ];
           # Disable user sandboxing, or file ownership won't work
           PrivateUsers = lib.mkForce false;
+          NoNewPrivileges = lib.mkForce false;
+
+          # Allow chown/lchown/fchownat.
+          # This avoids the systemd sandbox blocking
+          # copyOwnershipFromParent even when CAP_CHOWN is present
+          SystemCallFilter = lib.mkForce [
+            "@system-service"
+            "@chown"
+          ];
         };
 
         # ACL and permission provisioning to home directory

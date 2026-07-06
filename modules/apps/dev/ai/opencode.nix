@@ -2,7 +2,7 @@
 {inputs, ...}: {
   flake.modules = {
     # Install opencode through brew, but we will punt this in favor of  flake for now
-    darwin.ai = {
+    darwin.ai-opencode = {
       homebrew.casks = [
         "opencode-desktop"
       ];
@@ -19,7 +19,7 @@
       };
 
       # OpenCode setup
-      ai = {pkgs, ...}: {
+      ai-opencode = {pkgs, ...}: {
         # Enable opencode code config without installing it ourselves
         programs.opencode = {
           enable = true;

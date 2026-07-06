@@ -7,8 +7,8 @@
       # Kernel configuration
       boot = {
         # Kernel
-        # Mainline should be fine
-        kernelPackages = pkgs.linuxPackages_latest;
+        # Mainline lts should be fine
+        kernelPackages = pkgs.linuxPackages;
         # Parameters
         kernelParams = [
           "i915.enable_guc=2" # jellyfin vaapi/qsv might need it
@@ -20,15 +20,17 @@
         initrd = {
           # Detected by nixos-generate-config, available for loading
           availableKernelModules = [
-            "xhci_pci"
             "ahci"
-            "usbhid"
             "usb_storage"
             "sd_mod"
           ];
-          # Detected by nixos-facter; will need this anyway
+          # Force-loaded kernel modules
           kernelModules = [
             "i915"
+            "xhci_pci"
+            "xhci_hcd"
+            "usbhid"
+            "hid_generic"
           ];
         };
         # Virtualization module

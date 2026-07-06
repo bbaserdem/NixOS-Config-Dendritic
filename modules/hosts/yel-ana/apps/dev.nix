@@ -6,6 +6,8 @@
       vcs
       docker
       ai
+      ai-claude
+      ai-opencode
       kitty
       python
       nvim
