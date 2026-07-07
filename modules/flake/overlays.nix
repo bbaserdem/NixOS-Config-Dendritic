@@ -10,6 +10,17 @@
 
       modifications = final: prev: {
         # Modifications to existing packages
+
+        # yt-dlp fails on darwin right now
+        pythonPackagesExtensions =
+          (prev.pythonPackagesExtensions or [])
+          ++ (lib.optionals prev.stdenv.hostPlatform.isDarwin [
+            (pyFinal: pyPrev: {
+              yt-dlp-ejs = pyPrev.yt-dlp-ejs.override {
+                nodejs = final.nodejs_22;
+              };
+            })
+          ]);
       };
 
       # Local python package nameset

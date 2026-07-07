@@ -1,15 +1,21 @@
 # Configuring user paths
 {...}: {
-  localConfig.users.wolframite.xdgDirs = {
-    documents = "Documents";
-    music = "Music";
-    pictures = "Pictures";
-    videos = "Videos";
-    download = "Downloads";
-    desktop = "Desktop";
-    templates = "Templates";
-    publicShare = "Shared/Public";
-    projects = "Projects";
+  localConfig.users.wolframite = {
+    xdgDirs = {
+      documents = "Documents";
+      music = "Music";
+      pictures = "Pictures";
+      videos = "Videos";
+      download = "Downloads";
+      desktop = "Desktop";
+      templates = "Templates";
+      publicShare = "Shared/Public";
+      projects = "Projects";
+    };
+    extraDirs = {
+      android = "Shared/Android";
+      sharedSyncthing = "Shared/Syncthing";
+    };
   };
   flake.modules.homeManager.wolframite = {
     config,

@@ -153,6 +153,17 @@ in {
             If this option is not provided, then the target directory will be ~/Syncthing/<Folder>
           '';
         };
+        systemPath = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          description = ''
+            Absolute path for this folder on NixOS hosts,
+            overriding placement under mediaRoot.
+
+            Directory provisioning (ownership, marker access) becomes the
+            responsibility of the declaring service module.
+          '';
+        };
         hosts = lib.mkOption {
           type = lib.types.listOf lib.types.str;
           default = [];
@@ -170,20 +181,47 @@ in {
       type = ignoreType;
       default = {};
     };
+
     # Global declaration of all hosts
     hosts = lib.mkOption {
       type = lib.types.attrsOf hostType;
       default = {};
     };
+
     # Global declaration of users
     users = lib.mkOption {
       type = lib.types.attrsOf userType;
       default = {};
     };
+
     # Global folder declarations
     folders = lib.mkOption {
       type = lib.types.attrsOf folderType;
       default = {};
+    };
+
+    # For users, root media directory
+    mediaRoot = lib.mkOption {
+      type = lib.types.str;
+      default = "/home/media";
+      description = "Root for user synced folder trees on NixOS hosts";
+    };
+
+    # Shared folder across all users
+    shared = lib.mkOption {
+      type = lib.types.submodule {
+        options = {
+          enable = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+          };
+          hosts = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [];
+          };
+          ignore = lib.mkOption {type = ignoreType;};
+        };
+      };
     };
   };
 }

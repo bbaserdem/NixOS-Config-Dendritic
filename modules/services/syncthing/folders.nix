@@ -2,11 +2,11 @@
 {
   inputs,
   config,
-  lib,
   ...
 }: let
   cfg = config.localConfig.syncthing;
   folders = cfg.folders;
+  registeredHost = host: (cfg.hosts.${host}.id or "") != "";
   # Create ignore file
   mkIgnoreText = hostName: folder: ''
     ${cfg.ignore.global}
@@ -59,7 +59,7 @@ in {
           value = {
             enable = true;
             path = "~/${mkRelativePath name folder}";
-            devices = lib.filter (host: host != hostName) folder.hosts;
+            devices = lib.filter (host: (host != hostName) && (registeredHost host)) folder.hosts;
           };
         });
       # Dispatch ignore file
@@ -82,14 +82,21 @@ in {
     }: let
       hostName = config.networking.hostName;
       syncUser = config.services.syncthing.user;
-      syncGroup = config.services.syncthing.group;
-      dataDir = config.services.syncthing.dataDir;
+      mediaRoot = cfg.mediaRoot;
       # Function for folder path
-      mkNixosPath = name: folder: "${dataDir}/${inputs.self.lib.capitalize name}";
-      # Check owner existence
       ownerExists = owner:
         (owner != null)
         && ((config.users.users.${owner}.enable or false) == true);
+      # systemPath only applies where the owning service exists;
+      # receivers fall back to placement under the media root
+      systemPathActive = folder:
+        (folder.systemPath != null) && (ownerExists folder.owner);
+      # Function for folder path
+      mkNixosPath = name: folder:
+        if systemPathActive folder
+        then folder.systemPath
+        else "${mediaRoot}/${inputs.self.lib.capitalize name}";
+      # Check owner existence
       # Split ignore lines into a list of strings
     in {
       # Dispatch the syncthing config
@@ -101,7 +108,8 @@ in {
           value = {
             enable = true;
             path = mkNixosPath name folder;
-            devices = lib.filter (host: host != hostName) folder.hosts;
+            devices = lib.filter (host: (host != hostName) && (registeredHost host)) folder.hosts;
+            ignorePerms = true;
             ignorePatterns =
               (mkIgnoreText hostName folder)
               |> lib.splitString "\n";
@@ -111,30 +119,19 @@ in {
       # Provision the folders and permissions + ACL
       systemd.tmpfiles.settings =
         folders
-        |> lib.filterAttrs (_: folder: lib.elem hostName folder.hosts)
+        |> lib.filterAttrs (_: folder:
+          (lib.elem hostName folder.hosts)
+          && !(systemPathActive folder))
         |> lib.mapAttrs' (name: folder: {
           name = "35-syncthing-folder-${name}";
           value = {
-            "${mkNixosPath name folder}" = {
-              d = {
-                user =
-                  if ownerExists folder.owner
-                  then folder.owner
-                  else syncUser;
-                group =
-                  if ownerExists folder.owner
-                  then config.users.users.${folder.owner}.group
-                  else syncGroup;
-                mode = "0750";
-              };
-              "A+".argument =
+            "${mkNixosPath name folder}".d = {
+              user =
                 if ownerExists folder.owner
-                then "u:${syncUser}:rwX,m::rwX"
-                else "u:${syncUser}:rwX,m::rwX";
-              "a+".argument =
-                if ownerExists folder.owner
-                then "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx"
-                else "d:u:${syncUser}:rwx,d:m::rwx";
+                then folder.owner
+                else syncUser;
+              group = "users";
+              mode = "2770";
             };
           };
         });

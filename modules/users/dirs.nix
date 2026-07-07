@@ -51,10 +51,17 @@ in {
   options = {
     localConfig.users = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
-        options.xdgDirs = lib.mkOption {
-          type = xdgDirsType;
-          default = {};
-          description = "Flake-wide user metadata.";
+        options = {
+          xdgDirs = lib.mkOption {
+            type = xdgDirsType;
+            default = {};
+            description = "Flake-wide user metadata.";
+          };
+          extraDirs = lib.mkOption {
+            type = lib.types.attrsOf lib.types.str;
+            default = {};
+            description = "Non-XDG named directories, relative to HOME.";
+          };
         };
       });
     };

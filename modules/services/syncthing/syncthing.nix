@@ -53,47 +53,43 @@
         # Enable relays and ports
         openDefaultPorts = true;
         relay.enable = true;
-
-        # The dataDir option is the home directory of the syncthing users
-        dataDir = "/home/syncthing";
       };
 
+      # Add syncthing to users group to be able to operate with users
+      users.users.${cfg.user}.extraGroups = ["users"];
+
       # Daemon settings
-      systemd = {
+      systemd.services.syncthing.serviceConfig = {
         # https://github.com/NixOS/nixpkgs/issues/338485
         # By default, nixos module doesn't have permissions for ownership change
         # This should allow the service to do ownership change though
-        services.syncthing.serviceConfig = {
-          # Add these capabilities
-          AmbientCapabilities = [
-            "CAP_CHOWN"
-            "CAP_FOWNER"
-          ];
-          # Disable user sandboxing, or file ownership won't work
-          PrivateUsers = lib.mkForce false;
-          NoNewPrivileges = lib.mkForce false;
+        # WARNING
+        # This won't be taken advantage of, due to syncthing inherit ownership
+        # being bugged, and not working.
+        # https://github.com/syncthing/syncthing/issues/8399
+        # We are switching functionality instead; but leaving the capability
+        # levers in place; to go back to previousy implementation if bug is fixed
 
-          # Allow chown/lchown/fchownat.
-          # This avoids the systemd sandbox blocking
-          # copyOwnershipFromParent even when CAP_CHOWN is present
-          SystemCallFilter = lib.mkForce [
-            "@system-service"
-            "@chown"
-          ];
-        };
+        # New files 0660 / dirs 0770; combined with setgid dirs and ignorePerms
+        UMask = "0007";
 
-        # ACL and permission provisioning to home directory
-        tmpfiles.settings."10-syncthing-data"."${cfg.dataDir}" = {
-          # Set root directory ownership to syncthing
-          d = {
-            user = cfg.user;
-            group = cfg.group;
-            mode = "0750";
-          };
-          # Provision ACL access to the entire tree
-          "A+".argument = "u:${cfg.user}:rwX,m::rwX";
-          "a+".argument = "d:u:${cfg.user}:rwx,d:m::rwx";
-        };
+        # Add these capabilities
+        AmbientCapabilities = [
+          "CAP_CHOWN"
+          "CAP_FOWNER"
+        ];
+
+        # Disable user sandboxing, or file ownership won't work
+        PrivateUsers = lib.mkForce false;
+        NoNewPrivileges = lib.mkForce false;
+
+        # Allow chown/lchown/fchownat.
+        # This avoids the systemd sandbox blocking
+        # copyOwnershipFromParent even when CAP_CHOWN is present
+        SystemCallFilter = lib.mkForce [
+          "@system-service"
+          "@chown"
+        ];
       };
     };
 

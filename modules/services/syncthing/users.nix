@@ -1,5 +1,6 @@
 # Create syncthing folder configuration users to share xdg files
 {
+  inputs,
   config,
   lib,
   ...
@@ -8,6 +9,8 @@
   cfgSync = config.localConfig.syncthing;
   cfgUsers = config.localConfig.users;
   users = cfgSync.users;
+  mediaRoot = cfgSync.mediaRoot;
+  registeredHost = host: (cfgSync.hosts.${host}.id or "") != "";
   darwinDirs = {
     desktop = "Desktop";
     documents = "Documents";
@@ -20,10 +23,7 @@
   };
 
   # Functions
-  capitalize = s:
-    if s == ""
-    then ""
-    else (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (builtins.stringLength s) s);
+  capitalize = inputs.self.lib.capitalize;
 
   # Ignore
   mkIgnoreText = hostName: xdgCfg: ''
@@ -32,8 +32,10 @@
     ${xdgCfg.ignore.global}
     ${xdgCfg.ignore.hosts.${hostName} or ""}
   '';
+
   # Joint folder-id
   mkFolderName = user: xdgDir: "${user}-${xdgDir}";
+
   # Pre-processing; unfold everything
   flattenXdgFolders =
     users
@@ -86,10 +88,14 @@ in {
             _: folder:
               folder.user == userName && lib.elem hostName folder.hosts
           );
+        # Resolve non-xdg directories (localConfig extraDirs) relative to HOME
+        extraRel = xdgDir:
+          cfgUsers.${userName}.extraDirs.${xdgDir}
+          or (throw "localConfig.users.${userName}.extraDirs.${xdgDir} is needed for syncthing module");
         xdgPath = xdgDir:
           if pkgs.stdenv.hostPlatform.isDarwin
-          then "${config.home.homeDirectory}/${darwinDirs.${xdgDir}}"
-          else config.xdg.userDirs.${xdgDir};
+          then "${config.home.homeDirectory}/${darwinDirs.${xdgDir} or (extraRel xdgDir)}"
+          else config.xdg.userDirs.${xdgDir} or "${config.home.homeDirectory}/${extraRel xdgDir}";
         relativeToHome = path:
           if lib.hasPrefix "${config.home.homeDirectory}/" path
           then lib.removePrefix "${config.home.homeDirectory}/" path
@@ -105,7 +111,7 @@ in {
             value = {
               enable = true;
               path = xdgPath folder.xdgDir;
-              devices = lib.filter (host: host != hostName) folder.hosts;
+              devices = lib.filter (host: (host != hostName) && (registeredHost host)) folder.hosts;
             };
           });
         # Drop stignore files
@@ -132,22 +138,45 @@ in {
           && (lib.hasAttrByPath ["local" "hm" "users"] options)
         ) (let
           hostName = config.networking.hostName;
-          dataDir = config.services.syncthing.dataDir;
           syncUser = config.services.syncthing.user;
-          syncGroup = config.services.syncthing.group;
+
           # Enabled folders
           enabledFolders = lib.filterAttrs (_: folder: lib.elem hostName folder.hosts) flattenXdgFolders;
           userEnabled = user: config.local.hm.users.${user} or false;
-          # Path resolvel
+
+          # Path resolver
           userHome = user: cfgUsers.${user}.home.linux;
-          userGroup = user: cfgUsers.${user}.group;
           userXdgRelPath = user: xdgDir: (
             cfgUsers.${user}.xdgDirs.${xdgDir}
-          or (throw "localConfig.users.${user}.xdgDirs.${xdgDir} is needed for syncthing module")
+            or cfgUsers.${user}.extraDirs.${xdgDir}
+            or (throw "localConfig.users.${user}.xdgDirs.${xdgDir} is needed for syncthing module")
           );
           userXdgPath = user: xdgDir: "${userHome user}/${userXdgRelPath user xdgDir}";
-          mkPathUser = user: "${dataDir}/${capitalize user}";
-          mkPath = folder: "${dataDir}/${capitalize folder.user}/${capitalize folder.xdgDir}";
+          mkPathUser = user: "${mediaRoot}/${capitalize user}";
+          mkPath = folder: "${mediaRoot}/${capitalize folder.user}/${capitalize folder.xdgDir}";
+
+          # Walk from the users' home to the bind target;
+          # every element except the target itself is a parent that must
+          # exist with correct ownership before the bind mount lands
+          # (tmpfiles auto-created parents would be root:root)
+          targetWalk = folder: inputs.self.lib.walkToDir (userHome folder.user) (userXdgPath folder.user folder.xdgDir);
+          targetParents = folder: let
+            walk = targetWalk folder;
+          in
+            if walk == []
+            then []
+            else lib.init walk;
+          mkParentRules = user: parents:
+            parents
+            |> map (path:
+              lib.nameValuePair path {
+                d = {
+                  user = user;
+                  group = "users";
+                  mode = "0750";
+                };
+              })
+            |> lib.listToAttrs;
         in {
           services.syncthing.settings.folders =
             enabledFolders
@@ -156,73 +185,77 @@ in {
               value = {
                 enable = true;
                 path = mkPath folder;
-                devices = lib.filter (host: host != hostName) folder.hosts;
+                devices = lib.filter (host: (host != hostName) && (registeredHost host)) folder.hosts;
                 ignorePatterns = lib.splitString "\n" (mkIgnoreText hostName folder);
-                copyOwnershipFromParent = true;
+                # Never apply or propagate permission bits; content is
+                # created as 0660/0770 via the service UMask, and setgid
+                # dirs keep group "users" inherited
+                ignorePerms = true;
               };
             });
 
           # Provision folder permissions
           systemd.tmpfiles.settings = lib.mkMerge (
             (
-              # Parent folder dispatch (result is a list of attrsets)
+              # Namespace dirs; /home/media/<User>
+              # Group "users" carries syncthing's access (traversal only);
+              # setgid so anything created inside inherits the group
               enabledFolders
               |> lib.mapAttrsToList (_: folder: folder.user)
               |> lib.unique
               |> map (
                 user: {
-                  "34-syncthing-namespace-${user}" =
-                    if (userEnabled user)
-                    then {
-                      "${mkPathUser user}" = {
-                        d = {
-                          user = user;
-                          group = userGroup user;
-                          mode = "0750";
-                        };
-                        "A+".argument = "u:${syncUser}:rwX,m::rwX";
-                        "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
-                      };
-                    }
-                    else {
-                      "${mkPathUser user}".d = {
-                        user = syncUser;
-                        group = syncGroup;
-                        mode = "0750";
-                      };
-                    };
+                  "34-syncthing-namespace-${user}"."${mkPathUser user}".d = {
+                    user =
+                      if (userEnabled user)
+                      then user
+                      else syncUser;
+                    group = "users";
+                    mode = "2750";
+                  };
                 }
               )
             )
+            ++ (
+              # Home-side parent hierarchies for nested bind targets
+              # (xdgDirs and extraDirs entries alike, e.g. Shared/Android).
+              # One shared key per user; identical entries contributed by
+              # sibling folders or other modules merge at eval time into
+              # a single tmpfiles line. Sorts before 35-* targets.
+              enabledFolders
+              |> lib.filterAttrs (_: folder: userEnabled folder.user)
+              |> lib.mapAttrsToList (_: folder: {
+                "34-home-dirs-${folder.user}" = mkParentRules folder.user (targetParents folder);
+              })
+            )
             ++ [
               (
-                # XDG folders
+                # XDG folders; real location and bind target
                 enabledFolders
                 |> lib.mapAttrs' (name: folder: {
                   name = "35-syncthing-xdg-${name}";
                   value =
-                    if (userEnabled folder.user)
-                    then {
-                      "${mkPath folder}" = {
-                        d = {
-                          user = folder.user;
-                          group = userGroup folder.user;
-                          mode = "0750";
-                        };
-                        "A+".argument = "u:${syncUser}:rwX,m::rwX";
-                        "a+".argument = "u:${syncUser}:rwx,d:u:${syncUser}:rwx,m::rwx,d:m::rwx";
-                      };
-                      "${userXdgPath folder.user folder.xdgDir}".d = {
-                        user = folder.user;
-                        group = userGroup folder.user;
-                        mode = "0750";
+                    {
+                      # Real location under /home/media; group-writable
+                      # for syncthing, setgid for group inheritance
+                      "${mkPath folder}".d = {
+                        user =
+                          if (userEnabled folder.user)
+                          then folder.user
+                          else syncUser;
+                        group = "users";
+                        mode = "2770";
                       };
                     }
-                    else {
-                      "${mkPath folder}".d = {
-                        user = syncUser;
-                        group = syncGroup;
-                        mode = "0750";
+                    // lib.optionalAttrs (userEnabled folder.user) {
+                      # Bind target in the users' home
+                      # Deliberately identical to the media-side rul;
+                      # Once mounted, bboth paths alias the same inode,
+                      # and tmpfiles re-runs on every activation with mounts active
+                      "${userXdgPath folder.user folder.xdgDir}".d = {
+                        user = folder.user;
+                        group = "users";
+                        mode = "2770";
                       };
                     };
                 })
@@ -238,9 +271,13 @@ in {
               value = {
                 device = mkPath folder;
                 fsType = "none";
-                options = ["bind" "nofail"];
+                options = [
+                  "bind"
+                  "nofail"
+                  "x-systemd.after=systemd-tmpfiles-setup.service"
+                ];
                 depends = [
-                  dataDir
+                  mediaRoot
                   (userHome folder.user)
                 ];
               };

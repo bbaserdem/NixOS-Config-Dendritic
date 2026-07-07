@@ -88,6 +88,9 @@
           };
         };
       };
+      android = {
+        hosts = ["yel-ana" "erlik"];
+      };
     };
   };
 }

@@ -32,7 +32,7 @@
         };
       };
       config = let
-        trashDir = "${config.local.paperless.mediaDir}/trash";
+        trashDir = "${config.services.paperless.mediaDir}/trash";
       in {
         # Provisioning the home directory
         # The other directories are provisioned by the paperless module by default
