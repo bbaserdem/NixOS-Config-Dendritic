@@ -11,6 +11,7 @@
 {
   inputs,
   lib,
+  den,
   ...
 }: {
   # New output options to our flake-parts repo
@@ -22,21 +23,31 @@
     };
   };
 
-  # Load dendritic flake modules
+  # Load flake-parts modules
   imports = [
-    inputs.flake-file.flakeModules.dendritic
-    inputs.flake-parts.flakeModules.modules
+    (inputs.flake-parts.flakeModules.modules or {})
+    (inputs.flake-file.flakeModules.dendritic or {})
+    (inputs.den.flakeModules.default or {})
+    # (den.flakeModules.strict or {}) Bugged, throws immediately
   ];
 
   config = {
-    # Flake-Parts sources
+    # Dendritic pattern sourcing
     flake-file.inputs = {
       flake-parts = {
         url = "github:hercules-ci/flake-parts";
         inputs.nixpkgs-lib.follows = "nixpkgs";
       };
+      den.url = "github:denful/den/v0.18.0";
       flake-file.url = "github:denful/flake-file";
       import-tree.url = "github:denful/import-tree";
+    };
+
+    # Replacement for inporting den.flakeModules.strict not working
+    den.schema = {
+      host = den.lib.strict;
+      user = den.lib.strict;
+      home = den.lib.strict;
     };
 
     # Systems we will be building for

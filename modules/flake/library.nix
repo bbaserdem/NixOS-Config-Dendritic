@@ -1,7 +1,14 @@
-{lib, ...}: {
+{
+  lib,
+  config,
+  ...
+}: {
   # Definition of common boilerplate functions used throughout this flake;
   # Define them sequential in the let binding to set recursive reference
   # Then inherit them in the output
+
+  # These should only be standalone functions; should not touch flake-parts
+  # config; otherwise we hit infinite recursion
 
   # Flake-parts doesn't automagically have a lib output spec defined
   options = {
@@ -13,6 +20,10 @@
   };
 
   config = {
+    # Available as flake-module args
+    _module.args.flib = config.flake.lib;
+
+    # Actual functions
     flake.lib = let
       # --- String functions
       # Capitalize Strings

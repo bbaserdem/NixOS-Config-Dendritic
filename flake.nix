@@ -9,6 +9,7 @@
       url = "github:chaotic-cx/nyx";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    den.url = "github:denful/den/v0.18.0";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";

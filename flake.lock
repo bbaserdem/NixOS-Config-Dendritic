@@ -182,6 +182,22 @@
         "type": "github"
       }
     },
+    "den": {
+      "locked": {
+        "lastModified": 1781621963,
+        "narHash": "sha256-8Mntz200pNVIF2l8twpdc4wvEFqzrlkICz2tvkfwz0s=",
+        "owner": "denful",
+        "repo": "den",
+        "rev": "5df0987658d6e44268abba953406480e9f066928",
+        "type": "github"
+      },
+      "original": {
+        "owner": "denful",
+        "ref": "v0.18.0",
+        "repo": "den",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -1054,6 +1070,7 @@
       "inputs": {
         "base16": "base16",
         "chaotic": "chaotic",
+        "den": "den",
         "disko": "disko",
         "flake-file": "flake-file",
         "flake-parts": "flake-parts",

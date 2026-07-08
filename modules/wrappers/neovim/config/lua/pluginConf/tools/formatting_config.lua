@@ -8,7 +8,6 @@ local M = {
     cmd = {
       "ConformInfo",
       "ConformToggle",
-      "ConformToggle!",
     },
     on_require = "conform",
     after = function(plugin)
@@ -69,7 +68,7 @@ local M = {
       })
 
       -- Register command to disable conform
-      vim.api.nvim_creat_user_command("ConformToggle", function(args)
+      vim.api.nvim_create_user_command("ConformToggle", function(args)
         if args.bang then
           vim.b.disable_autoformat = not (vim.b.disable_autoformat or false)
           print("Buffer autoformat " .. (vim.b.disable_autoformat and "disabled" or "enabled"))

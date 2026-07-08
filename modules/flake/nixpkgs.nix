@@ -52,20 +52,9 @@ in {
       };
 
       # System utilities, here for easy version upgrades
-      home-manager = {
-        url = "github:nix-community/home-manager/release-${version}";
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
       nix-darwin = {
         url = "github:nix-darwin/nix-darwin/nix-darwin-${version}";
         inputs.nixpkgs.follows = "nixpkgs-darwin";
-      };
-      stylix.url = "github:nix-community/stylix/release-${version}";
-
-      # Auto-database fetching for nixpkgs
-      nix-index-database = {
-        url = "github:nix-community/nix-index-database";
-        inputs.nixpkgs.follows = "nixpkgs-unstable";
       };
     };
 

@@ -6,10 +6,9 @@
 
 # Flake
 
-- [❄️ Flake Design](flake/README.md)
-  - [⌨️ Code](flake/code.md)
-  - [⚙️ Local Config](flake/config.md)
-  - [💻 Development](flake/development.md)
+- [❄️ Flake Overview](flake/README.md)
+  - [⌨️ Style](flake/formatting.md)
+  - [⚙️ Setup](flake/setup.md)
 - [🧭 Guides](guides/README.md)
   - [💽 Deployment](guides/deployment.md)
   - [🔑 Authentication](guides/authentication.md)

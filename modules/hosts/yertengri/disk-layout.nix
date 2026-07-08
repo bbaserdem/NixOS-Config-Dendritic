@@ -1,7 +1,7 @@
-# Su-ana disko config
-{inputs, ...}: {
-  flake.diskoConfigurations.yertengri = {
-    disko.devices.disk = {
+# Yertengri's disko configuration
+{...}: {
+  config = {
+    den.hosts.x86_64-linux.yertengri.disks.disk = {
       # Main disk on yertengri PC
       Linux = {
         type = "disk";

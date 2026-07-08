@@ -36,7 +36,7 @@
           {
             home.packages = with pkgs; [
               streamrip # Music downloader
-              audacity # Audio editor
+              tenacity # Audio editor
               musescore # Score editing
               chromaprint # Calculate acoustic id
             ];

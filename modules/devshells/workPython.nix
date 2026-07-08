@@ -7,7 +7,7 @@
           # Python projects use uv tooling for python environment
           uv
           # Node.js for claude and codex
-          nodejs-slim
+          nodejs-slim_22
           pnpm
           # Tooling for agents
           ripgrep
