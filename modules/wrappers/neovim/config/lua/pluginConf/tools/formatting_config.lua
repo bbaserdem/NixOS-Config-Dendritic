@@ -30,6 +30,9 @@ local M = {
             "goimports",
             "gofmt",
           },
+          json = {
+            "fixjson",
+          },
           markdown = {
             "prettier",
           },
