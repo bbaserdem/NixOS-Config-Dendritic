@@ -2,7 +2,6 @@
   inputs,
   config,
   den,
-  lib,
   ...
 }: let
   version = config.localConfig.nixVersion;
@@ -19,7 +18,7 @@ in {
     };
 
     den = {
-      # Selectable feature
+      # Selectable feature; basically in all scopes
       aspects.stylix = {
         # Shared enable semantics for both os classes
         os = {...}: {
@@ -36,7 +35,10 @@ in {
         darwin = {...}: {
           imports = [inputs.stylix.darwinModules.stylix];
         };
-        # Standalone only
+        # We want to dispatch specific aspect to standalone scope
+        includes = [
+          den.aspects.stylix.provides.standalone
+        ];
         provides.standalone = {home}: {
           homeManager = {...}: {
             imports = [inputs.stylix.homeModules.stylix];
@@ -47,45 +49,6 @@ in {
           };
         };
       };
-
-      # Intersection classes
-      classes = {
-        stylix.description = ''
-          Stylix home-manager settings.
-          Delivered to config.stylix only where stylix is loaded.
-        '';
-        stylixOs.description = ''
-          Stylix nixos/nix-darwin settings.
-          Delivered to config.stylix only where stylix is loaded.
-        '';
-      };
-
-      policies = {
-        stylixOs-route = {host, ...}:
-          lib.optional (host ? class && builtins.elem host.class ["nixos" "darwin"]) (
-            den.lib.policy.route {
-              fromClass = "stylixOs";
-              intoClass = host.class;
-              intoPath = ["stylix"];
-              guard = {options, ...}: options ? stylix;
-            }
-          );
-        stylixHome-route = {...}: [
-          (
-            den.lib.policy.route {
-              fromClass = "stylix";
-              intoClass = "homeManager";
-              intoPath = ["stylix"];
-              guard = {options, ...}: options ? stylix;
-            }
-          )
-        ];
-      };
-
-      default.includes = [
-        den.policies.stylixOs-route
-        den.policies.stylixHome-route
-      ];
     };
 
     # Flake modules that enables stylix

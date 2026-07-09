@@ -35,23 +35,28 @@
           };
         };
 
+        # By default, include disko aspect in every host
         includes = [den.aspects.disko];
       };
 
-      # Define disko aspect for den host-kind entities
+      # Define the disko aspect for den host-kind entities
       aspects.disko = {host}: {
-        nixos = {...}: (lib.optionalAttrs (host."${devicesNameSpace}" != null) {
-          imports = [
-            inputs.disko.nixosModules.disko
-          ];
-          config = {
-            disko.devices = host."${devicesNameSpace}";
-          };
-        });
+        nixos = {...}: (
+          # We condition on disko definition existing before dispatch;
+          # Side-effect of auto-aspect include
+          lib.optionalAttrs (host."${devicesNameSpace}" != null) {
+            imports = [
+              inputs.disko.nixosModules.disko
+            ];
+            config = {
+              disko.devices = host."${devicesNameSpace}";
+            };
+          }
+        );
       };
     };
 
-    # Disko configurations output from den hosts
+    # Disko configurations output, pulled from den host-kind entities' record
     flake.diskoConfigurations =
       config.den.hosts
       |> lib.concatMapAttrs (

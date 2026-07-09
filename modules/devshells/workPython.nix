@@ -1,5 +1,5 @@
 # DevShell for python development at work
-{inputs, ...}: {
+{...}: {
   perSystem = {pkgs, ...}: {
     devShells.workPython = pkgs.mkShell {
       packages = with pkgs;

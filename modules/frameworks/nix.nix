@@ -11,38 +11,59 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Nix configuration aspect
     den = {
-      aspects.nix = {
+      aspects.nix = let
+        # Settings shared across ALL contexts
+        nixShared = {
+          settings = {
+            auto-optimise-store = true;
+            experimental-features = [
+              "nix-command"
+              "flakes"
+              "pipe-operators"
+              "ca-derivations"
+            ];
+            # For dev related things
+            keep-outputs = true;
+            keep-derivations = true;
+          };
+          gc = {
+            automatic = true;
+            options = "--delete-older-than 60d";
+          };
+        };
+      in {
         # Both OS classes
         os = {...}: {
-          nix = {
-            gc.options = "--delete-older-than 60d";
-            settings = {
-              experimental-features = [
-                "nix-command"
-                "flakes"
-                "pipe-operators"
-                "ca-derivations"
-              ];
-              # For dev related things
-              keep-outputs = true;
-              keep-derivations = true;
-            };
-          };
+          nix = nixShared;
         };
         nixos = {...}: {
           # Garbage collect settings
           nix = {
             nixPath = ["nixpkgs=${inputs.nixpkgs}"];
-            gc.automatic = true;
-            settings.auto-optimise-store = true;
+            optimise = {
+              automatic = true;
+              dates = "weekly";
+            };
+            gc.dates = "weekly";
           };
         };
         darwin = {...}: {
           nix = {
-            nixPath = ["nixpkgs=${inputs.nixpkgs-darwin}"];
-            optimise.automatic = true;
+            # Let nix manage itself
             enable = true;
+            nixPath = ["nixpkgs=${inputs.nixpkgs-darwin}"];
+            optimise = {
+              automatic = true;
+              interval = [
+                {
+                  Hour = 4;
+                  Minute = 15;
+                  Weekday = 7;
+                }
+              ];
+            };
             gc.interval = [
               {
                 Hour = 3;
@@ -52,12 +73,44 @@
             ];
             # Enable cross-comp
             linux-builder.enable = true;
-            settings.trusted-users = ["@admin"];
+            settings.trusted-users = ["@admin" "@builders" "@staff"];
           };
         };
 
         # Extras: tooling and conveniences selected per host
-        provides.extras = {
+        includes = [den.aspects.nix.provides.standalone];
+        provides.standalone = {home}: {
+          homeManager = {
+            lib,
+            pkgs,
+            ...
+          }: {
+            nix = lib.recursiveUpdate nixShared {
+              package = pkgs.nix;
+              nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+              gc.dates = "weekly";
+            };
+          };
+        };
+
+        # Extras to be provided
+        provides.extras = let
+          hmNixModule = {...}: {
+            imports = [inputs.nix-index-database.homeModules.default];
+            config = {
+              programs = {
+                nix-index-database.comma.enable = true;
+                nix-index = {
+                  enable = true;
+                  enableBashIntegration = true;
+                  enableZshIntegration = true;
+                  enableFishIntegration = true;
+                  enableNushellIntegration = true;
+                };
+              };
+            };
+          };
+        in {
           os = {pkgs, ...}: {
             programs = {
               nix-index.enable = true;
@@ -88,34 +141,17 @@
           darwin = {...}: {
             imports = [inputs.nix-index-database.darwinModules.nix-index];
           };
-
-          # Selecting extras on host propagates to it's users
-          provides = {
-            to-users.includes = [den.aspects.nix.provides.extras.provides.home];
-            home = {
-              homeManager = {...}: {
-                imports = [inputs.nix-index-database.homeModules.default];
-                config = {
-                  programs = {
-                    nix-index-database.comma.enable = true;
-                    nix-index = {
-                      enable = true;
-                      enableBashIntegration = true;
-                      enableZshIntegration = true;
-                      enableFishIntegration = true;
-                      enableNushellIntegration = true;
-                    };
-                  };
-                };
-              };
-            };
-          };
+          # Selecting extras on host propagates, or on home also stays
+          homeManager = hmNixModule;
+          provides.to-users = {homeManager = hmNixModule;};
         };
       };
 
-      # Fleet invariant, dispatched to everyone
+      # Fleet invariant, base aspect should be dispatched to everyone
+      # Don't walk in default; because user walk up would duplicate.
       schema = {
         host.includes = [den.aspects.nix];
+        home.includes = [den.aspects.nix];
       };
     };
 

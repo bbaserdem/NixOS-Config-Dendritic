@@ -2,6 +2,7 @@
 {
   inputs,
   lib,
+  den,
   ...
 }: {
   config = {
@@ -14,9 +15,8 @@
     };
 
     den = {
+      # Schema defins for concerned entities
       schema = {
-        # Host level sops-nix
-        # Config here refers to the entity record.
         host = {config, ...}: {
           options.secrets = {
             sopsFile = lib.mkOption {
@@ -28,8 +28,6 @@
             };
           };
         };
-        # User level sops-nix
-        # Config here referst to the user
         user = {config, ...}: {
           options.secrets = {
             sopsFile = lib.mkOption {
@@ -41,40 +39,54 @@
             };
           };
         };
+        home = {config, ...}: {
+          options.secrets = {
+            sopsFile = lib.mkOption {
+              type = lib.types.path;
+              default =
+                if (config.hostName != null)
+                then (inputs.self + "/secrets/host/${config.hostName}/secrets.yaml")
+                else (inputs.self + "/secrets/user/${config.userName}/secrets.yaml");
+              description = "Default sops file for this user.";
+            };
+          };
+        };
       };
 
       aspects.secrets = {
         includes = [
-          (
-            {host}: {
-              # Generic dispatch to darwin and nixos
-              os = {...}: {
-                config = {
-                  sops = {
-                    defaultSopsFile = host.secrets.sopsFile;
-                    age = {
-                      sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
-                      generateKey = false;
-                    };
-                  };
-                };
-              };
-              # Nixos specific dispatch
-              nixos = {...}: {
-                imports = [inputs.sops-nix.nixosModules.sops];
-                config = {
-                  sops.useSystemdActivation = true;
-                };
-              };
-              # Darwin specific dispatch
-              darwin = {...}: {
-                imports = [inputs.sops-nix.darwinModules.sops];
-              };
-            }
-          )
+          den.aspects.secrets._.host
+          den.aspects.secrets._.standalone
         ];
 
-        provides.home = {user}: {
+        provides.host = {host}: {
+          # Generic dispatch to darwin and nixos
+          os = {...}: {
+            config = {
+              sops = {
+                defaultSopsFile = host.secrets.sopsFile;
+                age = {
+                  sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+                  generateKey = false;
+                };
+              };
+            };
+          };
+          # Nixos specific dispatch
+          nixos = {...}: {
+            imports = [inputs.sops-nix.nixosModules.sops];
+            config = {
+              sops.useSystemdActivation = true;
+            };
+          };
+          # Darwin specific dispatch
+          darwin = {...}: {
+            imports = [inputs.sops-nix.darwinModules.sops];
+          };
+        };
+
+        # The fan-out to managed users
+        provides.to-users = {user}: {
           homeManager = {
             config,
             lib,
@@ -87,6 +99,35 @@
                 # Home-manager sops dispatch
                 sops = {
                   defaultSopsFile = user.secrets.sopsFile;
+                  age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+                };
+              }
+              (
+                # In darwin default location is in application support
+                lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
+                  home.file."Library/Application Support/sops" = {
+                    source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/sops";
+                    force = true;
+                  };
+                }
+              )
+            ];
+          };
+        };
+
+        provides.standalone = {home}: {
+          homeManager = {
+            config,
+            lib,
+            pkgs,
+            ...
+          }: {
+            imports = [inputs.sops-nix.homeModules.sops];
+            config = lib.mkMerge [
+              {
+                # Home-manager sops dispatch
+                sops = {
+                  defaultSopsFile = home.secrets.sopsFile;
                   age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
                 };
               }
