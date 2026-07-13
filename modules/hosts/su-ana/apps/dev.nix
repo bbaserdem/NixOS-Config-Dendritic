@@ -21,6 +21,7 @@
       ai-chatgpt
       ai-codegraph
       ai-opencode
+      ai-pi
     ];
   };
 }

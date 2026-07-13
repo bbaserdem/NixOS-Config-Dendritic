@@ -14,9 +14,15 @@ in {
 
   config = {
     # Home-manoger flake source
-    flake-file.inputs.home-manager = {
-      url = "github:nix-community/home-manager/release-${version}";
-      inputs.nixpkgs.follows = "nixpkgs";
+    flake-file.inputs = {
+      home-manager = {
+        url = "github:nix-community/home-manager/release-${version}";
+        inputs.nixpkgs.follows = "nixpkgs";
+      };
+      home-manager-unstable = {
+        url = "github:nix-community/home-manager";
+        inputs.nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
 
     # Configuring default hm settings in den

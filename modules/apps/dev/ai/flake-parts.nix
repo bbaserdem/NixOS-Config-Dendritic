@@ -18,7 +18,7 @@
 
   # Apply our nixpkgs overlay to pull in from pkgs
   localConfig.nixpkgs.overlays = [
-    inputs.llm-agents.overlays.default
+    inputs.llm-agents.overlays.shared-nixpkgs
   ];
 
   # Collect factoried modules
@@ -29,6 +29,7 @@
     (config.factory.inclusionModules "ai-codegraph")
     (config.factory.inclusionModules "ai-codex")
     (config.factory.inclusionModules "ai-opencode")
+    (config.factory.inclusionModules "ai-pi")
     (config.factory.inclusionModules "ai-droid")
     (config.factory.inclusionModules "ai-forgecode")
   ];
