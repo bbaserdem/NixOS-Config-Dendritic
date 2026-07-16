@@ -6,7 +6,7 @@ Coding patterns I tend to use in this flake.
 
 All markdown files should use good truncation rules for long lines.
 Never write a paragraph as a line; try to break around 100 characters.
-[neovim](../software/neovim.md) should have a formatter.
+[neovim](../software/neovim.md) should have a formatter, so shouldn't be a problem.
 
 ## Variables
 
@@ -48,15 +48,16 @@ If it's used in multiple places, it should go in `modules/flake/library.nix`.
 ## Modules
 
 - If something is a module (`flake-parts`, `nixos`, `nix-darwin`, `home-manager`)
-  it should be made explicit by taking module arguments;
-  even when not needed.
+  it should be made explicit by taking module arguments, even when not needed.
   Meaning, `{...}: {}` notation should be used.
 
-- Inside module blocks, even when there is only `config` set, it should be explicit;
-  Meaning `{...}: { <option>.enable = true; }` is considered an anti-pattern;
-  correct way is `{...}: {config = { <option>.enable = true; };}`
+- Inside module blocks, if there is `imports` or `options`; then `config`
+  should always be explicit.
+  Only if `config` is the only definition, is it allowed to be implicit.
+  Anti-pattern is `{...}: {imports = [...]; <option>.enable = true; }`,
+  correct way is `{...}: {imports = [...]; config = {<option>.enable = true;}; }`
 
-- `config` and `options` should never be traversed directly; always expose attrset.
+- `config` and `options` should always be top level attrsets; always expose the attrset.
   Anti-pattern is `{...}: {config.<option>.enable = true;}`;
   correct way is `{...}: { config = { <option>.enable = true;};}`
 
@@ -66,14 +67,20 @@ explicitness makes things easier to follow for me.
 
 ## Den
 
-When using `den`, _entity kinds_ should always be divorced from module arguments.
-This is considered an anti pattern;
+Styling in `den`
+
+### Aspects
+
+- For parametric aspects, _context_ arguments should always be divorced
+  from _module_ arguments.
+
+This is considered an anti-pattern;
 
 ```
 den.aspects.<feature> = {host, config, ...}: {
-    nixos = {
-        ...
-    };
+  nixos = {
+    ...
+  };
 };
 ```
 
@@ -81,8 +88,31 @@ Correct usage is;
 
 ```
 den.aspects.<feature> = {host}: {
-    nixos = {config, ...}: {
+  nixos = {config, ...}: {
+    ...
+  };
+};
+```
+
+As a result, mixing parametric aspects for different contexts can't happen.
+This should be done with `provides`, and includes.
+
+```
+den.aspects.<feature> = {
+  includes = [
+    den.aspects.<feature>._.standalone
+  ];
+
+  nixos = {config, ...}: {
+    ...
+  };
+
+  provides = {
+    standalone = {home}: {
+      homeManager = {config, ...}: {
         ...
+      };
     };
+  };
 };
 ```

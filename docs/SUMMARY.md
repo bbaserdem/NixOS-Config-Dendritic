@@ -9,10 +9,11 @@
 - [❄️ Flake Overview](flake/README.md)
   - [⌨️ Style](flake/formatting.md)
   - [⚙️ Setup](flake/setup.md)
-  - [🪾 Dendritic](flake/dendritic.md)
+  - [🌲 Dendritic Setup](flake/dendritic.md)
 - [🧭 Guides](guides/README.md)
   - [💽 Deployment](guides/deployment.md)
   - [🔑 Authentication](guides/authentication.md)
+  - [🪾 Den](guides/den.md)
 
 # Interfaces
 

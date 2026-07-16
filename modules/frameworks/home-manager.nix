@@ -33,33 +33,43 @@ in {
     # host configuration can go in den.schema.hm-host.includes (undocumented)
     den = {
       # Home manager settings configuration aspect
-      aspects.home-manager = {
-        #  Default stateversion for hm eval
-        homeManager = {lib, ...}: {
-          home.stateVersion = lib.mkDefault "${version}";
-        };
-        # We don't globally want to enable os settings; so we are going to
-        # hook this as a sub-aspect to schema.hm-host.includes
-        provides.osSettings.os = {
-          lib,
-          options,
-          ...
-        }: {
-          config = lib.optionalAttrs (options ? home-manager) {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              backupFileExtension = "hm-backup";
-              overwriteBackup = true;
+      aspects = {
+        home-manager = {
+          #  Default stateVersion for hm evals
+          homeManager = {lib, ...}: {
+            home.stateVersion = lib.mkDefault "${version}";
+          };
+          # Host configuration
+          os = {
+            lib,
+            options,
+            ...
+          }: {
+            config = lib.optionalAttrs (options ? home-manager) {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                backupFileExtension = "hm-backup";
+                overwriteBackup = true;
+              };
             };
           };
+          # Host includes (not needed, den does this by default
+          # darwin = {...}: {
+          #   includes = [
+          #     inputs.home-manager.modules.darwinModules.home-manager
+          #   ];
+          # };
+          # nixos = {...}: {
+          #   includes = [
+          #     inputs.home-manager.modules.nixosModules.home-manager
+          #   ];
+          # };
         };
       };
 
       # Dispatch global hm-settings in all relevant scopes;
-      # global to homeManager, osSettings to hm-host scope
       default.includes = [den.aspects.home-manager];
-      schema.hm-host.includes = [den.aspects.home-manager.provides.settings];
     };
 
     # System wide home-manager modules;
