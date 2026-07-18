@@ -13,6 +13,13 @@
 
     # Nix configuration aspect
     den = {
+      # Base dispatch is Fleet invariant, should be for all systems
+      # (Don't walk in default, user walk up would duplicate the scope.)
+      schema = {
+        host.includes = [den.aspects.nix];
+        home.includes = [den.aspects.nix];
+      };
+
       aspects.nix = {
         # Shared settings
         os = {...}: {
@@ -30,11 +37,13 @@
             inputs.self.modules.darwin.nix-common
           ];
         };
-
-        # Extras: tooling and conveniences selected per host
-        # (Guard in realizing this only in hm-as-standalone scope with parametric)
-        includes = [den.aspects.nix._.standalone];
-        provides.standalone = {home}: {
+        homeManager = {...}: {
+          imports = [
+            inputs.self.modules.generic.nix-common
+            inputs.self.modules.homeManager.nix-common
+          ];
+        };
+        provides.to-users = {
           homeManager = {...}: {
             imports = [
               inputs.self.modules.generic.nix-common
@@ -60,12 +69,7 @@
               inputs.self.modules.darwin.nix-extras
             ];
           };
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.nix-extras
-            ];
-          };
-          # Selecting extras on host propagates, or on home also stays
+          # Selecting extras on host propagates, or on home also there
           provides.to-users = {
             homeManager = {...}: {
               imports = [inputs.self.modules.homeManager.nix-extras];
@@ -73,68 +77,70 @@
           };
         };
       };
-
-      # Fleet invariant, base aspect should be dispatched to everyone
-      # Don't walk in default, user walk up would duplicate the scope.
-      schema = {
-        host.includes = [den.aspects.nix];
-        home.includes = [den.aspects.nix];
-      };
     };
 
-    # Old flake-parts
     flake = {
       modules = {
         # Module for common settings to the nix daemon; all contexnt
         generic = {
           nix-common = {...}: {
-            nix = {
-              settings = {
-                auto-optimise-store = true;
-                experimental-features = [
-                  "nix-command"
-                  "flakes"
-                  "pipe-operators"
-                  "ca-derivations"
-                ];
-                # For dev related things
-                keep-outputs = true;
-                keep-derivations = true;
-              };
-              gc = {
-                automatic = true;
-                options = "--delete-older-than 60d";
+            key = "frameworks-nix#os";
+            config = {
+              nix = {
+                settings = {
+                  auto-optimise-store = true;
+                  experimental-features = [
+                    "nix-command"
+                    "flakes"
+                    "pipe-operators"
+                    "ca-derivations"
+                  ];
+                  # For dev related things
+                  keep-outputs = true;
+                  keep-derivations = true;
+                };
+                gc = {
+                  automatic = true;
+                  options = "--delete-older-than 60d";
+                };
               };
             };
           };
           nix-extras = {pkgs, ...}: {
-            programs = {
-              nix-index.enable = true;
-              nix-index-database.comma.enable = true;
-            }; # Nix helper utilities
-            environment.systemPackages = with pkgs; [
-              nh
-              nix-output-monitor
-              nvd
-              nix-diff
-              nix-weather
-            ];
+            key = "frameworks-nix/extras#os";
+            config = {
+              programs = {
+                nix-index.enable = true;
+                nix-index-database.comma.enable = true;
+              }; # Nix helper utilities
+              environment.systemPackages = with pkgs; [
+                nh
+                nix-output-monitor
+                nvd
+                nix-diff
+                nix-weather
+              ];
+            };
           };
         };
         nixos = {
           nix-common = {...}: {
-            nix = {
-              # Set the nixpkgs source for legacy nix tooling
-              nixPath = ["nixpkgs=${inputs.nixpkgs}"];
-              # Garbage collect settings
-              optimise = {
-                automatic = true;
-                dates = "weekly";
+            key = "frameworks-nix#nixos";
+            config = {
+              nix = {
+                # Set the nixpkgs source for legacy nix tooling
+                nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+                # Garbage collect settings
+                optimise = {
+                  automatic = true;
+                  dates = "weekly";
+                };
+                gc.dates = "weekly";
               };
-              gc.dates = "weekly";
             };
           };
           nix-extras = {...}: {
+            key = "frameworks-nix/extras#nixos";
             imports = [inputs.nix-index-database.nixosModules.nix-index];
             config = {
               programs = {
@@ -151,48 +157,56 @@
         };
         darwin = {
           nix-common = {...}: {
-            nix = {
-              # Let nix manage itself (?)
-              enable = true;
-              # Set the nixpkgs source for legacy nix tooling
-              nixPath = ["nixpkgs=${inputs.nixpkgs-darwin}"];
-              # Garbage collect settings; darwin specific
-              optimise = {
-                automatic = true;
-                interval = [
+            key = "frameworks-nix#darwin";
+            config = {
+              nix = {
+                # Let nix manage itself (?)
+                enable = true;
+                # Set the nixpkgs source for legacy nix tooling
+                nixPath = ["nixpkgs=${inputs.nixpkgs-darwin}"];
+                # Garbage collect settings; darwin specific
+                optimise = {
+                  automatic = true;
+                  interval = [
+                    {
+                      Hour = 4;
+                      Minute = 15;
+                      Weekday = 7;
+                    }
+                  ];
+                };
+                gc.interval = [
                   {
-                    Hour = 4;
+                    Hour = 3;
                     Minute = 15;
                     Weekday = 7;
                   }
                 ];
+                # Enable cross-compilation
+                linux-builder.enable = true;
+                # Darwin trusted settings
+                settings.trusted-users = ["@admin" "@builders" "@staff"];
               };
-              gc.interval = [
-                {
-                  Hour = 3;
-                  Minute = 15;
-                  Weekday = 7;
-                }
-              ];
-              # Enable cross-compilation
-              linux-builder.enable = true;
-              # Darwin trusted settings
-              settings.trusted-users = ["@admin" "@builders" "@staff"];
             };
           };
           nix-extras = {...}: {
+            key = "frameworks-nix/extras#darwin";
             imports = [inputs.nix-index-database.darwinModules.nix-index];
           };
         };
         homeManager = {
           nix-common = {pkgs, ...}: {
-            nix = {
-              package = pkgs.nix;
-              nixPath = ["nixpkgs=${inputs.nixpkgs}"];
-              gc.dates = "weekly";
+            key = "frameworks-nix#hm";
+            config = {
+              nix = {
+                package = pkgs.nix;
+                nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+                gc.dates = "weekly";
+              };
             };
           };
           nix-extras = {...}: {
+            key = "frameworks-nix/extras#hm";
             imports = [inputs.nix-index-database.homeModules.default];
             config = {
               programs = {
@@ -208,6 +222,9 @@
             };
           };
         };
+
+        # --- OLD: Flake-parts setup
+        # TODO: after full den migration, rename nix-common to nix
 
         # Generic; for nix settings for both nixos and darwin contexts
         generic.nix = {pkgs, ...}: {

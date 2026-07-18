@@ -28,7 +28,7 @@
             refreshInterval = 5;
           };
           # Permissive mode
-          defaultModel = "auto";
+          defaultMode = "auto";
         };
       };
     };

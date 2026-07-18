@@ -82,6 +82,12 @@ For example, the `yertengri` host entity, with two users; `wolframite` and `joey
 
 The attrset of the contents of the current scope is called the **context**.
 
+> [!NOTE]
+> I ban the use of standalone home configs outside `<username>@<hostname>`
+> When this is set; the corresponding host and user are materialized in scope.
+> This means, every aspect can use these scopes.
+> Meaning, home scope parametric aspects should be used very sparingly
+
 ### Schema
 
 Schema is used to declare global options;
@@ -163,6 +169,8 @@ There are special provides names that have some automatic behavior;
   _to-hosts_ sub-aspect is fired at the `{host, user}` scope, and the `os` content
   rides up to the `{host}` scope.
   (This is just a naming convention, this behavior is identical with the parent aspect.)
+  > [!NOTE]
+  > Needs the aspect to be `{home, user}`; baked into the internal policy
 - `provides.<username>`
   _username_ sub-aspect is enabled on `{host, user == <username>}` scope,
   if the parent aspect is in the `{host}` scope.

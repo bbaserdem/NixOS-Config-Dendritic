@@ -30,7 +30,6 @@
         includes = [
           den.batteries.define-user # Bootstrap OS level user accounts
           den.batteries.hostname # Seed hostname from hosts.<name>.hostname
-          den.batteries.primary-user # Make user an admin on nixos, and primary-user on darwin
         ];
       };
     };

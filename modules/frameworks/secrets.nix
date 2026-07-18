@@ -15,7 +15,7 @@
     };
 
     den = {
-      # Schema defins for concerned entities
+      # Schema defines for concerned entities
       schema = {
         host = {config, ...}: {
           options.secrets = {
@@ -55,100 +55,108 @@
 
       aspects.secrets = {
         includes = [
-          den.aspects.secrets._.host
-          den.aspects.secrets._.standalone
+          den.aspects.secrets.provides.for-hosts
+          den.aspects.secrets.provides.for-homes
         ];
 
-        provides.host = {host}: {
-          # Generic dispatch to darwin and nixos
+        os = {...}: {
+          imports = [inputs.self.modules.generic.sops];
+        };
+        nixos = {...}: {
+          imports = [inputs.self.modules.nixos.sops];
+        };
+        darwin = {...}: {
+          imports = [inputs.self.modules.darwin.sops];
+        };
+
+        # Generic dispatch to default key file, parametric on host scopes
+        # (Fires on standalone hm due to virtual host, but os module isn't used)
+        provides.for-hosts = {host}: {
           os = {...}: {
-            config = {
-              sops = {
-                defaultSopsFile = host.secrets.sopsFile;
-                age = {
-                  sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
-                  generateKey = false;
-                };
-              };
-            };
-          };
-          # Nixos specific dispatch
-          nixos = {...}: {
-            imports = [inputs.sops-nix.nixosModules.sops];
-            config = {
-              sops.useSystemdActivation = true;
-            };
-          };
-          # Darwin specific dispatch
-          darwin = {...}: {
-            imports = [inputs.sops-nix.darwinModules.sops];
+            sops.defaultSopsFile = host.secrets.sopsFile;
           };
         };
 
-        # The fan-out to managed users
-        provides.to-users = {user}: {
-          homeManager = {
-            config,
-            lib,
-            pkgs,
-            ...
-          }: {
-            imports = [inputs.sops-nix.homeModules.sops];
-            config = lib.mkMerge [
-              {
-                # Home-manager sops dispatch
-                sops = {
-                  defaultSopsFile = user.secrets.sopsFile;
-                  age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
-                };
-              }
-              (
-                # In darwin default location is in application support
-                lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-                  home.file."Library/Application Support/sops" = {
-                    source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/sops";
-                    force = true;
-                  };
-                }
-              )
-            ];
+        # Dispatch default key file to standalone hm, parametric on home scopes
+        provides.for-homes = {home}: {
+          homeManager = {lib, ...}: {
+            imports = [inputs.self.modules.homeManager.sops];
+            config = {
+              sops.defaultSopsFile = lib.mkOverride 900 home.secrets.sopsFile;
+            };
           };
         };
 
-        provides.standalone = {home}: {
-          homeManager = {
-            config,
-            lib,
-            pkgs,
-            ...
-          }: {
-            imports = [inputs.sops-nix.homeModules.sops];
-            config = lib.mkMerge [
-              {
-                # Home-manager sops dispatch
-                sops = {
-                  defaultSopsFile = home.secrets.sopsFile;
-                  age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
-                };
-              }
-              (
-                # In darwin default location is in application support
-                lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-                  home.file."Library/Application Support/sops" = {
-                    source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/sops";
-                    force = true;
-                  };
-                }
-              )
-            ];
+        # The (auto) fan-out to managed users; dispatch sops secret location
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          homeManager = {lib, ...}: {
+            imports = [inputs.self.modules.homeManager.sops];
+            config = {
+              sops.defaultSopsFile = lib.mkOverride 950 user.secrets.sopsFile;
+            };
           };
         };
       };
     };
 
-    # Old flake-parts stuff
-    # Load into contexts, generic gets loaded into nixos and darwin settings
     flake.modules = {
+      # Modules to dispatch
+      generic.sops = {...}: {
+        key = "frameworks-sops#os";
+        config = {
+          sops = {
+            age = {
+              sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+              generateKey = false;
+            };
+          };
+        };
+      };
+      nixos.sops = {...}: {
+        key = "frameworks-sops#nixos";
+        imports = [inputs.sops-nix.nixosModules.sops];
+        config = {
+          sops.useSystemdActivation = true;
+        };
+      };
+      darwin.sops = {...}: {
+        key = "frameworks-sops#darwin";
+        imports = [inputs.sops-nix.darwinModules.sops];
+      };
+      homeManager.sops = {
+        config,
+        pkgs,
+        lib,
+        ...
+      }: {
+        key = "frameworks-sops#hm";
+        imports = [
+          inputs.sops-nix.homeModules.sops
+        ];
+        config = lib.mkMerge [
+          {
+            # Keyfile location
+            sops = {
+              age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+            };
+          }
+          (
+            # Drop a symlink in the canonical directory in macos
+            lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+              home.file."Library/Application Support/sops" = {
+                source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/sops";
+                force = true;
+              };
+            }
+          )
+        ];
+      };
+
+      # Old flake-parts stuff
+      # Load into contexts, generic gets loaded into nixos and darwin settings
       generic.secrets = {config, ...}: {
         # Default ssh key locations
         sops = {

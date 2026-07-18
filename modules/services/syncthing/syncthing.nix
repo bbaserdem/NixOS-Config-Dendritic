@@ -9,7 +9,7 @@
     }: {
       options = {
         syncthing = {
-          enabled = lib.mkOption {
+          enable = lib.mkOption {
             type = lib.types.bool;
             default = config.syncthing.deviceId != "";
             description = ''

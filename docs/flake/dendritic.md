@@ -47,9 +47,17 @@ I personally organized my _features_ into several **types**.
 
 ---
 
+## Flake-Parts
+
+Usage of `flake-parts` in this flake.
+
+### Modules
+
+---
+
 ## Den
 
-The setup guide of den in this container.
+The setup guide of den in this flake.
 
 ### Aspects
 

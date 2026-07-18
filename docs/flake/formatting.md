@@ -51,15 +51,21 @@ If it's used in multiple places, it should go in `modules/flake/library.nix`.
   it should be made explicit by taking module arguments, even when not needed.
   Meaning, `{...}: {}` notation should be used.
 
-- Inside module blocks, if there is `imports` or `options`; then `config`
-  should always be explicit.
+- Inside module blocks, if there is module keys besides `config`
+  `config` should always be explicit.
+  (i.e. `imports` or `options` is defined, then config should be explicit.)
   Only if `config` is the only definition, is it allowed to be implicit.
   Anti-pattern is `{...}: {imports = [...]; <option>.enable = true; }`,
   correct way is `{...}: {imports = [...]; config = {<option>.enable = true;}; }`
 
-- `config` and `options` should always be top level attrsets; always expose the attrset.
+- `config` and `options` should always be top level attrsets, not dot notationed.
   Anti-pattern is `{...}: {config.<option>.enable = true;}`;
   correct way is `{...}: { config = { <option>.enable = true;};}`
+
+- For deduplication, modules should set the top-level `key` property.
+  Whenever this could be an issue, set this top-level key.
+  Naming for this should use `category[/subcategory]-feature[/subfeature]#class[@user/host]`,
+  dedupes on module level (part of nix modules spec)
 
 This may be too verbose, and sometimes hard to read.
 But shorthand conventions mess up with my brain,
@@ -68,6 +74,10 @@ explicitness makes things easier to follow for me.
 ## Den
 
 Styling in `den`
+
+### Entities
+
+- No bare home entities allowed; all home entities must use `<username>@<hostname>`.
 
 ### Aspects
 
@@ -100,14 +110,14 @@ This should be done with `provides`, and includes.
 ```
 den.aspects.<feature> = {
   includes = [
-    den.aspects.<feature>._.standalone
+    den.aspects.<feature>._.for-home
   ];
 
   nixos = {config, ...}: {
     ...
   };
 
-  provides = {
+  for-home = {
     standalone = {home}: {
       homeManager = {config, ...}: {
         ...
