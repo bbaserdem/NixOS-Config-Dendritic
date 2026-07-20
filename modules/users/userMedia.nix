@@ -88,11 +88,12 @@ in {
     quirks.mediaDirs = {
       description = "Resolved user media directory records";
       # Should be keyed as "<user>-<foldername> and have the following information;
+      # - name: <foldername>
+      # - user: the main user name for this folder
       # - directory: actual path
       # - bindLocation: target to bind this directory to
-      # - user: the main user name for this folder
     };
-    policies.expose-mediaDirs = {...}: [
+    policies.expose-mediaDirs = {...} @ ctx: [
       (
         den.lib.policy.pipe.from den.quirks.mediaDirs [
           den.lib.policy.pipe.expose

@@ -13,7 +13,7 @@
               ])
           )
           # Node.js for claude and codex
-          nodejs-slim
+          nodejs-slim_26
           pnpm
           # Project environment
           bun
