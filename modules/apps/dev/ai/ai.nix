@@ -7,6 +7,8 @@
         homebrew = {
           casks = [
             # External context tools
+            "perplexity"
+            "wispr-flow"
           ];
         };
       };
