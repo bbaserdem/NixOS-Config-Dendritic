@@ -2,7 +2,6 @@
   inputs,
   lib,
   config,
-  den,
   ...
 }: {
   # Declarative disk partitioning for NixOS

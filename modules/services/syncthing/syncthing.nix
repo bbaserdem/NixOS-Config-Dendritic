@@ -1,32 +1,6 @@
 # Syncthing; file synching across computers
 {lib, ...}: {
   config = {
-    # Host setting registry for den
-    den.schema.host = {
-      config,
-      lib,
-      ...
-    }: {
-      options = {
-        syncthing = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = config.syncthing.deviceId != "";
-            description = ''
-              Whether to enable running syncthing on this host
-              Default to enabled if device ID is populated.
-            '';
-          };
-          deviceId = lib.mkOption {
-            type = lib.types.strMatching "([A-Z2-7]{7}(-[A-Z2-7]{7}){7})?";
-            # 56 base32 characters, 8 dash seperated groups of 7 (or empty string)
-            default = "";
-            description = "Host ID in syncthing for this host";
-          };
-        };
-      };
-    };
-
     # Global stignore string
     localConfig.syncthing.ignore.global = ''
       // Global stignore

@@ -34,9 +34,9 @@ There are 3 relevant `kind`s built-in to den's entity schema;
 > But, if a home entity's name is set as "<username>@<hostname>",
 > den's built in behavior populates three reference fields;
 >
-> - <home>.hostName set to hostname
-> - <home>.host set to the den.hosts.<hostname> entity if exists, stubs the entry if not.
-> - <home>.user set to den.hosts.<hostname>.users.<username> if exists.
+> - `<home>.hostName` set to hostname
+> - `<home>.host` set to the `den.hosts.<hostname>` entity if exists, stubs the entry if not.
+> - `<home>.user` set to `den.hosts.<hostname>.users.<username>` if exists.
 >   This machinery is built for cases where OS is nixos, but users are managed
 >   with home-manager standalone.
 >

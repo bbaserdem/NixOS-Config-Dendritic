@@ -195,11 +195,16 @@
           };
         };
         homeManager = {
-          nix-common = {pkgs, ...}: {
+          nix-common = {
+            pkgs,
+            lib,
+            ...
+          }: {
             key = "frameworks-nix#hm";
             config = {
               nix = {
-                package = pkgs.nix;
+                # This is set by default in den
+                # package = lib.mkDefault pkgs.nix;
                 nixPath = ["nixpkgs=${inputs.nixpkgs}"];
                 gc.dates = "weekly";
               };

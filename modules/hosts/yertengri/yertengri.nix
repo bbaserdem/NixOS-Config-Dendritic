@@ -2,12 +2,6 @@
 {den, ...}: {
   den = {
     hosts.x86_64-linux.yertengri = {
-      # Syncthing configuration
-      syncthing = {
-        enable = true;
-        deviceId = "OGURLTB-BBT3MMT-CCK23PS-FT76672-YMWVY4T-6AR7LIO-22O6VN2-GJB3DAF";
-      };
-
       # Enable styling
       stylix.enable = true;
 

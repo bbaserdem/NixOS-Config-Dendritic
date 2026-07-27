@@ -9,6 +9,7 @@
             # External context tools
             "perplexity"
             "wispr-flow"
+            "granola"
           ];
         };
       };
