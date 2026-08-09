@@ -41,9 +41,9 @@ I personally organized my _features_ into several **types**.
   User facing apps, such as _mpd_, _obsidian_ etc.
   Applications have `domains` such as _documents_, _music_ etc.
 - **Utilities**: Not exactly programes, but more like runners and processes.
-  Things such as _networkmanager_, _avahi_ etc.
+  Things such as _networkmanager_, _avahi_, _syncthing_ etc.
 - **Services**: Programs that are _serving_ functions, not just direct point of contact.
-  Things such as _syncthing_, _paperless_ etc.
+  Things such as _paperless_ etc.
 
 ---
 

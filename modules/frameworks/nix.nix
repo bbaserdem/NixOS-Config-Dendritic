@@ -17,7 +17,6 @@
       # (Don't walk in default, user walk up would duplicate the scope.)
       schema = {
         host.includes = [den.aspects.nix];
-        home.includes = [den.aspects.nix];
       };
 
       aspects.nix = {
@@ -43,14 +42,6 @@
             inputs.self.modules.homeManager.nix-common
           ];
         };
-        provides.to-users = {
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.generic.nix-common
-              inputs.self.modules.homeManager.nix-common
-            ];
-          };
-        };
 
         # Extras to be provided
         extras = {
@@ -69,7 +60,7 @@
               inputs.self.modules.darwin.nix-extras
             ];
           };
-          # Selecting extras on host propagates, or on home also there
+          # Selecting extras on host should propagate to users
           provides.to-users = {
             homeManager = {...}: {
               imports = [inputs.self.modules.homeManager.nix-extras];
@@ -195,11 +186,7 @@
           };
         };
         homeManager = {
-          nix-common = {
-            pkgs,
-            lib,
-            ...
-          }: {
+          nix-common = {...}: {
             key = "frameworks-nix#hm";
             config = {
               nix = {
@@ -229,7 +216,7 @@
         };
 
         # --- OLD: Flake-parts setup
-        # TODO: after full den migration, rename nix-common to nix
+        # TODO: after full den migration, rename nix-common to nix and remove these
 
         # Generic; for nix settings for both nixos and darwin contexts
         generic.nix = {pkgs, ...}: {

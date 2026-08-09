@@ -39,24 +39,10 @@
             };
           };
         };
-        home = {config, ...}: {
-          options.secrets = {
-            sopsFile = lib.mkOption {
-              type = lib.types.path;
-              default =
-                if (config.hostName != null)
-                then (inputs.self + "/secrets/host/${config.hostName}/secrets.yaml")
-                else (inputs.self + "/secrets/user/${config.userName}/secrets.yaml");
-              description = "Default sops file for this user.";
-            };
-          };
-        };
       };
 
       aspects.secrets = {
         includes = [
-          den.aspects.secrets.provides.for-hosts
-          den.aspects.secrets.provides.for-homes
         ];
 
         os = {...}: {
@@ -68,36 +54,8 @@
         darwin = {...}: {
           imports = [inputs.self.modules.darwin.sops];
         };
-
-        # Generic dispatch to default key file, parametric on host scopes
-        # (Fires on standalone hm due to virtual host, but os module isn't used)
-        provides.for-hosts = {host}: {
-          os = {...}: {
-            sops.defaultSopsFile = host.secrets.sopsFile;
-          };
-        };
-
-        # Dispatch default key file to standalone hm, parametric on home scopes
-        provides.for-homes = {home}: {
-          homeManager = {lib, ...}: {
-            imports = [inputs.self.modules.homeManager.sops];
-            config = {
-              sops.defaultSopsFile = lib.mkOverride 900 home.secrets.sopsFile;
-            };
-          };
-        };
-
-        # The (auto) fan-out to managed users; dispatch sops secret location
-        provides.to-users = {
-          host,
-          user,
-        }: {
-          homeManager = {lib, ...}: {
-            imports = [inputs.self.modules.homeManager.sops];
-            config = {
-              sops.defaultSopsFile = lib.mkOverride 950 user.secrets.sopsFile;
-            };
-          };
+        homeManager = {...}: {
+          imports = [inputs.self.modules.homeManager.sops];
         };
       };
     };

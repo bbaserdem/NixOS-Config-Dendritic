@@ -39,7 +39,8 @@ in {
           homeManager = {lib, ...}: {
             home.stateVersion = lib.mkDefault "${version}";
           };
-          # Host configuration
+
+          # Host configuration for system home-manager
           os = {
             lib,
             options,
@@ -54,26 +55,25 @@ in {
               };
             };
           };
-          # Host includes (not needed, den does this by default
-          # darwin = {...}: {
-          #   includes = [
-          #     inputs.home-manager.modules.darwinModules.home-manager
-          #   ];
-          # };
-          # nixos = {...}: {
-          #   includes = [
-          #     inputs.home-manager.modules.nixosModules.home-manager
-          #   ];
-          # };
+
+          # Includes
+          darwin = {...}: {
+            imports = [
+              inputs.home-manager.modules.darwinModules.home-manager
+            ];
+          };
+
+          nixos = {...}: {
+            includes = [
+              inputs.home-manager.modules.nixosModules.home-manager
+            ];
+          };
         };
       };
-
-      # Dispatch global hm-settings in all relevant scopes;
-      default.includes = [den.aspects.home-manager];
     };
 
     # System wide home-manager modules;
-    # Kept in place until den migration
+    # TODO: keep in place until den migration
     flake = {
       modules = let
         # Generic home-manager settings module, for using hm as a system module

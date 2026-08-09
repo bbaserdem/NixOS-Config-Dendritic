@@ -21,7 +21,7 @@
     };
 
     den = {
-      # Define disk output for den host-kind entities.
+      # Define disk output for den host-kind entities
       schema.host = {
         options = {
           "${devicesNameSpace}" = lib.mkOption {
@@ -55,6 +55,7 @@
       |> lib.concatMapAttrs (
         _system: hosts:
           hosts
+          |> lib.filterAttrs (_: host: host.class == "nixos")
           |> lib.filterAttrs (_: host: host.disks != null)
           |> lib.mapAttrs (_name: host: {disko.devices = host."${devicesNameSpace}";})
       );

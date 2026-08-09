@@ -16,22 +16,7 @@
       den.url = "github:denful/den/v0.18.0";
     };
 
-    # Replacement for inporting den.flakeModules.strict not working
     den = {
-      # Harden the schema
-      schema = {
-        host = den.lib.strict;
-        user = den.lib.strict;
-        home = den.lib.strict;
-      };
-
-      # Default batteries to use
-      default = {
-        includes = [
-          den.batteries.define-user # Bootstrap OS level user accounts
-          den.batteries.hostname # Seed hostname from hosts.<name>.hostname
-        ];
-      };
     };
   };
 }

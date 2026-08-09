@@ -1,7 +1,10 @@
 # Yertengri host entry point
 {den, ...}: {
   den = {
-    hosts.x86_64-linux.yertengri = {
+    hosts.yertengri = {
+      # System definition
+      system = "x86_64-linux";
+
       # Enable styling
       stylix.enable = true;
 
