@@ -2,26 +2,30 @@
   inputs,
   lib,
   config,
+  den,
   ...
-}: {
+}: let
+  devicesNameSpace = "disks";
+in {
   # Declarative disk partitioning for NixOS
   # https://github.com/nix-community/disk
 
+  # Import flake-parts module
   imports = [
     (inputs.disko.flakeModules.default or {})
   ];
 
-  config = let
-    devicesNameSpace = "disks";
-  in {
-    # Import disko flake-parts module into our flake
+  config = {
+    # Import disko input into our flake
     flake-file.inputs.disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Wire den so that there is an option for hosts to define their disco config
+    # And it's wired to the outputs
     den = {
-      # Define disk output for den host-kind entities
+      # Define disk output for den host entities
       schema.host = {
         options = {
           "${devicesNameSpace}" = lib.mkOption {
@@ -33,6 +37,11 @@
             '';
           };
         };
+
+        # Policy; include the aspect when the host is of nixos type
+        includes = [
+          den.policies.disko
+        ];
       };
 
       # Define the disko aspect for den host-kind entities
@@ -47,6 +56,15 @@
           };
         };
       };
+
+      # Policy; disko aspect should be included if a host is of nixos type
+      policies.disko = {host, ...}:
+        lib.optional (
+          (host.class == "nixos")
+          && (host."${devicesNameSpace}" != null)
+        ) [
+          (den.lib.policy.include den.aspects.disko)
+        ];
     };
 
     # Disko configurations output, pulled from den host-kind entities' record

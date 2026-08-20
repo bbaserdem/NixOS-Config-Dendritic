@@ -2,7 +2,6 @@
 {
   inputs,
   lib,
-  den,
   ...
 }: {
   config = {
@@ -42,9 +41,6 @@
       };
 
       aspects.secrets = {
-        includes = [
-        ];
-
         os = {...}: {
           imports = [inputs.self.modules.generic.sops];
         };

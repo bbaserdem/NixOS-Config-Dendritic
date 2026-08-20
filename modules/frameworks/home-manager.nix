@@ -2,7 +2,6 @@
 {
   inputs,
   config,
-  den,
   ...
 }: let
   version = config.localConfig.nixVersion;

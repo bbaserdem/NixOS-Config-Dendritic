@@ -19,6 +19,41 @@ in {
     };
 
     den = {
+      # Forward battery for custom stylix class
+      classes = {
+        stylix.description = ''
+          Stylix configuration forwarded into Home Manager
+        '';
+        stylixOs.description = ''
+          Stylix configuration forwarded into the host OS
+        '';
+      };
+
+      policies = {
+        stylix-to-home-manager = _: [
+          (den.lib.policy.route {
+            fromClass = "stylix";
+            intoClass = "homeManager";
+            intoPath = ["stylix"];
+            guard = {options, ...}: options ? stylix;
+          })
+        ];
+        stylix-to-os = {host, ...}:
+          lib.optional (
+            builtins.elem host.class ["nixos" "darwin"]
+          ) (den.lib.policy.route {
+            fromClass = "stylixOs";
+            intoClass = host.class;
+            intoPath = ["stylix"];
+            guard = {options, ...}: options ? stylix;
+          });
+      };
+
+      default.includes = [
+        den.policies.stylix-to-home-manager
+        den.policies.stylix-to-os
+      ];
+
       # Dispatchable feature
       aspects.stylix = {
         os = {...}: {
