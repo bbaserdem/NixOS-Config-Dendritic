@@ -6,7 +6,7 @@
   };
 
   # Common hardware configuration to dispatch
-  flake.modules.nixos.nixos = {pkgs, ...}: {
+  flake.modules.nixos.nixos-hardware = {pkgs, ...}: {
     config = {
       hardware.enableRedistributableFirmware = true;
 

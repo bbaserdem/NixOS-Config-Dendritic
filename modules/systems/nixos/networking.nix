@@ -1,6 +1,6 @@
 # Networking tools to install to userspace
 {inputs, ...}: {
-  flake.modules.nixos.nixos = {pkgs, ...}: {
+  flake.modules.nixos.nixos-networking = {pkgs, ...}: {
     # Dispatch local LAN keys as trusted
     security.pki.certificates = [
       (builtins.readFile (inputs.self + /assets/home-lan-ca.crt))

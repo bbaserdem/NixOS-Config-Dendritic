@@ -1,6 +1,42 @@
-# Configuring macos systems
+# Configuring OS defaults for macos systems
 {inputs, ...}: {
-  flake.modules.darwin.macos = {lib, ...}: {
+  den.aspects = {
+    system = {host}: {
+      darwin = {lib, ...}: {
+        imports = with inputs.self.modules.darwin; [
+          # Base modules to configure the system
+          macos-filesystems
+          macos-homebrew
+          macos-networking
+          macos-settings
+        ];
+        config = {
+          # Default state version for this nix-darwin
+          system.stateVersion = lib.mkDefault 7;
+          # Full computer name
+          networking.computerName = host.description;
+        };
+      };
+    };
+  };
+
+  # TODO: Delete after den migration
+  flake.modules.darwin.macos = {...}: {
+    imports = with inputs.self.modules.darwin; [
+      nix
+      homeManager
+      shell
+      # Submodules
+      macos-homebrew
+      macos-filesystems
+      inputs.self.modules.generic.filesystems
+      macos-settings
+      macos-local
+      macos-networking
+    ];
+  };
+
+  flake.modules.darwin.macos-local = {lib, ...}: {
     # Mirrors the "to-be-deprecated" system.primaryUser option
     options = {
       local.mainUser = lib.mkOption {
@@ -9,52 +45,6 @@
         description = ''
           The user that can be configured by modules in this flake.
         '';
-      };
-    };
-
-    imports = with inputs.self.modules.darwin; [
-      nix
-      homebrew
-      homeManager
-      shell
-    ];
-
-    config = {
-      system = {
-        # Don't need this with flakes
-        checks.verifyNixPath = false;
-        defaults = {
-          LaunchServices = {
-            LSQuarantine = false;
-          };
-          NSGlobalDomain = {
-            AppleShowAllExtensions = true;
-            ApplePressAndHoldEnabled = false;
-
-            # 120, 90, 60, 30, 12, 6, 2
-            KeyRepeat = 2;
-
-            # 120, 94, 68, 35, 25, 15
-            InitialKeyRepeat = 15;
-          };
-          finder = {
-            _FXShowPosixPathInTitle = true;
-          };
-          loginwindow = {
-            DisableConsoleAccess = false;
-            GuestEnabled = false;
-          };
-          menuExtraClock = {
-            Show24Hour = true;
-          };
-          screencapture = {
-            # location = "";
-            type = "png";
-          };
-        };
-        keyboard = {
-          enableKeyMapping = true;
-        };
       };
     };
   };

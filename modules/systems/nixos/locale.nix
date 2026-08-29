@@ -1,6 +1,6 @@
 # Nixos systems locale settings
 {...}: {
-  flake.modules.nixos.nixos = {...}: {
+  flake.modules.nixos.nixos-locale = {...}: {
     i18n = {
       supportedLocales = [
         "C.UTF-8/UTF-8"

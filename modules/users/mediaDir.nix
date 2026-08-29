@@ -81,14 +81,6 @@ in {
           den.aspects.mediaDirs.mediaUserDirs
         ];
       };
-      home = {
-        imports = [
-          ({home, ...}: {options = mediaDirsDeclare home.system;})
-        ];
-        includes = [
-          den.aspects.mediaDirs.mediaHomeXdgDirs
-        ];
-      };
 
       # Declare, a media directory mount for host
       host = {

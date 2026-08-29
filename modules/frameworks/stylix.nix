@@ -31,9 +31,9 @@ in {
       policies = {
         # Deliver stylix class to host scope's targets
         stylix-to-host-scope = {host, ...}:
-          lib.optionals (
-            builtins.elem host.class ["nixos" "darwin" "homeManager"]
-          ) [
+          lib.optionals
+          (builtins.elem host.class ["nixos" "darwin" "homeManager"])
+          [
             (den.lib.policy.route {
               fromClass = "stylix";
               intoClass = host.class;
@@ -48,7 +48,8 @@ in {
           user,
           ...
         }:
-          lib.optionals (
+          lib.optionals
+          (
             # Logic such that the inputs are used; just redundant sanity check
             (builtins.elem host.class ["nixos" "darwin" "homeManager"])
             && (

@@ -1,7 +1,7 @@
 # Configuring macos dock, without hard-coding
 # Original source: https://gist.github.com/antifuchs/10138c4d838a63c0a05e725ccd7bccdd
 {...}: {
-  flake.modules.darwin.macos = {
+  flake.modules.darwin.macos-dock = {
     config,
     pkgs,
     lib,
@@ -9,41 +9,6 @@
   }: let
     cfg = config.macos.dock;
   in {
-    # Define our options
-    options = {
-      macos.dock = {
-        # Enable flag
-        enable = lib.mkOption {
-          description = "Enable dock config";
-          default = pkgs.stdenv.hostPlatform.isDarwin;
-        };
-        # Entry list
-        entries = lib.mkOption {
-          description = "Entries on the Dock";
-          type = with lib.types;
-            listOf (submodule {
-              options = {
-                path = lib.mkOption {type = str;};
-                section = lib.mkOption {
-                  type = str;
-                  default = "apps";
-                };
-                options = lib.mkOption {
-                  type = str;
-                  default = "";
-                };
-              };
-            });
-          readOnly = true;
-        };
-        username = lib.mkOption {
-          description = "Username to apply the dock settings to";
-          type = lib.types.nullOr lib.types.str;
-          default = null;
-        };
-      };
-    };
-
     config = lib.mkIf (cfg.enable && (cfg.username != null)) (
       let
         dockutil = "${pkgs.dockutil}/bin/dockutil";
@@ -83,5 +48,47 @@
         '';
       }
     );
+  };
+
+  # TODO: Remove after den migration
+  flake.modules.darwin.macos-dock-local = {
+    pkgs,
+    lib,
+    ...
+  }: {
+    # Define our options
+    options = {
+      macos.dock = {
+        # Enable flag
+        enable = lib.mkOption {
+          description = "Enable dock config";
+          default = pkgs.stdenv.hostPlatform.isDarwin;
+        };
+        # Entry list
+        entries = lib.mkOption {
+          description = "Entries on the Dock";
+          type = with lib.types;
+            listOf (submodule {
+              options = {
+                path = lib.mkOption {type = str;};
+                section = lib.mkOption {
+                  type = str;
+                  default = "apps";
+                };
+                options = lib.mkOption {
+                  type = str;
+                  default = "";
+                };
+              };
+            });
+          readOnly = true;
+        };
+        username = lib.mkOption {
+          description = "Username to apply the dock settings to";
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+        };
+      };
+    };
   };
 }

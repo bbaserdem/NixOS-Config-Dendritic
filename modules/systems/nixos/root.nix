@@ -1,6 +1,6 @@
 # Nixos; root user config
 {inputs, ...}: {
-  flake.modules.nixos.nixos = {
+  flake.modules.nixos.nixos-root = {
     config,
     lib,
     options,

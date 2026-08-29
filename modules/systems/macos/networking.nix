@@ -1,6 +1,6 @@
 # Configuring the local lan of darwin systems
 {inputs, ...}: {
-  flake.modules.darwin.macos = {
+  flake.modules.darwin.macos-networking = {
     lib,
     options,
     ...

@@ -1,6 +1,6 @@
 # Nixos; input settings
 {...}: {
-  flake.modules.nixos.nixos = {...}: {
+  flake.modules.nixos.nixos-keyboard = {...}: {
     # Default my systems to dvorak
     services.xserver.xkb = {
       layout = "us,tr,us";

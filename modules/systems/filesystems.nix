@@ -1,6 +1,6 @@
 # Filesystem settings
 {...}: {
-  flake.modules.generic.filesystems = {pkgs, ...}: {
+  flake.modules.generic.filesystem = {pkgs, ...}: {
     # Cross-platform tooling
     environment.systemPackages = with pkgs; [
       # Disk/Partition Inspection
