@@ -17,6 +17,11 @@
     };
 
     den = {
+      # Default batteries to include
+      default.includes = [
+        den.batteries.define-user
+        den.batteries.hostname
+      ];
     };
   };
 }

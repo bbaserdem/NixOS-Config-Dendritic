@@ -5,6 +5,7 @@
   den,
   ...
 }: let
+  # Central location for option name; can change this in the future if needed
   devicesNameSpace = "disks";
 in {
   # Declarative disk partitioning for NixOS
@@ -25,7 +26,7 @@ in {
     # Wire den so that there is an option for hosts to define their disco config
     # And it's wired to the outputs
     den = {
-      # Define disk output for den host entities
+      # Define disk output attrset for den host entities
       schema.host = {
         options = {
           "${devicesNameSpace}" = lib.mkOption {
@@ -59,7 +60,7 @@ in {
 
       # Policy; disko aspect should be included if a host is of nixos type
       policies.disko = {host, ...}:
-        lib.optional (
+        lib.optionals (
           (host.class == "nixos")
           && (host."${devicesNameSpace}" != null)
         ) [

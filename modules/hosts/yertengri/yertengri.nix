@@ -25,19 +25,8 @@
     aspects.yertengri = {
       # Base frameworks to subscribe to
       includes = with den.aspects; [
-        disko
         secrets
       ];
-
-      # Settings dispatched to users
-      provides = {
-        wolframite = {
-          includes = [den.batteries.primary-user];
-        };
-        joeysaur = {
-          includes = [den.batteries.primary-user];
-        };
-      };
     };
   };
 }

@@ -40,9 +40,13 @@
         };
       };
 
-      aspects.secrets = {
+      aspects.secrets = {host}: {
         os = {...}: {
           imports = [inputs.self.modules.generic.sops];
+          config = {
+            # Set the default sops file in the system for OS outputs
+            sops.defaultSopsFile = host.secrets.sopsFile;
+          };
         };
         nixos = {...}: {
           imports = [inputs.self.modules.nixos.sops];
@@ -52,6 +56,20 @@
         };
         homeManager = {...}: {
           imports = [inputs.self.modules.homeManager.sops];
+          # We don't deliberately set homeManager only outputs' sops default file
+        };
+
+        # Auto dispatch this module to every users' hm environment too
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          homeManager = {...}: {
+            imports = [inputs.self.modules.homeManager.sops];
+            config = {
+              sops.defaultSopsFile = user.secrets.sopsFile;
+            };
+          };
         };
       };
     };

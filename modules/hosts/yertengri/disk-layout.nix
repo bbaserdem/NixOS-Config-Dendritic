@@ -1,7 +1,7 @@
 # Yertengri's disko configuration
 {...}: {
   config = {
-    den.hosts.x86_64-linux.yertengri.disks.disk = {
+    den.hosts.yertengri.disks.disk = {
       # Main disk on yertengri PC
       Linux = {
         type = "disk";

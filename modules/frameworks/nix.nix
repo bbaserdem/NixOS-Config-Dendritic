@@ -38,6 +38,7 @@
         };
         homeManager = {...}: {
           imports = [
+            # This specific generic module is common for os and hm
             inputs.self.modules.generic.nix-common
             inputs.self.modules.homeManager.nix-common
           ];
@@ -60,7 +61,13 @@
               inputs.self.modules.darwin.nix-extras
             ];
           };
-          # Selecting extras on host should propagate to users
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.nix-extras
+            ];
+          };
+          # This specific extras module should be dispatched to contained users
+          # HM evals as well
           provides.to-users = {
             homeManager = {...}: {
               imports = [inputs.self.modules.homeManager.nix-extras];
@@ -75,7 +82,7 @@
         # Module for common settings to the nix daemon; all contexnt
         generic = {
           nix-common = {...}: {
-            key = "frameworks-nix#os";
+            key = "frameworks-nix#all";
             config = {
               nix = {
                 settings = {
@@ -186,12 +193,16 @@
           };
         };
         homeManager = {
-          nix-common = {...}: {
+          nix-common = {
+            lib,
+            pkgs,
+            ...
+          }: {
             key = "frameworks-nix#hm";
             config = {
               nix = {
                 # This is set by default in den
-                # package = lib.mkDefault pkgs.nix;
+                package = lib.mkDefault pkgs.nix;
                 nixPath = ["nixpkgs=${inputs.nixpkgs}"];
                 gc.dates = "weekly";
               };

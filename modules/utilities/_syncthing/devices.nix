@@ -3,8 +3,8 @@
   den = {
     aspects.syncthing = {
       includes = [
-        den.aspects.syncthing.devicesHost
-        den.aspects.syncthing.devicesHome
+        # den.aspects.syncthing.devicesHost
+        # den.aspects.syncthing.devicesHome
       ];
 
       provides = {

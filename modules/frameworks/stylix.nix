@@ -22,39 +22,61 @@ in {
       # Forward battery for custom stylix class
       classes = {
         stylix.description = ''
-          Stylix configuration forwarded into Home Manager
+          Stylix configuration forwarded into appropriate setting;
+          - from host scopes; delivers to the host's class
+          - from host, user scopes; delivers to the (same scope's) homeManager class
         '';
         stylixOs.description = ''
-          Stylix configuration forwarded into the host OS
+          Stylix configuration forwarded into the host OS;
+          - from host, user scopes; delivers to the host's class
         '';
       };
 
       policies = {
-        stylix-to-home-manager = _: [
+        # Deliver stylix class to host scope's targets
+        stylix-to-host-scope = {host, ...}:
+          lib.optional (
+            builtins.elem host.class ["nixos" "darwin" "homeManager"]
+          )
           (den.lib.policy.route {
             fromClass = "stylix";
-            intoClass = "homeManager";
-            intoPath = ["stylix"];
-            guard = {options, ...}: options ? stylix;
-          })
-        ];
-        stylix-to-os = {host, ...}:
-          lib.optional (
-            builtins.elem host.class ["nixos" "darwin"]
-          ) (den.lib.policy.route {
-            fromClass = "stylixOs";
             intoClass = host.class;
             intoPath = ["stylix"];
             guard = {options, ...}: options ? stylix;
           });
+
+        # Deliver stylix class to user's homeManager, or host targets
+        stylix-to-user-scope = {
+          host,
+          user,
+          ...
+        }:
+          [
+            (den.lib.policy.route {
+              fromClass = "stylix";
+              intoClass = "homeManager";
+              intoPath = ["stylix"];
+              guard = {options, ...}: options ? stylix;
+            })
+          ]
+          ++ (
+            lib.optional
+            (builtins.elem host.class ["nixos" "darwin"])
+            (den.lib.policy.route {
+              fromClass = "stylixOs";
+              intoClass = host.class;
+              intoPath = ["stylix"];
+              guard = {options, ...}: options ? stylix;
+            })
+          );
       };
 
-      default.includes = [
-        den.policies.stylix-to-home-manager
-        den.policies.stylix-to-os
-      ];
+      schema = {
+        host.includes = [den.policies.stylix-to-host-scope];
+        user.includes = [den.policies.stylix-to-user-scope];
+      };
 
-      # Dispatchable feature
+      # The setup of the feature
       aspects.stylix = {
         os = {...}: {
           stylix = {
