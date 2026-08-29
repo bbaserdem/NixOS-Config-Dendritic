@@ -31,6 +31,9 @@ in {
     # - homeManager class registered;
     # host configuration can go in den.schema.hm-host.includes (undocumented)
     den = {
+      # TODO: Temporary fix to make homeManager eval, fix after hooking own policy
+      default.homeManager.home.stateVersion = "${version}";
+
       # Home manager settings configuration aspect
       aspects = {
         home-manager = {
