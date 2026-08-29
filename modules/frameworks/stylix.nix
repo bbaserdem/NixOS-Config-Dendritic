@@ -26,24 +26,21 @@ in {
           - from host scopes; delivers to the host's class
           - from host, user scopes; delivers to the (same scope's) homeManager class
         '';
-        stylixOs.description = ''
-          Stylix configuration forwarded into the host OS;
-          - from host, user scopes; delivers to the host's class
-        '';
       };
 
       policies = {
         # Deliver stylix class to host scope's targets
         stylix-to-host-scope = {host, ...}:
-          lib.optional (
+          lib.optionals (
             builtins.elem host.class ["nixos" "darwin" "homeManager"]
-          )
-          (den.lib.policy.route {
-            fromClass = "stylix";
-            intoClass = host.class;
-            intoPath = ["stylix"];
-            guard = {options, ...}: options ? stylix;
-          });
+          ) [
+            (den.lib.policy.route {
+              fromClass = "stylix";
+              intoClass = host.class;
+              intoPath = ["stylix"];
+              guard = {options, ...}: options ? stylix;
+            })
+          ];
 
         # Deliver stylix class to user's homeManager, or host targets
         stylix-to-user-scope = {
@@ -51,6 +48,14 @@ in {
           user,
           ...
         }:
+          lib.optionals (
+            # Logic such that the inputs are used; just redundant sanity check
+            (builtins.elem host.class ["nixos" "darwin" "homeManager"])
+            && (
+              (host.class == "homeManager")
+              || (builtins.elem "homeManager" host.users."${user.userName}".classes)
+            )
+          )
           [
             (den.lib.policy.route {
               fromClass = "stylix";
@@ -58,17 +63,7 @@ in {
               intoPath = ["stylix"];
               guard = {options, ...}: options ? stylix;
             })
-          ]
-          ++ (
-            lib.optional
-            (builtins.elem host.class ["nixos" "darwin"])
-            (den.lib.policy.route {
-              fromClass = "stylixOs";
-              intoClass = host.class;
-              intoPath = ["stylix"];
-              guard = {options, ...}: options ? stylix;
-            })
-          );
+          ];
       };
 
       schema = {

@@ -26,6 +26,7 @@
       # Base frameworks to subscribe to
       includes = with den.aspects; [
         secrets
+        stylix
       ];
     };
   };

@@ -7,7 +7,7 @@
   # Load flake-parts modules
   imports = [
     (inputs.den.flakeModules.default or {})
-    # (den.flakeModules.strict or {}) Bugged, throws immediately
+    # (inputs.den.flakeModules.strict or {}) Bugged, throws immediately
   ];
 
   config = {
@@ -22,6 +22,27 @@
         den.batteries.define-user
         den.batteries.hostname
       ];
+
+      schema.host = {
+        config,
+        lib,
+        ...
+      }: {
+        config = lib.mkMerge [
+          # Fix hard-coded naming of nix-darwin flake input
+          (
+            lib.mkIf (config.class == "darwin") {
+              instantiate = lib.mkDefault inputs.nix-darwin.lib.darwinSystem;
+            }
+          )
+          # Stub host output path for homeManager class host
+          (
+            lib.mkIf (config.class == "homeManager") {
+              intoAttr = [];
+            }
+          )
+        ];
+      };
     };
   };
 }

@@ -58,13 +58,13 @@ in {
           # Includes
           darwin = {...}: {
             imports = [
-              inputs.home-manager.modules.darwinModules.home-manager
+              inputs.home-manager.darwinModules.home-manager
             ];
           };
 
           nixos = {...}: {
-            includes = [
-              inputs.home-manager.modules.nixosModules.home-manager
+            imports = [
+              inputs.home-manager.nixosModules.home-manager
             ];
           };
         };
