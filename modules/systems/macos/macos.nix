@@ -5,7 +5,7 @@
       darwin = {lib, ...}: {
         imports = with inputs.self.modules.darwin; [
           # Base modules to configure the system
-          macos-filesystems
+          macos-filesystem
           macos-homebrew
           macos-networking
           macos-settings
@@ -28,8 +28,8 @@
       shell
       # Submodules
       macos-homebrew
-      macos-filesystems
-      inputs.self.modules.generic.filesystems
+      macos-filesystem
+      inputs.self.modules.generic.filesystem
       macos-settings
       macos-local
       macos-networking

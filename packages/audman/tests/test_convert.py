@@ -7,6 +7,14 @@ import pytest
 from audman import convert
 
 
+@pytest.fixture(autouse=True)
+def backup_base(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    base = tmp_path / "cache" / "audman-backup"
+    monkeypatch.setattr(convert, "_backup_base_dir", lambda: base)
+    monkeypatch.setattr(convert, "_runtime_timestamp", lambda: "20260831-161755")
+    return base
+
+
 def write_file(path: Path, text: str = "audio") -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
@@ -58,7 +66,10 @@ def test_convert_lossless_path_skips_flac(tmp_path: Path) -> None:
 
     result = convert.convert_lossless_path(source)
 
-    assert result == [convert.ConversionResult(source.resolve(), None, "skipped")]
+    assert result.results == [
+        convert.ConversionResult(source.resolve(), None, "skipped")
+    ]
+    assert result.backup_dir is None
     assert source.exists()
 
 
@@ -72,6 +83,7 @@ def test_convert_lossless_single_rejects_flac(tmp_path: Path) -> None:
 def test_convert_lossless_path_converts_wav_and_backs_up(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    backup_base: Path,
 ) -> None:
     source = write_file(tmp_path / "source.wav")
     monkeypatch.setattr(convert, "_encode_flac", fake_encode_flac)
@@ -79,8 +91,12 @@ def test_convert_lossless_path_converts_wav_and_backs_up(
     result = convert.convert_lossless_path(source)
 
     output = tmp_path / "source.flac"
-    backup = tmp_path / convert.BACKUP_DIR_NAME / "source.wav"
-    assert result == [convert.ConversionResult(source.resolve(), output, "converted")]
+    backup_dir = backup_base / "20260831-161755-source.wav"
+    backup = backup_dir / "source.wav"
+    assert result.results == [
+        convert.ConversionResult(source.resolve(), output, "converted")
+    ]
+    assert result.backup_dir == backup_dir
     assert output.read_text(encoding="utf-8") == "flac:source.wav"
     assert backup.read_text(encoding="utf-8") == "audio"
     assert not source.exists()
@@ -96,7 +112,7 @@ def test_convert_lossless_path_converts_alac_m4a(
 
     result = convert.convert_lossless_path(source)
 
-    assert result[0].action == "converted"
+    assert result.results[0].action == "converted"
     assert (tmp_path / "source.flac").exists()
 
 
@@ -109,7 +125,10 @@ def test_convert_lossless_path_skips_aac_m4a(
 
     result = convert.convert_lossless_path(source)
 
-    assert result == [convert.ConversionResult(source.resolve(), None, "skipped")]
+    assert result.results == [
+        convert.ConversionResult(source.resolve(), None, "skipped")
+    ]
+    assert result.backup_dir is None
     assert source.exists()
 
 
@@ -127,12 +146,12 @@ def test_convert_lossy_single_writes_output_without_backup(
     assert result == convert.ConversionResult(source.resolve(), output, "converted")
     assert output.read_text(encoding="utf-8") == "opus:192k:source.mp3"
     assert source.exists()
-    assert not (tmp_path / convert.BACKUP_DIR_NAME).exists()
 
 
 def test_convert_lossy_path_converts_and_backs_up(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    backup_base: Path,
 ) -> None:
     source = write_file(tmp_path / "source.mp3")
     monkeypatch.setattr(convert, "_probe_audio_bitrate", lambda _path: 128_000)
@@ -141,8 +160,12 @@ def test_convert_lossy_path_converts_and_backs_up(
     result = convert.convert_lossy_path(source)
 
     output = tmp_path / "source.opus"
-    backup = tmp_path / convert.BACKUP_DIR_NAME / "source.mp3"
-    assert result == [convert.ConversionResult(source.resolve(), output, "converted")]
+    backup_dir = backup_base / "20260831-161755-source.mp3"
+    backup = backup_dir / "source.mp3"
+    assert result.results == [
+        convert.ConversionResult(source.resolve(), output, "converted")
+    ]
+    assert result.backup_dir == backup_dir
     assert output.read_text(encoding="utf-8") == "opus:96k:source.mp3"
     assert backup.exists()
     assert not source.exists()
@@ -151,21 +174,60 @@ def test_convert_lossy_path_converts_and_backs_up(
 def test_compress_flac_path_replaces_source_and_backs_up(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    backup_base: Path,
 ) -> None:
     source = write_file(tmp_path / "source.flac")
     monkeypatch.setattr(convert, "_encode_flac", fake_encode_flac)
 
     result = convert.compress_flac_path(source)
 
-    backup = tmp_path / convert.BACKUP_DIR_NAME / "source.flac"
-    assert result == [convert.ConversionResult(source.resolve(), source.resolve(), "compressed")]
+    backup_dir = backup_base / "20260831-161755-source.flac"
+    backup = backup_dir / "source.flac"
+    assert result.results == [
+        convert.ConversionResult(source.resolve(), source.resolve(), "compressed")
+    ]
+    assert result.backup_dir == backup_dir
     assert source.read_text(encoding="utf-8") == "flac:source.flac"
     assert backup.read_text(encoding="utf-8") == "audio"
 
 
-def test_matching_files_skips_backup_directory(tmp_path: Path) -> None:
+def test_directory_backup_preserves_relative_structure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    backup_base: Path,
+) -> None:
+    target = tmp_path / "Qobuz Import"
+    source = write_file(target / "Artist" / "Album" / "track.flac")
+    monkeypatch.setattr(convert, "_encode_flac", fake_encode_flac)
+
+    result = convert.compress_flac_path(target)
+
+    backup_dir = backup_base / "20260831-161755-Qobuz-Import"
+    backup = backup_dir / "Artist" / "Album" / "track.flac"
+    assert result.backup_dir == backup_dir
+    assert backup.read_text(encoding="utf-8") == "audio"
+    assert source.read_text(encoding="utf-8") == "flac:track.flac"
+
+
+def test_no_backup_removes_source_without_creating_cache(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    backup_base: Path,
+) -> None:
     source = write_file(tmp_path / "source.mp3")
-    write_file(tmp_path / convert.BACKUP_DIR_NAME / "backup.mp3")
+    monkeypatch.setattr(convert, "_probe_audio_bitrate", lambda _path: 128_000)
+    monkeypatch.setattr(convert, "_encode_opus", fake_encode_opus)
+
+    result = convert.convert_lossy_path(source, backup=False)
+
+    assert result.backup_dir is None
+    assert not source.exists()
+    assert not backup_base.exists()
+
+
+def test_matching_files_skips_legacy_backup_directory(tmp_path: Path) -> None:
+    source = write_file(tmp_path / "source.mp3")
+    write_file(tmp_path / convert.LEGACY_BACKUP_DIR_NAME / "backup.mp3")
 
     assert convert._matching_files(tmp_path, {".mp3"}) == [source]
 
@@ -195,13 +257,17 @@ def test_directory_conversion_uses_requested_jobs(
     monkeypatch.setattr(
         convert,
         "_convert_file",
-        lambda path, mode, backup: convert.ConversionResult(path, None, mode),
+        lambda path, mode, backup_plan: convert.ConversionResult(path, None, mode),
+    )
+    progress = []
+
+    result = convert.convert_lossy_path(
+        tmp_path, jobs=3, progress=lambda done, total: progress.append((done, total))
     )
 
-    result = convert.convert_lossy_path(tmp_path, jobs=3)
-
     assert seen_workers == [3]
-    assert [item.source.name for item in result] == ["a.mp3", "b.mp3"]
+    assert [item.source.name for item in result.results] == ["a.mp3", "b.mp3"]
+    assert progress == [(0, 2), (1, 2), (2, 2)]
 
 
 def test_normalize_jobs_defaults_to_cpu_count(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
 from typing import Annotated
 
@@ -7,6 +8,7 @@ import typer
 
 from .convert import (
     AudmanError,
+    ConversionRun,
     compress_flac_path,
     compress_flac_single,
     convert_lossless_path,
@@ -36,16 +38,13 @@ def lossless(
         if single:
             if input_file is None or output_file is None:
                 raise AudmanError("--single requires --input-file and --output-file")
-            _print_result(convert_lossless_single(input_file, output_file))
+            _run_single(convert_lossless_single, input_file, output_file)
             return
 
         if input_path is None:
             raise AudmanError("input path is required unless --single is used")
 
-        for result in convert_lossless_path(
-            input_path, backup=not no_backup, jobs=jobs
-        ):
-            _print_result(result)
+        _run_path(convert_lossless_path, input_path, not no_backup, jobs)
     except AudmanError as exc:
         _exit_error(str(exc))
 
@@ -64,14 +63,13 @@ def lossy(
         if single:
             if input_file is None or output_file is None:
                 raise AudmanError("--single requires --input-file and --output-file")
-            _print_result(convert_lossy_single(input_file, output_file))
+            _run_single(convert_lossy_single, input_file, output_file)
             return
 
         if input_path is None:
             raise AudmanError("input path is required unless --single is used")
 
-        for result in convert_lossy_path(input_path, backup=not no_backup, jobs=jobs):
-            _print_result(result)
+        _run_path(convert_lossy_path, input_path, not no_backup, jobs)
     except AudmanError as exc:
         _exit_error(str(exc))
 
@@ -90,23 +88,68 @@ def flac(
         if single:
             if input_file is None or output_file is None:
                 raise AudmanError("--single requires --input-file and --output-file")
-            _print_result(compress_flac_single(input_file, output_file))
+            _run_single(compress_flac_single, input_file, output_file)
             return
 
         if input_path is None:
             raise AudmanError("input path is required unless --single is used")
 
-        for result in compress_flac_path(input_path, backup=not no_backup, jobs=jobs):
-            _print_result(result)
+        _run_path(compress_flac_path, input_path, not no_backup, jobs)
     except AudmanError as exc:
         _exit_error(str(exc))
 
 
-def _print_result(result) -> None:
-    if result.output is None:
-        typer.echo(f"{result.action}: {result.source}")
-    else:
-        typer.echo(f"{result.action}: {result.source} -> {result.output}")
+class _ProgressDisplay:
+    width = 24
+
+    def __init__(self) -> None:
+        self.started = False
+
+    def update(self, completed: int, total: int) -> None:
+        ratio = completed / total if total else 0
+        filled = int(self.width * ratio)
+        bar = "#" * filled + "-" * (self.width - filled)
+        typer.echo(f"\r[{bar}] {completed}/{total}", nl=False)
+        self.started = True
+
+    def finish(self) -> None:
+        if self.started:
+            typer.echo()
+            self.started = False
+
+
+def _run_path(operation, input_path: Path, backup: bool, jobs: int | None) -> None:
+    progress = _ProgressDisplay()
+    try:
+        run = operation(
+            input_path,
+            backup=backup,
+            jobs=jobs,
+            progress=progress.update,
+        )
+    finally:
+        progress.finish()
+    _print_summary(run)
+
+
+def _run_single(operation, input_file: Path, output_file: Path) -> None:
+    progress = _ProgressDisplay()
+    progress.update(0, 1)
+    try:
+        result = operation(input_file, output_file)
+        progress.update(1, 1)
+    finally:
+        progress.finish()
+    _print_summary(ConversionRun([result], None))
+
+
+def _print_summary(run: ConversionRun) -> None:
+    counts = Counter(result.action for result in run.results)
+    details = ", ".join(f"{count} {action}" for action, count in counts.items())
+    suffix = f": {details}" if details else ""
+    typer.echo(f"Finished {len(run.results)} files{suffix}.")
+    if run.backup_dir is not None:
+        typer.echo(f"Backup: {run.backup_dir}")
 
 
 def _exit_error(message: str) -> None:

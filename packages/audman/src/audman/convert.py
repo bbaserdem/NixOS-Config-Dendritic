@@ -1,15 +1,20 @@
 from __future__ import annotations
 
-import os
 import json
+import os
+import re
 import shutil
 import subprocess
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+from threading import Lock
+from typing import Callable
 
-BACKUP_DIR_NAME = ".audman_backup"
+BACKUP_CACHE_DIR_NAME = "audman-backup"
+LEGACY_BACKUP_DIR_NAME = ".audman_backup"
 
 LOSSLESS_EXTENSIONS = {".flac", ".wav", ".aiff", ".aif", ".m4a"}
 LOSSLESS_CONVERT_EXTENSIONS = {".wav", ".aiff", ".aif", ".m4a"}
@@ -30,22 +35,52 @@ class ConversionResult:
     action: str
 
 
+@dataclass(frozen=True)
+class ConversionRun:
+    results: list[ConversionResult]
+    backup_dir: Path | None
+
+
+@dataclass(frozen=True)
+class BackupPlan:
+    root: Path
+    source_root: Path
+
+
+ProgressCallback = Callable[[int, int], None]
+
+
 def convert_lossless_path(
-    path: Path, backup: bool = True, jobs: int | None = None
-) -> list[ConversionResult]:
-    return _convert_path(path, mode="lossless", backup=backup, jobs=jobs)
+    path: Path,
+    backup: bool = True,
+    jobs: int | None = None,
+    progress: ProgressCallback | None = None,
+) -> ConversionRun:
+    return _convert_path(
+        path, mode="lossless", backup=backup, jobs=jobs, progress=progress
+    )
 
 
 def convert_lossy_path(
-    path: Path, backup: bool = True, jobs: int | None = None
-) -> list[ConversionResult]:
-    return _convert_path(path, mode="lossy", backup=backup, jobs=jobs)
+    path: Path,
+    backup: bool = True,
+    jobs: int | None = None,
+    progress: ProgressCallback | None = None,
+) -> ConversionRun:
+    return _convert_path(
+        path, mode="lossy", backup=backup, jobs=jobs, progress=progress
+    )
 
 
 def compress_flac_path(
-    path: Path, backup: bool = True, jobs: int | None = None
-) -> list[ConversionResult]:
-    return _convert_path(path, mode="compress-flac", backup=backup, jobs=jobs)
+    path: Path,
+    backup: bool = True,
+    jobs: int | None = None,
+    progress: ProgressCallback | None = None,
+) -> ConversionRun:
+    return _convert_path(
+        path, mode="compress-flac", backup=backup, jobs=jobs, progress=progress
+    )
 
 
 def convert_lossless_single(input_file: Path, output_file: Path) -> ConversionResult:
@@ -76,27 +111,52 @@ def compress_flac_single(input_file: Path, output_file: Path) -> ConversionResul
 
 
 def _convert_path(
-    path: Path, mode: str, backup: bool, jobs: int | None
-) -> list[ConversionResult]:
+    path: Path,
+    mode: str,
+    backup: bool,
+    jobs: int | None,
+    progress: ProgressCallback | None,
+) -> ConversionRun:
     path = path.expanduser().resolve()
 
     if path.is_file():
-        return [_convert_file(path, mode=mode, backup=backup)]
-
-    if path.is_dir():
+        items = [path]
+    elif path.is_dir():
         items = _matching_files(path, _extensions_for_mode(mode))
+    else:
+        raise AudmanError(f"input path does not exist: {path}")
+
+    total = len(items)
+    completed = 0
+    progress_lock = Lock()
+    backup_plan = _create_backup_plan(path) if backup and items else None
+
+    if progress is not None:
+        progress(0, total)
+
+    def convert_item(item: Path) -> ConversionResult:
+        nonlocal completed
+        try:
+            return _convert_file(item, mode=mode, backup_plan=backup_plan)
+        finally:
+            with progress_lock:
+                completed += 1
+                if progress is not None:
+                    progress(completed, total)
+
+    if path.is_file():
+        results = [convert_item(path)]
+    else:
         with ThreadPoolExecutor(max_workers=_normalize_jobs(jobs)) as executor:
-            return list(
-                executor.map(
-                    lambda item: _convert_file(item, mode=mode, backup=backup),
-                    items,
-                )
-            )
+            results = list(executor.map(convert_item, items))
 
-    raise AudmanError(f"input path does not exist: {path}")
+    backup_dir = _used_backup_dir(backup_plan)
+    return ConversionRun(results, backup_dir)
 
 
-def _convert_file(path: Path, mode: str, backup: bool) -> ConversionResult:
+def _convert_file(
+    path: Path, mode: str, backup_plan: BackupPlan | None
+) -> ConversionResult:
     suffix = path.suffix.lower()
 
     if mode == "lossless":
@@ -109,7 +169,7 @@ def _convert_file(path: Path, mode: str, backup: bool) -> ConversionResult:
         output = path.with_suffix(".flac")
         _ensure_output_available(output)
         _encode_flac(path, output)
-        _backup_or_remove(path, backup=backup)
+        _backup_or_remove(path, backup_plan=backup_plan)
         return ConversionResult(path, output, "converted")
 
     if mode == "lossy":
@@ -119,19 +179,21 @@ def _convert_file(path: Path, mode: str, backup: bool) -> ConversionResult:
         output = path.with_suffix(".opus")
         _ensure_output_available(output)
         _encode_opus(path, output, opus_bitrate_for(path))
-        _backup_or_remove(path, backup=backup)
+        _backup_or_remove(path, backup_plan=backup_plan)
         return ConversionResult(path, output, "converted")
 
     if mode == "compress-flac":
         if suffix != ".flac":
             return ConversionResult(path, None, "skipped")
 
-        return _compress_flac_in_place(path, backup=backup)
+        return _compress_flac_in_place(path, backup_plan=backup_plan)
 
     raise AudmanError(f"unknown conversion mode: {mode}")
 
 
-def _compress_flac_in_place(path: Path, backup: bool) -> ConversionResult:
+def _compress_flac_in_place(
+    path: Path, backup_plan: BackupPlan | None
+) -> ConversionResult:
     with tempfile.NamedTemporaryFile(
         prefix=f"{path.stem}.",
         suffix=".flac",
@@ -144,7 +206,7 @@ def _compress_flac_in_place(path: Path, backup: bool) -> ConversionResult:
 
     try:
         _encode_flac(path, tmp_path)
-        _backup_or_remove(path, backup=backup)
+        _backup_or_remove(path, backup_plan=backup_plan)
         tmp_path.replace(path)
         return ConversionResult(path, path, "compressed")
     except Exception:
@@ -191,7 +253,7 @@ def _matching_files(path: Path, extensions: set[str]) -> list[Path]:
         item
         for item in sorted(path.rglob("*"))
         if item.is_file()
-        and BACKUP_DIR_NAME not in item.parts
+        and LEGACY_BACKUP_DIR_NAME not in item.parts
         and item.suffix.lower() in extensions
     ]
 
@@ -299,14 +361,56 @@ def _ffprobe_json(path: Path, entries: str) -> dict:
     return json.loads(proc.stdout)
 
 
-def _backup_or_remove(path: Path, backup: bool) -> None:
-    if not backup:
+def _backup_or_remove(path: Path, backup_plan: BackupPlan | None) -> None:
+    if backup_plan is None:
         path.unlink()
         return
 
-    backup_dir = path.parent / BACKUP_DIR_NAME
-    backup_dir.mkdir(exist_ok=True)
-    shutil.move(str(path), str(_unique_backup_path(backup_dir / path.name)))
+    relative_path = path.relative_to(backup_plan.source_root)
+    backup_path = backup_plan.root / relative_path
+    backup_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(path), str(_unique_backup_path(backup_path)))
+
+
+def _create_backup_plan(path: Path) -> BackupPlan:
+    backup_base = _backup_base_dir()
+    backup_base.mkdir(parents=True, exist_ok=True)
+    session_name = f"{_runtime_timestamp()}-{_sanitize_target_name(path)}"
+
+    for index in range(10_000):
+        suffix = "" if index == 0 else f"-{index}"
+        root = backup_base / f"{session_name}{suffix}"
+        try:
+            root.mkdir()
+            source_root = path if path.is_dir() else path.parent
+            return BackupPlan(root=root, source_root=source_root)
+        except FileExistsError:
+            continue
+
+    raise AudmanError(f"could not allocate backup directory for {path}")
+
+
+def _used_backup_dir(backup_plan: BackupPlan | None) -> Path | None:
+    if backup_plan is None:
+        return None
+    if any(backup_plan.root.iterdir()):
+        return backup_plan.root
+    backup_plan.root.rmdir()
+    return None
+
+
+def _backup_base_dir() -> Path:
+    return Path.home() / ".cache" / BACKUP_CACHE_DIR_NAME
+
+
+def _runtime_timestamp() -> str:
+    return datetime.now().strftime("%Y%m%d-%H%M%S")
+
+
+def _sanitize_target_name(path: Path) -> str:
+    name = path.name or "root"
+    sanitized = re.sub(r"[^A-Za-z0-9._-]+", "-", name).strip("-.")
+    return sanitized or "target"
 
 
 def _unique_backup_path(path: Path) -> Path:

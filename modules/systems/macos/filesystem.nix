@@ -1,6 +1,6 @@
 # Filesystem settings
 {...}: {
-  flake.modules.darwin.macos-filesystems = {pkgs, ...}: {
+  flake.modules.darwin.macos-filesystem = {pkgs, ...}: {
     # Additionale support
     homebrew = {
       casks = [
