@@ -2,7 +2,7 @@
 {...}: {
   flake.modules = {
     # Enable starship on system level
-    nixos.shell = {...}: {
+    nixos.shell-starship = {...}: {
       programs.starship = {
         enable = true;
         interactiveOnly = true;
@@ -28,7 +28,7 @@
 
     # Enable starship on user level
     # We pull in nerd font symbols override
-    homeManager.shell = {
+    homeManager.shell-starship = {
       pkgs,
       lib,
       ...

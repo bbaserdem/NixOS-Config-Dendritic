@@ -38,6 +38,9 @@
       includes = with den.aspects; [
         secrets
         stylix
+        # Get the extras from these modules
+        nix-extra
+        shell-extra
       ];
     };
   };

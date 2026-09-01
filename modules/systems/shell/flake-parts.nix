@@ -4,7 +4,7 @@
   lib,
   ...
 }: {
-  # Collect factoried modules
+  # TODO: Delete after den
   flake.modules = lib.foldl lib.recursiveUpdate {} [
     (config.factory.inclusionModules "shell")
   ];

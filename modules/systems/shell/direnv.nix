@@ -1,6 +1,6 @@
 # Direnv setup
 {...}: {
-  flake.modules.homeManager.shell = {
+  flake.modules.homeManager.shell-direnv = {
     pkgs,
     lib,
     ...
@@ -28,6 +28,7 @@
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+          # TODO: Check this if this still holds
           # On nixpkgs-25.11 darwin of direnv is broken, pull from unstable
           programs.direnv.package = pkgs.unstable.direnv;
         }

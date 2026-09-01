@@ -1,8 +1,35 @@
 # ZSH config
-{...}: {
+{
+  lib,
+  inputs,
+  ...
+}: {
+  den = {
+    # Aspect, auto-loaded with the den.aspects.shell.policies.default-shell
+    aspects.shell = {
+      provides.default-shell-zsh = {host}: {
+        nixos = {...}: {
+          imports =
+            if (host.defaultShell == "zsh")
+            then [inputs.self.modules.nixos.shell-zsh-default]
+            else [];
+        };
+      };
+    };
+  };
+
   flake.modules = {
+    # Default set module
+    nixos.shell-zsh-default = {pkgs, ...}: {
+      # Set zsh as default shell
+      users = {
+        defaultUserShell = pkgs.zsh;
+        # Set zsh as root shell too
+        users.root.shell = pkgs.zsh;
+      };
+    };
     # Generic settings for both settings
-    generic.shell = {...}: {
+    generic.shell-zsh = {...}: {
       programs.zsh = {
         enable = true;
         enableCompletion = true;
@@ -10,7 +37,7 @@
       };
     };
     # Nix-darwin settings
-    darwin.shell = {...}: {
+    darwin.shell-zsh = {...}: {
       programs.zsh = {
         enableAutosuggestions = true;
         enableFastSyntaxHighlighting = true;
@@ -22,7 +49,7 @@
       };
     };
     # Configure zsh on nixos
-    nixos.shell = {pkgs, ...}: {
+    nixos.shell-zsh = {...}: {
       # ZSH
       programs.zsh = {
         vteIntegration = true;
@@ -52,7 +79,7 @@
     };
 
     # Configure user-level zsh
-    homeManager.shell = {
+    homeManager.shell-zsh = {
       config,
       pkgs,
       lib,

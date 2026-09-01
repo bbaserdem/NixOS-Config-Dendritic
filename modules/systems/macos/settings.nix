@@ -1,5 +1,6 @@
 # Configuring OS defaults for macos systems
 {...}: {
+  # TODO: These settings should be migrated to a wolframite specific module
   flake.modules.darwin.macos-settings = {...}: {
     system = {
       # Don't need this with flakes

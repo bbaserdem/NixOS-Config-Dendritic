@@ -1,6 +1,6 @@
 # Shell aliases
 {...}: {
-  flake.modules.homeManager.shell = {...}: {
+  flake.modules.homeManager.shell-alias = {...}: {
     home.shellAliases = {
       ls = "ls --color";
       ll = "ls -l";

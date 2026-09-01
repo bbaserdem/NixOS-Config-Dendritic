@@ -2,7 +2,7 @@
 {...}: {
   flake.modules = {
     # Setup system bash
-    nixos.shell = {...}: {
+    nixos.shell-bash = {...}: {
       # Bash options
       programs.bash = {
         # Undistract me stuff
@@ -23,7 +23,7 @@
     };
 
     # Setup bash per user
-    homeManager.shell = {...}: {
+    homeManager.shell-bash = {...}: {
       # Integrations
       home.shell.enableBashIntegration = true;
       services = {

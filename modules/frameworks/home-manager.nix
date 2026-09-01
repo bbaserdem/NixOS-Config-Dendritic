@@ -2,10 +2,9 @@
 {
   inputs,
   config,
+  den,
   ...
-}: let
-  version = config.localConfig.nixVersion;
-in {
+}: {
   # Load the home-manager flake-parts module
   imports = [
     (inputs.home-manager.flakeModules.home-manager or {})
@@ -15,7 +14,7 @@ in {
     # Home-manoger flake source
     flake-file.inputs = {
       home-manager = {
-        url = "github:nix-community/home-manager/release-${version}";
+        url = "github:nix-community/home-manager/release-${config.localConfig.nixVersion}";
         inputs.nixpkgs.follows = "nixpkgs";
       };
       home-manager-unstable = {
@@ -31,43 +30,40 @@ in {
     # - homeManager class registered;
     # host configuration can go in den.schema.hm-host.includes (undocumented)
     den = {
-      # TODO: Temporary fix to make homeManager eval, fix after hooking own policy
-      default.homeManager.home.stateVersion = "${version}";
+      schema.hm-host.includes = [
+        den.aspects.home-manager
+      ];
 
       # Home manager settings configuration aspect
-      aspects = {
-        home-manager = {
-          #  Default stateVersion for hm evals
-          homeManager = {lib, ...}: {
-            home.stateVersion = lib.mkDefault "${version}";
-          };
+      aspects.home-manager = {
+        # Host configuration for system home-manager
+        os = {...}: {
+          imports = [
+            inputs.self.modules.generic.homeManager-module-settings
+          ];
+        };
 
-          # Host configuration for system home-manager
-          os = {
-            lib,
-            options,
-            ...
-          }: {
-            config = lib.optionalAttrs (options ? home-manager) {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "hm-backup";
-                overwriteBackup = true;
-              };
-            };
-          };
+        # Includes
+        darwin = {...}: {
+          imports = [
+            inputs.home-manager.darwinModules.home-manager
+          ];
+        };
 
-          # Includes
-          darwin = {...}: {
+        nixos = {...}: {
+          imports = [
+            inputs.home-manager.nixosModules.home-manager
+          ];
+        };
+
+        # For managed users, also do this
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          homeManager = {...}: {
             imports = [
-              inputs.home-manager.darwinModules.home-manager
-            ];
-          };
-
-          nixos = {...}: {
-            imports = [
-              inputs.home-manager.nixosModules.home-manager
+              inputs.self.modules.homeManager.homeManager-version
             ];
           };
         };
@@ -75,8 +71,8 @@ in {
     };
 
     # System wide home-manager modules;
-    # TODO: keep in place until den migration
     flake = {
+      # TODO: delete after den migration
       modules = let
         # Generic home-manager settings module, for using hm as a system module
         homeManagerOSConfig = {...}: {
@@ -88,6 +84,25 @@ in {
           };
         };
       in {
+        # TODO: Keep these two, delete rest after den migration
+        homeManager.homeManager-version = {lib, ...}: {
+          home.stateVersion = lib.mkDefault "${config.localConfig.nixVersion}";
+        };
+        generic.homeManager-module-settings = {
+          lib,
+          options,
+          ...
+        }: {
+          config = lib.optionalAttrs (options ? home-manager) {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "hm-backup";
+              overwriteBackup = true;
+            };
+          };
+        };
+
         # Dispatch option to register users into enabled hosts list
         generic.homeManager = {lib, ...}: {
           options = {
@@ -140,7 +155,7 @@ in {
             };
           };
           config = {
-            home.stateVersion = "26.05";
+            home.stateVersion = "${config.localConfig.nixVersion}";
           };
         };
       };

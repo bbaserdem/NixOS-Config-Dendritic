@@ -23,6 +23,7 @@
         # Shared settings
         os = {...}: {
           imports = [
+            inputs.self.modules.generic.nixpkgs
             inputs.self.modules.generic.nix-common
           ];
         };
@@ -43,35 +44,38 @@
             inputs.self.modules.homeManager.nix-common
           ];
         };
+      };
 
-        # Extras to be provided
-        extras = {
-          os = {...}: {
-            imports = [
-              inputs.self.modules.generic.nix-extras
-            ];
-          };
-          nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.nix-extras
-            ];
-          };
-          darwin = {...}: {
-            imports = [
-              inputs.self.modules.darwin.nix-extras
-            ];
-          };
+      # Extras to be provided
+      aspects.nix-extra = {
+        os = {...}: {
+          imports = [
+            inputs.self.modules.generic.nix-extras
+          ];
+        };
+        nixos = {...}: {
+          imports = [
+            inputs.self.modules.nixos.nix-extras
+          ];
+        };
+        darwin = {...}: {
+          imports = [
+            inputs.self.modules.darwin.nix-extras
+          ];
+        };
+        homeManager = {...}: {
+          imports = [
+            inputs.self.modules.homeManager.nix-extras
+          ];
+        };
+        # This specific extras module should be dispatched to contained users
+        # HM evals as well
+        provides.to-users = {
+          host,
+          user,
+        }: {
           homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.nix-extras
-            ];
-          };
-          # This specific extras module should be dispatched to contained users
-          # HM evals as well
-          provides.to-users = {
-            homeManager = {...}: {
-              imports = [inputs.self.modules.homeManager.nix-extras];
-            };
+            imports = [inputs.self.modules.homeManager.nix-extras];
           };
         };
       };
