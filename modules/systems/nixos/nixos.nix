@@ -6,7 +6,6 @@
       nixos = {lib, ...}: {
         imports = with inputs.self.modules.nixos; [
           # Base modules that configure a nixos system
-          nixos-boot
           nixos-console
           nixos-displayManager
           nixos-filesystem

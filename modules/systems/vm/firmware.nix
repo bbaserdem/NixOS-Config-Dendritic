@@ -2,7 +2,7 @@
 # The module that defines the kernel, initrd and boot config
 {...}: {
   flake.modules.nixos = {
-    vm = {...}: {
+    virtual-machine = {...}: {
       # Boot parameters
       boot = {
         # Kernel modules and parameters
@@ -38,7 +38,7 @@
     };
 
     # AMD64 specific settings
-    vm-amd = {...}: {
+    virtual-machine-amd = {...}: {
       boot = {
         initrd.availableKernelModules = [
           "ata_piix"
@@ -51,7 +51,7 @@
     };
 
     # ARM specific settings
-    vm-arm = {...}: {
+    virtual-machine-arm = {...}: {
       boot = {
         kernelParams = [
           "console=ttyAMA0"

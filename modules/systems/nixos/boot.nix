@@ -1,5 +1,6 @@
 # Nixos; configuring the boot bootloader; UEFI only
 {
+  inputs,
   lib,
   den,
   ...
@@ -86,9 +87,16 @@
               && (host.boot.loader != null)
             )
           then [
+            (den.lib.policy.include den.aspects.system._.bootloader)
             (den.lib.policy.include den.aspects.system._.bootloader._.${host.boot.loader})
           ]
           else [];
+
+        nixos = {...}: {
+          imports = [
+            inputs.self.modules.nixos.nixos-boot
+          ];
+        };
 
         # Grub implementation
         provides.grub = {host}: {

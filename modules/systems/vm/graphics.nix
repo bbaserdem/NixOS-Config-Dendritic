@@ -1,17 +1,17 @@
 # Graphics configuration for guest nixos OS
 {...}: {
   flake.modules.nixos = {
-    vm = {...}: {
+    virtual-machine = {...}: {
       hardware.graphics.enable = true;
     };
 
     # AMD64 specific settings
-    vm-amd = {...}: {
+    virtual-machine-amd = {...}: {
       services.xserver.videoDrivers = ["virtio"];
     };
 
     # ARM specific settings
-    vm-arm = {...}: {
+    virtual-machine-arm = {...}: {
       services.xserver.videoDrivers = ["modesetting"];
     };
   };
