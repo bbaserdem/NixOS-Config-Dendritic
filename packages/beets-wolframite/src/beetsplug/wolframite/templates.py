@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Any
+
+VARIOUS_ARTISTS = {"various artists", "şuradan buradan"}
 
 
 def tracknumber(item: Any) -> str:
@@ -20,10 +23,13 @@ def tracknumber(item: Any) -> str:
     disc_total = _get(item, "disctotal", 0) or 0
     disc = _get(item, "disc", 0) or 0
 
+    if not track:
+        return ""
+
     tracks = padded(track, track_total) if track_total > 99 else f"{track:02d}"
 
-    if disc_total > 1:
-        return f"{padded(disc, disc_total)}-{tracks}"
+    if disc_total > 1 or disc > 1:
+        return f"{padded(disc, max(disc_total, disc))}-{tracks}"
 
     return tracks
 
@@ -53,16 +59,19 @@ def date(item: Any) -> str:
 
 def initial(item: Any) -> str:
     """Return album artist initial for top-level artist buckets."""
-    albumartist = _get(item, "albumartist", "") or ""
+    albumartist = unicodedata.normalize(
+        "NFC",
+        _get(item, "albumartist", "") or "",
+    )
 
-    if albumartist in {"Various Artists", "Şuradan Buradan"}:
+    if albumartist.casefold() in VARIOUS_ARTISTS:
         return "@"
 
     sortable = re.sub(r"^(the|a|an) ", "", albumartist, flags=re.IGNORECASE)
     if not sortable:
         return "0"
 
-    first = sortable[0].upper()
+    first = sortable[0].upper()[0]
 
     if not (first.isascii() and first.isalnum()):
         return "0"
@@ -75,12 +84,11 @@ def initial(item: Any) -> str:
 
 def division(item: Any) -> str:
     """Return album subdivision based on series or album type."""
-    series = _get(item, "series", "")
-    if series:
-        return str(series)
-
     albumtypes = _albumtypes(item)
-    albumartist = _get(item, "albumartist", "") or ""
+    albumartist = unicodedata.normalize(
+        "NFC",
+        _get(item, "albumartist", "") or "",
+    )
 
     # Check division folder in top down order
     if _has_albumtype(albumtypes, "single"):
@@ -101,7 +109,7 @@ def division(item: Any) -> str:
         albumtypes, "broadcast"
     ):
         return "Streams"
-    if "Various Artists" not in albumartist and _has_albumtype(
+    if albumartist.casefold() not in VARIOUS_ARTISTS and _has_albumtype(
         albumtypes, "compilation"
     ):
         return "Compilations"
@@ -111,7 +119,8 @@ def division(item: Any) -> str:
 
 def tdot(text: str) -> str:
     """Parse trailing dots in path components."""
-    if text and text[-1] == ".":
+    text = text.rstrip()
+    if text.endswith("."):
         return f"{text}_"
 
     return text
@@ -130,10 +139,13 @@ def _albumtypes(item: Any) -> list[str]:
     value = _get(item, "albumtypes", []) or []
 
     if isinstance(value, str):
-        return [part.strip().lower() for part in value.split(";")]
+        return [
+            unicodedata.normalize("NFC", part.strip()).casefold()
+            for part in value.split(";")
+        ]
 
-    return [str(part).lower() for part in value]
+    return [unicodedata.normalize("NFC", str(part)).casefold() for part in value]
 
 
 def _has_albumtype(albumtypes: list[str], needle: str) -> bool:
-    return any(needle in albumtype for albumtype in albumtypes)
+    return needle in albumtypes

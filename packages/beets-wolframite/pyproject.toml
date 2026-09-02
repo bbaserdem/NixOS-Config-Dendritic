@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 dependencies = [
-    "beets>=2.11",
+    "beets>=2.13,<3",
     "mediafile>=0.13",
     "mutagen>=1.47",
 ]

@@ -2,23 +2,25 @@
 
 from __future__ import annotations
 
-import confuse
+import math
+from collections.abc import Iterable
+
 import mediafile
 import mutagen.id3
-from beets import config
 
 DEFAULT_RATING_OWNER = "wolframite"
 
 
-def rating_owner() -> str:
-    try:
-        return config["musicbrainz"]["email"].as_str() or DEFAULT_RATING_OWNER
-    except confuse.NotFoundError:
-        return DEFAULT_RATING_OWNER
-
-
 def clamp_stars(value) -> int:
-    return max(0, min(5, int(value or 0)))
+    try:
+        number = float(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+    if not math.isfinite(number):
+        return 0
+
+    return max(0, min(5, math.floor(number + 0.5)))
 
 
 def stars_to_popm(stars: int) -> int:
@@ -26,7 +28,8 @@ def stars_to_popm(stars: int) -> int:
 
 
 def popm_to_stars(rating: int) -> int:
-    return round(max(0, min(255, int(rating or 0))) * 5 / 255)
+    scaled = max(0, min(255, int(rating or 0))) * 5 / 255
+    return math.floor(scaled + 0.5)
 
 
 def stars_to_fraction(stars: int) -> str:
@@ -34,7 +37,15 @@ def stars_to_fraction(stars: int) -> str:
 
 
 def fraction_to_stars(value) -> int:
-    return round(float(value or 0) * 5)
+    try:
+        fraction = float(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+    if not math.isfinite(fraction):
+        return 0
+
+    return clamp_stars(fraction * 5)
 
 
 def stars_to_percent(stars: int) -> str:
@@ -42,23 +53,45 @@ def stars_to_percent(stars: int) -> str:
 
 
 def percent_to_stars(value) -> int:
-    return round(float(value or 0) / 20)
+    try:
+        percent = float(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+    if not math.isfinite(percent):
+        return 0
+
+    return clamp_stars(percent / 20)
 
 
 class MP3PopularimeterStorageStyle(mediafile.MP3StorageStyle):
     """Store stars in an ID3 POPM frame."""
 
-    def __init__(self, owner: str = DEFAULT_RATING_OWNER) -> None:
+    def __init__(
+        self,
+        owner: str = DEFAULT_RATING_OWNER,
+        legacy_owners: Iterable[str] = (),
+    ) -> None:
         self.owner = owner
+        self.legacy_owners = tuple(legacy_owners)
         super().__init__(f"POPM:{owner}")
 
     def fetch(self, mutagen_file):
-        try:
-            frame = mutagen_file.tags[self.key]
-        except KeyError:
-            return None
+        for owner in (self.owner, *self.legacy_owners):
+            try:
+                frame = mutagen_file.tags[f"POPM:{owner}"]
+            except KeyError:
+                continue
+            return popm_to_stars(frame.rating)
 
-        return popm_to_stars(frame.rating)
+        frames = sorted(
+            mutagen_file.tags.getall("POPM"),
+            key=lambda frame: (frame.rating, frame.email),
+            reverse=True,
+        )
+        if frames:
+            return popm_to_stars(frames[0].rating)
+        return None
 
     def store(self, mutagen_file, value) -> None:
         stars = clamp_stars(value)
@@ -81,12 +114,38 @@ class MP3PopularimeterStorageStyle(mediafile.MP3StorageStyle):
         )
 
     def delete(self, mutagen_file) -> None:
-        if self.key in mutagen_file.tags:
-            del mutagen_file.tags[self.key]
+        self.store(mutagen_file, 0)
 
 
 class NormalizedRatingStorageStyle(mediafile.StorageStyle):
     """Store stars as normalized 0.0..1.0 rating text."""
+
+    def __init__(self, key: str, legacy_keys: Iterable[str] = ()) -> None:
+        self.legacy_keys = tuple(legacy_keys)
+        super().__init__(key)
+
+    def fetch(self, mutagen_file):
+        for key in (self.key, *self.legacy_keys):
+            try:
+                value = mutagen_file[key]
+            except KeyError:
+                continue
+            if isinstance(value, list):
+                return value[0] if value else None
+            return str(value)
+
+        ratings = []
+        for key in mutagen_file.keys():
+            if str(key).upper().startswith("RATING:"):
+                value = mutagen_file[key]
+                value = value[0] if isinstance(value, list) and value else value
+                ratings.append((fraction_to_stars(value), str(key), value))
+        if ratings:
+            return max(ratings)[2]
+        return None
+
+    def delete(self, mutagen_file) -> None:
+        self.store(mutagen_file, self.serialize(0))
 
     def serialize(self, value):
         return stars_to_fraction(clamp_stars(value))
@@ -112,11 +171,44 @@ class MP4RateStorageStyle(mediafile.MP4StorageStyle):
         return percent_to_stars(mutagen_value)
 
 
-def stars_media_field(owner: str = DEFAULT_RATING_OWNER) -> mediafile.MediaField:
+class ASFSharedUserRatingStorageStyle(mediafile.ASFStorageStyle):
+    """Store ratings in the conventional ASF 0..99 field."""
+
+    VALUES = (0, 1, 25, 50, 75, 99)
+
+    def __init__(self) -> None:
+        super().__init__("WM/SharedUserRating", as_type=int)
+
+    def serialize(self, value):
+        return self.VALUES[clamp_stars(value)]
+
+    def deserialize(self, data):
+        value = super().deserialize(data)
+        try:
+            rating = int(value)
+        except (TypeError, ValueError):
+            return 0
+        return min(
+            range(6),
+            key=lambda stars: (abs(self.VALUES[stars] - rating), -stars),
+        )
+
+
+def stars_media_field(
+    owner: str = DEFAULT_RATING_OWNER,
+    legacy_owners: Iterable[str] = (),
+) -> mediafile.MediaField:
     """Create a conventional cross-format star-rating field."""
+    legacy_owners = tuple(
+        legacy_owner for legacy_owner in legacy_owners if legacy_owner != owner
+    )
     return mediafile.MediaField(
-        MP3PopularimeterStorageStyle(owner),
+        MP3PopularimeterStorageStyle(owner, legacy_owners),
         MP4RateStorageStyle(),
-        NormalizedRatingStorageStyle(f"RATING:{owner}"),
+        NormalizedRatingStorageStyle(
+            f"RATING:{owner}",
+            [f"RATING:{legacy_owner}" for legacy_owner in legacy_owners],
+        ),
+        ASFSharedUserRatingStorageStyle(),
         out_type=int,
     )

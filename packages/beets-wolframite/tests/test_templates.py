@@ -19,6 +19,8 @@ class FakeItem(SimpleNamespace):
         (FakeItem(track=7, tracktotal=123, disc=1, disctotal=1), "007"),
         (FakeItem(track=3, tracktotal=12, disc=2, disctotal=2), "2-03"),
         (FakeItem(track=3, tracktotal=12, disc=2, disctotal=10), "02-03"),
+        (FakeItem(track=3, tracktotal=12, disc=2, disctotal=0), "2-03"),
+        (FakeItem(track=0, tracktotal=0, disc=0, disctotal=0), ""),
     ],
 )
 def test_tracknumber(item: FakeItem, expected: str) -> None:
@@ -49,6 +51,9 @@ def test_date(item: FakeItem, expected: str) -> None:
         ("2Pac", "0"),
         ("!!!", "0"),
         ("", "0"),
+        ("ßeta", "S"),
+        ("E\u0301clair", "0"),
+        ("Éclair", "0"),
     ],
 )
 def test_initial(albumartist: str, expected: str) -> None:
@@ -72,7 +77,9 @@ def test_initial(albumartist: str, expected: str) -> None:
         (FakeItem(albumtypes=["compilation"], albumartist="Artist"), "Compilations"),
         (FakeItem(albumtypes=["compilation"], albumartist="Various Artists"), ""),
         (FakeItem(albumtypes="single; live", albumartist="Artist"), "Singles"),
-        (FakeItem(albumtypes=["album"], albumartist="Artist", series=3), "3"),
+        (FakeItem(albumtypes=["album"], albumartist="Artist", series=3), ""),
+        (FakeItem(albumtypes=["deep"], albumartist="Artist"), ""),
+        (FakeItem(albumtypes=["compilation"], albumartist="Şuradan Buradan"), ""),
     ],
 )
 def test_division(item: FakeItem, expected: str) -> None:
@@ -84,6 +91,7 @@ def test_division(item: FakeItem, expected: str) -> None:
     [
         ("Album", "Album"),
         ("Album.", "Album._"),
+        ("Album. ", "Album._"),
         ("", ""),
     ],
 )
