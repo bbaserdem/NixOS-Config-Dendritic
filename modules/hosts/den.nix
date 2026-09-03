@@ -7,7 +7,6 @@
   den = {
     # Default batteries to include for hosts
     default.includes = [
-      den.batteries.define-user
       den.batteries.hostname
     ];
 

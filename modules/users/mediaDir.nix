@@ -31,7 +31,7 @@ in {
     # For host schema, configure media directory location
     schema.host = {
       includes = [
-        den.aspects.mediaDirs.policies.mediaDirs-host-dispatch
+        den.aspects.mediaDir.policies.mediaDirs-host-dispatch
       ];
       imports = [
         # Inline module due to depending on eval and adding includes
@@ -53,7 +53,7 @@ in {
     # For user schema, managed media directories
     schema.user = {
       includes = [
-        den.aspects.mediaDirs.policies.mediaDirs-user-dispatch
+        den.aspects.mediaDir.policies.mediaDirs-user-dispatch
       ];
       # Inline module due to depending on host.system
       imports = [
@@ -69,9 +69,9 @@ in {
                         description = "Directory location relative to users' home";
                         default =
                           if (config.host.class == "nixos")
-                          then (xdgDefaults.linux.${name} or "Media/${flib.capitalize.name}")
+                          then (xdgDefaults.linux.${name} or "Media/${flib.capitalize name}")
                           else if (config.host.class == "darwin")
-                          then (xdgDefaults.darwin.${name} or "Media/${flib.capitalize.name}")
+                          then (xdgDefaults.darwin.${name} or "Media/${flib.capitalize name}")
                           else throw "Unsupported host class '${config.host.class}'";
                       };
                       externalize = lib.mkOption {
@@ -84,13 +84,10 @@ in {
                 )
               ));
               default =
-                if (builtins.elem config.host.class ["nixos" "darwin"])
-                then
-                  (
-                    lib.mapAttrs
-                    (_n: _v: {})
-                    (xdgDefaults."${config.host.class}" or {})
-                  )
+                if config.host.class == "darwin"
+                then (lib.mapAttrs (_n: _v: {}) (xdgDefaults.darwin))
+                else if (lib.elem config.host.class ["nixos" "homeManager"])
+                then (lib.mapAttrs (_n: _v: {}) (xdgDefaults.linux))
                 else null;
               description = "Media directories to manage";
             };
@@ -100,7 +97,7 @@ in {
     };
 
     # Behavior for media dirs
-    aspects.mediaDirs = {
+    aspects.mediaDir = {
       # Policy dispatches
       policies.mediaDirs-user-dispatch = {
         host,
@@ -111,17 +108,17 @@ in {
         ++ (
           lib.optional
           (user.mediaDirs != null)
-          (den.lib.policy.include den.aspects.mediaDirs._.mediaUserXdgDirs)
+          (den.lib.policy.include den.aspects.mediaDir._.mediaUserXdgDirs)
         )
         ++ (
           lib.optional
           ((host.mediaDir != null) && (user.mediaDirs != null))
-          (den.lib.policy.include den.aspects.mediaDirs._.mediaUserRoot)
+          (den.lib.policy.include den.aspects.mediaDir._.mediaUserRoot)
         )
         ++ (
           lib.optional
           ((host.mediaDir != null) && (user.mediaDirs != null) && (user.mediaDirs != {}))
-          (den.lib.policy.include den.aspects.mediaDirs._.mediaUserDirs)
+          (den.lib.policy.include den.aspects.mediaDir._.mediaUserDirs)
         )
       );
       policies.mediaDirs-host-dispatch = {host, ...}: (
@@ -129,7 +126,7 @@ in {
         ++ (
           lib.optional
           (host.mediaDir != null)
-          (den.lib.policy.include den.aspects.mediaDirs._.mediaRoot)
+          (den.lib.policy.include den.aspects.mediaDir._.mediaRoot)
         )
       );
 
@@ -156,7 +153,12 @@ in {
       );
 
       # Aspect that sets xdg directories of a user
-      provides.mediaUserXdgDirs = {user}: {
+      provides.mediaUserXdgDirs = {
+        host,
+        user,
+      }: {
+        # Name to prevent collisions
+        name = "mediaDirs/mediaUserXdgDirs(${user.userName}@${host.name})";
         homeManager = {
           pkgs,
           config,
@@ -210,6 +212,8 @@ in {
         host,
         user,
       }: {
+        # Name to prevent collisions
+        name = "mediaDirs/mediaUserRoot(${user.userName}@${host.name})";
         nixos = {...}: {
           systemd.tmpfiles.settings."31-media-${user.userName}-root" = {
             "${host.mediaDir}/${user.userName}" = {
@@ -233,17 +237,18 @@ in {
         host,
         user,
       }: {
+        # Name to prevent collisions
+        name = "mediaDirs/mediaUserDirs(${user.userName}@${host.name})";
         # Create and mount requested folders
-        nixos = {config, ...}: {
+        nixos = {...}: {
           config = let
-            userHome = config.users.users.${user.userName}.home;
             # Grab data record in processable form
             userDirs =
               user.mediaDirs
               |> lib.filterAttrs (_: dir: dir.externalize)
               |> lib.mapAttrs (name: dir: {
                 source = "${host.mediaDir}/${user.userName}/${name}";
-                target = "${userHome}/${dir.location}";
+                target = "${user.homeDirectory}/${dir.location}";
               });
           in {
             systemd.tmpfiles.settings = {
@@ -270,7 +275,7 @@ in {
               "33-media-${user.userName}-target-folders" =
                 userDirs
                 |> builtins.attrValues
-                |> map (dir: flib.walkToDir userHome dir.target)
+                |> map (dir: flib.walkToDir user.homeDirectory dir.target)
                 |> builtins.concatLists
                 |> lib.unique
                 |> map (
@@ -309,7 +314,7 @@ in {
                     ];
                     depends = [
                       host.mediaDir
-                      userHome
+                      user.homeDirectory
                     ];
                   }
               );
