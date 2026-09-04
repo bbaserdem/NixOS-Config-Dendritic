@@ -51,7 +51,7 @@ local M = {
 
         -- enables syntax highlighting and other treesitter features,
         -- disable on latex, don't conflict with vimtex
-        if not language == "latex" then
+        if language ~= "latex" then
           vim.treesitter.start(buf, language)
         end
 
@@ -63,7 +63,7 @@ local M = {
 
         -- enables treesitter based indentation
         -- disable on nix files, weird issues here with alejandra formatter
-        if not language == "nix" then
+        if language ~= "nix" then
           vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end
 

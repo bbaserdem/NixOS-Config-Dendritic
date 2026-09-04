@@ -50,6 +50,7 @@ local M = {
         },
         -- Default options
         default_format_opts = {
+          timeout_ms = 3000,
           lsp_format = "first",
         },
         -- Formatter specific options go into the ftplugin
@@ -61,7 +62,7 @@ local M = {
           end
           -- Return options otherwise
           return {
-            timeout_ms = 1000,
+            timeout_ms = 3000,
             lsp_format = "fallback",
           }
         end,

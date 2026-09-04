@@ -12,7 +12,6 @@
           nixos-hardware
           nixos-keyboard
           nixos-locale
-          nixos-networking
           nixos-root
           nixos-users
         ];

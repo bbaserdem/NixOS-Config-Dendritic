@@ -1,5 +1,57 @@
 # Networking tools to install to userspace
-{inputs, ...}: {
+{
+  inputs,
+  den,
+  ...
+}: {
+  den = {
+    aspects.system = {
+      # This provides already included inside the system aspect
+      provides.networking = {
+        # Firewall port opening from quirk
+        nixos = {
+          local-ports,
+          lib,
+          ...
+        }: {
+          imports = [
+            inputs.self.modules.nixos.nixos-networking
+          ];
+          config = {
+            networking.firewall = {
+              # Load all port specifications from
+              allowedTCPPorts =
+                local-ports
+                |> builtins.filter (p: builtins.elem p.proto ["tcp" "all"])
+                |> builtins.filter (p: p ? port)
+                |> builtins.map (p: p.port)
+                |> lib.lists.unique;
+              allowedTCPPortRanges =
+                local-ports
+                |> builtins.filter (p: builtins.elem p.proto ["tcp" "all"])
+                |> builtins.filter (p: ((p ? from) && (p ? to)))
+                |> builtins.map (p: {inherit (p) from to;})
+                |> lib.lists.unique;
+              allowedUDPPorts =
+                local-ports
+                |> builtins.filter (p: builtins.elem p.proto ["udp" "all"])
+                |> builtins.filter (p: p ? port)
+                |> builtins.map (p: p.port)
+                |> lib.lists.unique;
+              allowedUDPPortRanges =
+                local-ports
+                |> builtins.filter (p: builtins.elem p.proto ["udp" "all"])
+                |> builtins.filter (p: ((p ? from) && (p ? to)))
+                |> builtins.map (p: {inherit (p) from to;})
+                |> lib.lists.unique;
+            };
+          };
+        };
+      };
+    };
+  };
+
+  # Networking module
   flake.modules.nixos.nixos-networking = {pkgs, ...}: {
     # Dispatch local LAN keys as trusted
     security.pki.certificates = [
