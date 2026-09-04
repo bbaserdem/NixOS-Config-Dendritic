@@ -35,8 +35,8 @@
             "user"
           ];
           syncthing = {
-            enable = false;
-            id = null;
+            enable = true;
+            id = "2FBNH7N-X62S3J2-65TEACZ-IZFATY5-BXJXR7O-ZT6ED6P-ZF4O6BV-A4RG3QE";
           };
         };
       };

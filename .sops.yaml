@@ -2,10 +2,12 @@
 keys:
   - &admin-pgp        AC27F5199E8B2E77F1F3D35F75ED91815D5B960E
   - &user_wolframite  age1kef20n2n6cgs4rrv76zwg50q0y8xqzpce69twyrrsct6v63cqplqf297my
+  - &user_ben-abuyah  age1zwxsfe93sr653eu5m9ye3mtjtldaypnrnrckzpuff90asw75rvlqjurnnk
   - &host_su-ana      age1trtaqq9n93gck0gh4ew3ms6unu9qqd34yekhlla0ldn8mygjw46qnspvz5
   - &host_yel-ana     age1ndu9qtzt0ywu992jwquadut0y7szflzz33atrqggunsr6kmk3ees0h2wep
   - &host_yertengri   age10kl02ftg67e050tudrlemt2h9c5xcs90m0hhzkuvqw87s68r3e6saxy29s
   - &host_od-ata      age1pvnj5qfh3a6e7qh5t5v8aj95qc8q9tsesdn7r29q9t85sezeduhqnw08d5
+  - &host_rashi       age1tcdguj3sp473xt2xf8lzn989x8t9w2wmts24n07s30d0yn78kf9qlvy8qs
 creation_rules:
   #---GLOBAL---#
   # Everyone
@@ -13,10 +15,12 @@ creation_rules:
     key_groups:
     - age:
       - *user_wolframite
+      - *user_ben-abuyah
       - *host_su-ana
       - *host_yel-ana
       - *host_yertengri
       - *host_od-ata
+      - *host_rashi
       pgp:
       - *admin-pgp
   # Users
@@ -24,6 +28,7 @@ creation_rules:
     key_groups:
     - age:
       - *user_wolframite
+      - *user_ben-abuyah
       pgp:
       - *admin-pgp
   # Hosts
@@ -34,6 +39,7 @@ creation_rules:
       - *host_yel-ana
       - *host_yertengri
       - *host_od-ata
+      - *host_rashi
       pgp:
       - *admin-pgp
     # Each user's keys
@@ -41,6 +47,12 @@ creation_rules:
     key_groups:
     - age:
       - *user_wolframite
+      pgp:
+      - *admin-pgp
+  - path_regex: ^secrets/user/ben-abuyah/[^/]+\.(yaml|json|key|bin)$
+    key_groups:
+    - age:
+      - *user_ben-abuyah
       pgp:
       - *admin-pgp
     # Each host's keys
@@ -66,5 +78,11 @@ creation_rules:
     key_groups:
     - age:
       - *host_od-ata
+      pgp:
+      - *admin-pgp
+  - path_regex: ^secrets/host/rashi/[^/]+\.(yaml|json|key|bin)$
+    key_groups:
+    - age:
+      - *host_rashi
       pgp:
       - *admin-pgp
