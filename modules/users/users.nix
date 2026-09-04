@@ -19,6 +19,7 @@
         imports = [
           ({config, ...}: {
             options = {
+              # Store home directory location in entity record
               homeDirectory = lib.mkOption {
                 type = flib.types.absolutePath;
                 description = "User's home directory path";
@@ -26,6 +27,18 @@
                   if (lib.hasSuffix "darwin" config.host.system)
                   then "/Users/${config.userName}"
                   else "/home/${config.userName}";
+              };
+              # Internal enum field, for calculating per-user differences
+              enum = lib.mkOption {
+                type = lib.types.ints.unsigned;
+                readOnly = true;
+                description = "A metadata tag number for this user on this host.";
+                default =
+                  config.host.users
+                  |> builtins.attrNames
+                  |> lib.lists.findFirstIndex
+                  (userName: userName == config.name)
+                  (throw "Could not enumerate user: `${config.name}`");
               };
             };
           })

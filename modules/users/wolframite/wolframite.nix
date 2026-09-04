@@ -1,5 +1,5 @@
 # Initialize this user
-{inputs, ...}: {
+{...}: {
   # Establish defaults for wolframite user
   den = {
     schema.user = {
@@ -12,34 +12,46 @@
         mediaDirs = {
           documents = {
             location = "Documents";
-            externalize = true;
+            externalize = lib.mkDefault true;
+            sync = lib.mkDefault true;
           };
           download = {
             location = "Downloads";
-            externalize = true;
+            externalize = lib.mkDefault true;
+            sync = lib.mkDefault true;
           };
           music = {
             location = "Music";
-            externalize = true;
+            externalize = lib.mkDefault true;
+            sync = lib.mkDefault true;
           };
           pictures = {
             location = "Pictures";
-            externalize = true;
+            externalize = lib.mkDefault true;
+            sync = lib.mkDefault true;
           };
           videos = {
             location = "Videos";
-            externalize = true;
+            externalize = lib.mkDefault true;
+            sync = lib.mkDefault true;
           };
           projects = {
             location = "Projects";
-            externalize = false;
+            externalize = lib.mkDefault false;
+            sync = lib.mkDefault true;
           };
           publicShare = {
             location = "Shared/Public";
-            externalize = false;
+            externalize = lib.mkDefault false;
+            sync = lib.mkDefault false;
+          };
+          android = {
+            location = "Shared/Android";
+            externalize = lib.mkDefault true;
+            sync = lib.mkDefault true;
           };
         };
-        # User icon; host dependent
+        # User icon; host dependent (decrypts from secrets/assets/<username>_<icon>.bin)
         icon =
           if (config.host.hostName == "yel-ana")
           then "lensa"

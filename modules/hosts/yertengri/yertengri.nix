@@ -17,17 +17,27 @@
 
       # Users
       users = {
+        # Wolframite user host-specific settings
         wolframite = {
           classes = [
             "homeManager"
             "user"
           ];
+          syncthing = {
+            enable = true;
+            id = "OGURLTB-BBT3MMT-CCK23PS-FT76672-YMWVY4T-6AR7LIO-22O6VN2-GJB3DAF";
+          };
         };
-        joeysaur = {
+        # Ben-Abuyah user host-specific settings
+        ben-abuyah = {
           classes = [
             "homeManager"
             "user"
           ];
+          syncthing = {
+            enable = false;
+            id = null;
+          };
         };
       };
     };

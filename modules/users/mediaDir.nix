@@ -79,6 +79,11 @@ in {
                         default = config.host.class == "nixos";
                         description = "Externalize this directory";
                       };
+                      sync = lib.mkOption {
+                        type = lib.types.bool;
+                        default = false;
+                        description = "Sync this media through syncthing.";
+                      };
                     };
                   }
                 )
@@ -109,6 +114,11 @@ in {
           lib.optional
           (user.mediaDirs != null)
           (den.lib.policy.include den.aspects.mediaDir._.mediaUserXdgDirs)
+        )
+        ++ (
+          lib.optional
+          ((user.syncthing.enable) && (user.mediaDirs != null))
+          (den.lib.policy.include den.aspects.mediaDir._.mediaUserSync)
         )
         ++ (
           lib.optional
@@ -207,6 +217,29 @@ in {
         };
       };
 
+      # Aspect that publishes media folders to syncthing quirk
+      provides.mediaUserSync = {
+        host,
+        user,
+      }: {
+        # Name to prevent collisions
+        name = "mediaDirs/mediaUserSync(${user.userName}@${host.name})";
+
+        # Emit our folders to the folders quirk
+        syncthing-folders =
+          user.mediaDirs
+          |> lib.filterAttrs (_: dir: dir.sync)
+          |> lib.mapAttrsToList (name: dir: {
+            # One required metadata, quirk resolution will use this info
+            type = "media";
+            # Media type folders should just pass through their mediaDir option
+            # And their location
+            # Ownership etc. will be determined from provenence data
+            mediaDir = name;
+            location = "${user.homeDirectory}/${dir.location}";
+          });
+      };
+
       # Aspect that creates per user the media root folder
       provides.mediaUserRoot = {
         host,
@@ -239,6 +272,7 @@ in {
       }: {
         # Name to prevent collisions
         name = "mediaDirs/mediaUserDirs(${user.userName}@${host.name})";
+
         # Create and mount requested folders
         nixos = {...}: {
           config = let
