@@ -3,7 +3,6 @@
   buildPythonPackage,
   uv-build,
   mediafile,
-  mutagen,
   beets-minimal,
   pytestCheckHook,
 }:
@@ -27,7 +26,6 @@ buildPythonPackage {
 
   dependencies = [
     mediafile
-    mutagen
   ];
 
   nativeBuildInputs = [

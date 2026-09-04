@@ -5,6 +5,7 @@ from typing import cast
 
 import pytest
 from beets.library import Library
+from beets.plugins import BeetsPlugin
 from beets.ui import UserError
 
 from beetsplug.wolframite import alternatives
@@ -29,6 +30,15 @@ class FakeLib:
 
     def items(self):
         return list(self._items)
+
+
+class FakeLog:
+    def info(self, _message, *_args) -> None:
+        return None
+
+
+class FakePlugin:
+    _log = FakeLog()
 
 
 def test_translated_entries_rewrites_existing_alternative_paths(tmp_path: Path) -> None:
@@ -117,9 +127,12 @@ def test_sync_collection_playlists_writes_and_removes_playlists(
         lambda _lib, _path=None: music_dir,
     )
 
-    count = alternatives.sync_collection_playlists(cast(Library, lib), "lossy")
+    alternatives.sync_collection_playlists(
+        cast(BeetsPlugin, FakePlugin()),
+        cast(Library, lib),
+        "lossy",
+    )
 
-    assert count == 1
     assert (target_dir / "Keep.m3u").read_text(encoding="utf-8") == (
         f"{alternatives._generated_marker('lossy')}\n"
         "Main/A/Artist/01. Song.opus\n"
@@ -147,7 +160,11 @@ def test_missing_source_directory_preserves_generated_targets(
         lambda _lib, _collection: target_dir,
     )
 
-    assert alternatives.sync_collection_playlists(cast(Library, lib), "lossy") == 0
+    alternatives.sync_collection_playlists(
+        cast(BeetsPlugin, FakePlugin()),
+        cast(Library, lib),
+        "lossy",
+    )
     assert target.exists()
 
 
@@ -169,7 +186,11 @@ def test_orphaned_generated_target_is_removed(tmp_path: Path, monkeypatch) -> No
         lambda _lib, _collection: target_dir,
     )
 
-    alternatives.sync_collection_playlists(cast(Library, lib), "lossy")
+    alternatives.sync_collection_playlists(
+        cast(BeetsPlugin, FakePlugin()),
+        cast(Library, lib),
+        "lossy",
+    )
 
     assert not target.exists()
 

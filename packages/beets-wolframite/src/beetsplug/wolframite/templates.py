@@ -83,7 +83,7 @@ def initial(item: Any) -> str:
 
 
 def division(item: Any) -> str:
-    """Return album subdivision based on series or album type."""
+    """Return album subdivision based on album type."""
     albumtypes = _albumtypes(item)
     albumartist = unicodedata.normalize(
         "NFC",

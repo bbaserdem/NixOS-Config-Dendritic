@@ -77,7 +77,6 @@ def test_initial(albumartist: str, expected: str) -> None:
         (FakeItem(albumtypes=["compilation"], albumartist="Artist"), "Compilations"),
         (FakeItem(albumtypes=["compilation"], albumartist="Various Artists"), ""),
         (FakeItem(albumtypes="single; live", albumartist="Artist"), "Singles"),
-        (FakeItem(albumtypes=["album"], albumartist="Artist", series=3), ""),
         (FakeItem(albumtypes=["deep"], albumartist="Artist"), ""),
         (FakeItem(albumtypes=["compilation"], albumartist="Şuradan Buradan"), ""),
     ],

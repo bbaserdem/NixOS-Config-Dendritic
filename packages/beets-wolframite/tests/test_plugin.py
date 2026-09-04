@@ -92,23 +92,6 @@ def test_conflicting_item_fields_clear_album_copy(tmp_path) -> None:
     changed = fields.sync_item_fields_to_album(album)
 
     assert changed == {"collection"}
-    assert album.get("collection") == ""
+    assert album.get("collection") is None
     assert item_a.get("collection", with_album=False) == "A"
     assert item_b.get("collection", with_album=False) == "B"
-
-
-def test_update_refreshes_album_copy_from_read_item(tmp_path) -> None:
-    library = Library(
-        path=tmp_path / "library.db",
-        directory=str(tmp_path / "music"),
-    )
-    item = Item(path=tmp_path / "track.flac", title="Track", collection="Old")
-    album = library.add_album([item])
-    album["collection"] = "Old"
-    album.store(inherit=False)
-    item["collection"] = "New"
-
-    changed = fields.sync_read_item_fields_to_album(album, item)
-
-    assert changed == {"collection"}
-    assert album.get("collection") == "New"

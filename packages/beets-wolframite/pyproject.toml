@@ -8,7 +8,6 @@ license = "MIT"
 dependencies = [
     "beets>=2.13,<3",
     "mediafile>=0.13",
-    "mutagen>=1.47",
 ]
 
 [dependency-groups]

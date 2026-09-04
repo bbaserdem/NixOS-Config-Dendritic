@@ -66,7 +66,8 @@
       };
 
       lyrics = {
-        auto = true;
+        # Too many failures; disable auto stuff
+        auto = false;
         force = false;
         sources = [
           "lrclib"
@@ -94,19 +95,6 @@
           "LAME"
           "from.+collection"
           "ripped by"
-        ];
-      };
-
-      # Normalize tags; using self plugin
-      wolframite = {
-        field_translations = [
-          {
-            # Correct the many names of Osees
-            match = "artist:\"Oh Sees\"";
-            replacements = {
-              albumartist = "Osees";
-            };
-          }
         ];
       };
     };
