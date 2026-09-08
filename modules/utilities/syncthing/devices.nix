@@ -3,7 +3,6 @@
   inputs,
   lib,
   den,
-  flib,
   ...
 }: {
   den = {
@@ -57,7 +56,7 @@
           };
 
           # Emit where our gui address will be bound
-          local-dns = {
+          local-web = {
             service = "syncthing";
             subpath = user.userName;
             port = guiPort;
@@ -135,6 +134,8 @@
                       localAnnounceEnabled = discoveryPort != null;
                       localAnnouncePort = discoveryPort;
                     };
+                    # Set cookie path location to stop clashes
+                    gui.sessionCookiePath = "/${user.userName}/";
 
                     # Device list, pulled from quirk
                     devices =

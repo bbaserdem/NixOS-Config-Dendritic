@@ -7,7 +7,6 @@
           # Base modules to configure the system
           macos-filesystem
           macos-homebrew
-          macos-networking
           macos-settings
         ];
         config = {

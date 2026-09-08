@@ -6,7 +6,8 @@
       system = "x86_64-linux";
       description = "Yertengri: Homestation PC";
 
-      # Enable styling
+      # Enable features
+      localWeb.enable = true;
       stylix.enable = true;
 
       # Boot settings
