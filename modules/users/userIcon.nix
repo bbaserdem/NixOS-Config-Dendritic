@@ -10,7 +10,13 @@ in {
     schema.user = {
       options = {
         icon = lib.mkOption {
-          description = "Encrypted user icon to be dispatched";
+          description = ''
+            User icon to be dispatched.
+
+            This value must correspond to an existing *variant*.
+            Encrypted png file secrets/assets/<user>_<variant>.bin must exist in repo.
+            (File must be decryptable by both os and user; hence in assets)
+          '';
           default = null;
           type = lib.types.nullOr lib.types.str;
         };

@@ -1,4 +1,5 @@
 # General systems boilerplate
+# TODO: Delete after den migration
 {
   config,
   lib,
