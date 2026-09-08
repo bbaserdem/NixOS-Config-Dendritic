@@ -76,7 +76,7 @@
           in {
             config = lib.mkIf (host.localWeb.enable) {
               # Enable caddy from our module
-              local.services.caddy = {
+              services.caddy = {
                 # Enable caddy
                 enable = lib.mkDefault true;
 

@@ -7,5 +7,8 @@
       syncthing
       caddy
     ];
+    config = {
+      services.caddy.enable = true;
+    };
   };
 }

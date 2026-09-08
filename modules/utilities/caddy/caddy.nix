@@ -6,7 +6,7 @@
     pkgs,
     ...
   }: let
-    cfg = config.local.services.caddy;
+    cfg = config.services.caddy;
     caddyFile = pkgs.writeText "Caddyfile" ''
       {
         auto_https off
@@ -27,10 +27,10 @@
   in {
     # Options to define
     options = {
-      local.services.caddy = {
+      services.caddy = {
         enable = lib.mkOption {
           type = lib.types.bool;
-          default = true;
+          default = false;
           description = "Whether to enable Caddy";
         };
         package = lib.mkPackageOption pkgs "caddy" {};
