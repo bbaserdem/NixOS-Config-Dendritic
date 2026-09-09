@@ -33,23 +33,23 @@ in {
         })
       ];
       includes = [
-        den.aspects.sopsEnv.policies.user-sops-env-enable
+        den.aspects.user.policies.user-sops-env-enable
       ];
     };
 
-    aspects.sopsEnv = {
+    aspects.user = {
       # Policy for dispatching
       policies.user-sops-env-enable = {user, ...}:
         lib.optional
         user.sopsEnv.enable
-        (den.lib.policy.include den.aspects.sopsEnv._.set-user-env);
+        (den.lib.policy.include den.aspects.user._.sopsEnv);
 
-      provides.set-user-env = {
+      provides.sopsEnv = {
         host,
         user,
       }: {
         # Prevent collisions
-        name = "sopsEnv/set-user-env(${user.userName}@${host.name})";
+        name = "users/sopsEnv(${user.userName}@${host.name})";
 
         # Load the secrets in home-manager
         homeManager = {

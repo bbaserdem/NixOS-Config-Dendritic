@@ -8,39 +8,67 @@
 in {
   den = {
     schema.user = {
-      options = {
-        icon = lib.mkOption {
-          description = ''
-            User icon to be dispatched.
+      imports = [
+        ({config, ...}: let
+          userName = config.userName;
+        in {
+          options = {
+            profile = lib.mkOption {
+              description = "User profile customization settings";
+              default = {};
+              type = lib.types.submodule ({config, ...}: let
+                variant = config.icon;
+              in {
+                options = {
+                  icon = lib.mkOption {
+                    description = ''
+                      User profile icon to be dispatched.
+                      When set (non-null), a profile picture will be dispatched.
 
-            This value must correspond to an existing *variant*.
-            Encrypted png file secrets/assets/<user>_<variant>.bin must exist in repo.
-            (File must be decryptable by both os and user; hence in assets)
-          '';
-          default = null;
-          type = lib.types.nullOr lib.types.str;
-        };
-      };
+                      This value must correspond to an existing *variant*.
+                      Encrypted png file is secrets/assets/<user>_<variant>.bin
+                      (File must be decryptable by both os and user)
+                      File must decrypt to smaller than 1MiB (unix)
+                    '';
+                    default = null;
+                    type = lib.types.nullOr lib.types.str;
+                  };
+                  iconFile = lib.mkOption {
+                    description = "The resulting file path";
+                    readOnly = true;
+                    type = lib.types.nullOr lib.types.path;
+                    default =
+                      if config.icon == null
+                      then null
+                      else
+                        inputs.self
+                        + "/secrets/assets/"
+                        + "${userName}_${variant}.bin";
+                  };
+                };
+              });
+            };
+          };
+        })
+      ];
       includes = [
-        den.aspects.userIcon.policies.user-icon-dispatch
+        den.aspects.user.policies.user-icon-dispatch
       ];
     };
 
-    aspects.userIcon = {
+    aspects.user = {
       # Policy for dispatching
       policies.user-icon-dispatch = {user, ...}:
         lib.optional
-        (user.icon != null)
-        (den.lib.policy.include den.aspects.userIcon._.set-user-icon);
+        (user.profile.icon != null)
+        (den.lib.policy.include den.aspects.user._.profileIcon);
 
-      provides.set-user-icon = {
+      provides.profileIcon = {
         host,
         user,
-      }: let
-        filePath = "/secrets/assets/${user.userName}_${user.icon}.bin";
-      in {
+      }: {
         # Prevent collisions
-        name = "userIcon(${user.userName}@${host.name})";
+        name = "user/profileIcon(${user.userName}@${host.name})";
 
         # Nixos module that decrypts and sets the icon
         nixos = {
@@ -61,8 +89,8 @@ in {
             # Check if file exists
             assertions = [
               {
-                assertion = builtins.pathExists (inputs.self + filePath);
-                message = "Profile picture secret not found in `${filePath}`";
+                assertion = builtins.pathExists user.profile.iconFile;
+                message = "Profile picture secret not found.";
               }
             ];
             # Enable account daemon
@@ -71,7 +99,7 @@ in {
             # Load the sops secret
             sops.secrets.${secretName} = {
               format = "binary";
-              sopsFile = inputs.self + filePath;
+              sopsFile = user.profile.iconFile;
               owner = "root";
               group = "root";
               mode = "0444";
@@ -133,14 +161,14 @@ in {
                 # Check if file exists
                 assertions = [
                   {
-                    assertion = builtins.pathExists (inputs.self + filePath);
-                    message = "Profile picture secret not found in `${filePath}`";
+                    assertion = builtins.pathExists user.profile.iconFile;
+                    message = "Profile picture secret not found.";
                   }
                 ];
                 # Drop the sops file
                 sops.secrets.${secretName} = {
                   format = "binary";
-                  sopsFile = inputs.self + filePath;
+                  sopsFile = user.profile.iconFile;
                   mode = "0444";
                   path =
                     if pkgs.stdenv.hostPlatform.isDarwin

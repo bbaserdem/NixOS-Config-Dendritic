@@ -52,7 +52,7 @@
           };
         };
         # User icon; host dependent (decrypts from secrets/assets/<username>_<icon>.bin)
-        icon =
+        profile.icon =
           if (config.host.hostName == "yel-ana")
           then "lensa"
           else if (config.host.hostName == "su-ana")
