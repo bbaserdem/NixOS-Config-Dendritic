@@ -14,6 +14,7 @@
         };
       };
       includes = [
+        den.aspects.user.policies.set-user-password-hash
       ];
     };
 
