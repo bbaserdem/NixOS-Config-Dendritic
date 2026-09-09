@@ -1,6 +1,6 @@
 # Metadata plugins and workflows
 {...}: {
-  flake.modules.homeManager.wolframite = {...}: {
+  flake.modules.homeManager.beets-wolframite = {...}: {
     programs.beets.settings = {
       plugins = [
         "autobpm"
@@ -13,7 +13,7 @@
       ];
 
       # Auto-tagger settings
-      artist_credit = true;
+      artist_credit = false;
       match = {
         strong_rec_thresh = 0.04;
       };
@@ -40,7 +40,6 @@
         albumfields = [
           "album"
           "albumartist"
-          "artist"
           "genres"
           "mood"
           "collection"
@@ -60,7 +59,7 @@
         auto = true;
         canonical = true;
         count = 3;
-        force = true;
+        force = false;
         keep_existing = true;
         source = "album";
       };

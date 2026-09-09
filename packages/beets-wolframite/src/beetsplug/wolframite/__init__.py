@@ -18,13 +18,17 @@ class WolframitePlugin(BeetsPlugin):
     def __init__(self) -> None:
         super().__init__()
 
+        self._library_revision = None
+        self._updated_alternatives: set[str] = set()
         self.register_listener("album_imported", self._sync_imported_album_fields)
+        self.register_listener("library_opened", self._record_library_revision)
+        self.register_listener("cli_exit", self._sync_changed_album_fields)
         self.register_listener(
             cast(Any, "alternatives.collection_updated"),
-            self._sync_alternative_playlists,
+            self._queue_alternative_playlists,
         )
 
-        fields.install_item_store_compatibility()
+        fields.install_store_compatibility()
         fields.register_media_fields(self)
 
         self.template_fields["tracknumber"] = templates.tracknumber
@@ -39,5 +43,20 @@ class WolframitePlugin(BeetsPlugin):
     def _sync_imported_album_fields(self, lib, album) -> None:
         fields.sync_item_fields_to_album(album)
 
-    def _sync_alternative_playlists(self, lib, collection: str, **_kwargs) -> None:
-        alternatives.sync_collection_playlists(self, lib, collection)
+    def _record_library_revision(self, lib) -> None:
+        self._library_revision = lib.revision
+
+    def _sync_changed_album_fields(self, lib) -> None:
+        if self._library_revision is None or lib.revision == self._library_revision:
+            return
+        for album in lib.albums():
+            fields.sync_item_fields_to_album(album)
+
+    def _queue_alternative_playlists(self, collection: str, **_kwargs) -> None:
+        self._updated_alternatives.add(collection)
+        self.register_listener("cli_exit", self._sync_alternative_playlists)
+
+    def _sync_alternative_playlists(self, lib) -> None:
+        for collection in sorted(self._updated_alternatives):
+            alternatives.sync_collection_playlists(self, lib, collection)
+        self._updated_alternatives.clear()

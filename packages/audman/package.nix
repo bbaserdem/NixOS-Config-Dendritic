@@ -3,7 +3,7 @@
 in
   py.buildPythonApplication {
     pname = "audman";
-    version = "0.2.0";
+    version = "0.3.0";
     pyproject = true;
 
     src = ./.;
@@ -16,6 +16,7 @@ in
     build-system = [py.uv-build];
 
     dependencies = [
+      py.mutagen
       py.typer
     ];
 
@@ -24,6 +25,8 @@ in
     ];
 
     nativeCheckInputs = [
+      pkgs.ffmpeg
+      pkgs.flac
       py.pytestCheckHook
     ];
 

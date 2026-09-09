@@ -1,6 +1,6 @@
 # Discogs config for beets
 {...}: {
-  flake.modules.homeManager.wolframite = {
+  flake.modules.homeManager.beets-wolframite = {
     config,
     lib,
     options,

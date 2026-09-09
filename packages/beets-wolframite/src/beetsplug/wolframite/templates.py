@@ -61,7 +61,7 @@ def initial(item: Any) -> str:
     """Return album artist initial for top-level artist buckets."""
     albumartist = unicodedata.normalize(
         "NFC",
-        _get(item, "albumartist", "") or "",
+        _get(item, "albumartist", "") or _get(item, "artist", "") or "",
     )
 
     if albumartist.casefold() in VARIOUS_ARTISTS:

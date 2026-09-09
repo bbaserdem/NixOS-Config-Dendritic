@@ -69,20 +69,60 @@ def register_media_fields(plugin: BeetsPlugin) -> None:
         library.Item._media_tag_fields.add(name)
 
 
-def install_item_store_compatibility() -> None:
-    """Keep partial stores from treating flexible fields as SQL columns."""
+def install_store_compatibility() -> None:
+    """Make partial stores select only the requested custom fields."""
+    _install_item_store_compatibility()
+    _install_album_store_compatibility()
+
+
+def _install_item_store_compatibility() -> None:
     original_store = library.Item.store
     if getattr(original_store, "_wolframite_flexible_fields", False):
         return
 
     @wraps(original_store)
     def store(item, fields=None) -> None:
-        if fields is not None:
-            fields = set(fields) - set(ITEM_TYPES)
-        original_store(item, fields)
+        if fields is None:
+            original_store(item)
+            return
+
+        requested = set(fields)
+        deferred = (set(item._dirty) & set(ITEM_TYPES)) - requested
+        item._dirty.difference_update(deferred)
+        try:
+            original_store(item, requested - set(ITEM_TYPES))
+        finally:
+            item._dirty.update(deferred)
 
     setattr(store, "_wolframite_flexible_fields", True)
     setattr(library.Item, "store", store)
+
+
+def _install_album_store_compatibility() -> None:
+    original_store = library.Album.store
+    if getattr(original_store, "_wolframite_flexible_fields", False):
+        return
+
+    @wraps(original_store)
+    def store(album, fields=None, inherit=True) -> None:
+        if fields is None:
+            original_store(album, inherit=inherit)
+            return
+
+        requested = set(fields)
+        deferred = (set(album._dirty) & set(ALBUM_TYPES)) - requested
+        album._dirty.difference_update(deferred)
+        try:
+            original_store(
+                album,
+                requested - set(ALBUM_TYPES),
+                inherit=inherit,
+            )
+        finally:
+            album._dirty.update(deferred)
+
+    setattr(store, "_wolframite_flexible_fields", True)
+    setattr(library.Album, "store", store)
 
 
 def sync_item_fields_to_album(album: Album) -> set[str]:
@@ -94,8 +134,17 @@ def sync_item_fields_to_album(album: Album) -> set[str]:
     changed = set()
     for field in ALBUM_TYPES:
         values = [item.get(field, with_album=False) for item in items]
-        value = values[0] if all(current == values[0] for current in values) else None
-        if album.get(field) != value:
+        if field == "mood":
+            values = [sorted(value or []) for value in values]
+        unanimous = all(current == values[0] for current in values)
+        value = values[0] if unanimous else None
+        null = ALBUM_TYPES[field].null
+
+        if value is None or value == null:
+            if field in album:
+                del album[field]
+                changed.add(field)
+        elif album.get(field) != value:
             album[field] = value
             changed.add(field)
 

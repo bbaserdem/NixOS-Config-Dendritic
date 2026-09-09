@@ -1,9 +1,23 @@
-# Filetype conversion plugins
-# Allows for auto-changing tags
-{...}: {
-  flake.modules.homeManager.wolframite = {config, ...}: let
+# Playlist management
+{flib, ...}: {
+  flake.modules.homeManager.beets-wolframite = {config, ...}: let
     musicDir = config.services.mpd.musicDirectory;
     playlistDir = config.services.mpd.playlistDirectory;
+    moods = [
+      "instrumental"
+      "microtonal"
+      "affirmation"
+      "heavy"
+      "turkish"
+      "japanese"
+      "ambient"
+      "electronic"
+      "space"
+      "phonk"
+      "trippy"
+      "gag"
+      "cunt"
+    ];
   in {
     # This is basically the yaml array written in nix
     programs.beets.settings = {
@@ -22,8 +36,11 @@
 
       # Keep a playlist of recently added files
       importfeeds = {
-        formats = "m3u";
-        m3u_name = "Recents.m3u";
+        formats = [
+          "m3u"
+          "m3u_session"
+        ];
+        m3u_name = "Import.m3u";
         dir = playlistDir;
         relative_to = musicDir;
       };
@@ -33,60 +50,24 @@
         auto = true;
         playlist_dir = playlistDir;
         relative_to = musicDir;
-        playlists = [
-          {
-            name = "JoeyFavs.m3u";
-            query = "introducer:Joseph Hirsh";
-          }
-          {
-            name = "Mood-Instrumental.m3u";
-            query = "mood:instrumental";
-          }
-          {
-            name = "Mood-Microtonal.m3u";
-            query = "mood:microtonal";
-          }
-          {
-            name = "Mood-Affirmation.m3u";
-            query = "mood:affirmation";
-          }
-          {
-            name = "Mood-Heavy.m3u";
-            query = "mood:heavy";
-          }
-          {
-            name = "Mood-Turkish.m3u";
-            query = "mood:turkish";
-          }
-          {
-            name = "Mood-Japanese.m3u";
-            query = "mood:japanese";
-          }
-          {
-            name = "Mood-Ambient.m3u";
-            query = "mood:ambient";
-          }
-          {
-            name = "Mood-Electronic.m3u";
-            query = "mood:electronic";
-          }
-          {
-            name = "Mood-Space.m3u";
-            query = "mood:space";
-          }
-          {
-            name = "Mood-Phonk.m3u";
-            query = "mood:phonk";
-          }
-          {
-            name = "Mood-Trippy.m3u";
-            query = "mood:trippy";
-          }
-          {
-            name = "Mood-Gag.m3u";
-            query = "mood:gag";
-          }
-        ];
+        playlists =
+          [
+            # Joey songs in the library
+            {
+              name = "JoeyFavs.m3u";
+              query = "introducer:\"Joseph Hirsh\"";
+            }
+          ]
+          ++ (
+            # Mood generated playlists
+            moods
+            |> builtins.map (
+              p: {
+                name = "Mood-${flib.capitalize p}.m3u";
+                query = "mood:${p}";
+              }
+            )
+          );
       };
     };
   };

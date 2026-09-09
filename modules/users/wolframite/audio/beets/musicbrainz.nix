@@ -1,6 +1,6 @@
 # Musicbrainz configuration for beets
 {...}: {
-  flake.modules.homeManager.wolframite = {
+  flake.modules.homeManager.beets-wolframite = {
     config,
     lib,
     options,
@@ -39,7 +39,7 @@
         };
       }
       (
-        # Musicbrainz credentials to be merged to the main config
+        # Musicbrainz credentials to be merged to the main config; must exist!
         lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) (let
           yamlName = "beets-musicbrainz-credentials.yaml";
         in {

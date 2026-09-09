@@ -17,7 +17,8 @@ def test_batch_uses_progress_and_summary_without_file_dump(
     target.mkdir()
     backup_dir = tmp_path / "cache" / "20260831-161755-Qobuz"
 
-    def fake_compress(path, backup, jobs, progress):
+    def fake_compress(path, backup, force, jobs, progress):
+        assert not force
         progress(0, 2)
         progress(1, 2)
         progress(2, 2)
@@ -52,7 +53,7 @@ def test_single_uses_progress_and_summary(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(
         cli,
         "compress_flac_single",
-        lambda input_file, output_file: convert.ConversionResult(
+        lambda input_file, output_file, force: convert.ConversionResult(
             input_file, output_file, "compressed"
         ),
     )
@@ -74,3 +75,84 @@ def test_single_uses_progress_and_summary(tmp_path: Path, monkeypatch) -> None:
     assert "1/1" in result.output
     assert "Finished 1 files: 1 compressed." in result.output
     assert "source.flac ->" not in result.output
+
+
+def test_single_forwards_force(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "source.flac"
+    output = tmp_path / "output.opus"
+    seen = []
+
+    def fake_convert(input_file, output_file, force):
+        seen.append((input_file, output_file, force))
+        return convert.ConversionResult(input_file, output_file, "converted")
+
+    monkeypatch.setattr(cli, "convert_lossy_single", fake_convert)
+
+    result = runner.invoke(
+        cli.app,
+        [
+            "convert",
+            "lossy",
+            "--single",
+            "--input-file",
+            str(source),
+            "--output-file",
+            str(output),
+            "--force",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert seen == [(source, output, True)]
+
+
+def test_path_forwards_force(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "source.flac"
+    seen = []
+
+    def fake_convert(path, backup, force, jobs, progress):
+        seen.append((path, backup, force, jobs))
+        progress(0, 0)
+        return convert.ConversionRun([], None)
+
+    monkeypatch.setattr(cli, "convert_lossy_path", fake_convert)
+
+    result = runner.invoke(
+        cli.app,
+        ["convert", "lossy", str(source), "--force", "--no-backup"],
+    )
+
+    assert result.exit_code == 0
+    assert seen == [(source, False, True, None)]
+
+
+def test_single_rejects_path_only_options(tmp_path: Path) -> None:
+    source = tmp_path / "source.flac"
+    output = tmp_path / "output.opus"
+
+    result = runner.invoke(
+        cli.app,
+        [
+            "convert",
+            "lossy",
+            "--single",
+            "--input-file",
+            str(source),
+            "--output-file",
+            str(output),
+            "--no-backup",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "--no-backup cannot be used with --single" in result.output
+
+
+def test_unsupported_explicit_file_returns_error(tmp_path: Path) -> None:
+    source = tmp_path / "source.txt"
+    source.write_text("not audio", encoding="utf-8")
+
+    result = runner.invoke(cli.app, ["convert", "lossy", str(source)])
+
+    assert result.exit_code == 1
+    assert "unsupported input type" in result.output

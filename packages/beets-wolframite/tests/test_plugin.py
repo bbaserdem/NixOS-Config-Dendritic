@@ -39,7 +39,7 @@ def test_album_database_change_uses_native_item_inheritance(
 
 
 def test_partial_store_accepts_wolframite_flexible_fields(tmp_path) -> None:
-    fields.install_item_store_compatibility()
+    fields.install_store_compatibility()
     library = Library(
         path=tmp_path / "library.db",
         directory=str(tmp_path / "music"),
@@ -54,6 +54,27 @@ def test_partial_store_accepts_wolframite_flexible_fields(tmp_path) -> None:
     stored_item = library.get_item(item.id)
     assert stored_item is not None
     assert stored_item.get("collection", with_album=False) == "Archive"
+
+
+def test_partial_store_defers_unselected_custom_fields(tmp_path) -> None:
+    fields.install_store_compatibility()
+    library = Library(
+        path=tmp_path / "library.db",
+        directory=str(tmp_path / "music"),
+    )
+    item = Item(path=tmp_path / "track.flac", title="Track")
+    library.add(item)
+    item["collection"] = "Archive"
+    item["mood"] = ["heavy"]
+
+    item.store(fields={"collection"})
+
+    assert item.id is not None
+    stored_item = library.get_item(item.id)
+    assert stored_item is not None
+    assert stored_item.get("collection", with_album=False) == "Archive"
+    assert stored_item.get("mood", with_album=False) is None
+    assert "mood" in item._dirty
 
 
 def test_album_fields_are_rebuilt_from_unanimous_items(tmp_path) -> None:
@@ -92,6 +113,6 @@ def test_conflicting_item_fields_clear_album_copy(tmp_path) -> None:
     changed = fields.sync_item_fields_to_album(album)
 
     assert changed == {"collection"}
-    assert album.get("collection") is None
+    assert "collection" not in album
     assert item_a.get("collection", with_album=False) == "A"
     assert item_b.get("collection", with_album=False) == "B"

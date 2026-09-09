@@ -60,6 +60,10 @@ def test_initial(albumartist: str, expected: str) -> None:
     assert templates.initial(FakeItem(albumartist=albumartist)) == expected
 
 
+def test_initial_falls_back_to_track_artist() -> None:
+    assert templates.initial(FakeItem(albumartist="", artist="Artist")) == "A"
+
+
 @pytest.mark.parametrize(
     ("item", "expected"),
     [

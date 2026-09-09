@@ -1,13 +1,13 @@
-# Main config for Beets
+# Main config entry for wolframite's beets config
 {...}: {
-  flake.modules.homeManager.wolframite = {config, ...}: let
-  in {
+  flake.modules.homeManager.beets-wolframite = {config, ...}: {
     programs.beets.settings = {
       # Plugins
       plugins = [
         "duplicates"
         "info"
         "missing"
+        "fuzzy"
       ];
 
       # Main behavior
@@ -46,7 +46,7 @@
         quiet_fallback = "asis";
         log = "${config.xdg.cacheHome}/beets/log";
         default_action = "skip";
-        languages = ["en" "tr" "jp"];
+        languages = ["en" "tr" "ja"];
         detail = false;
         duplicate_action = "ask";
         bell = true;
@@ -55,11 +55,14 @@
       # Tools
       missing = {
         count = true;
-        total = true;
+        total = false;
       };
       duplicates = {
         delete = false;
         full = false;
+      };
+      fuzzy = {
+        threshold = 0.9;
       };
     };
   };

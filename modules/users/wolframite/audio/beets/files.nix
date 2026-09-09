@@ -1,6 +1,6 @@
 # Library file layout and moving settings
 {...}: {
-  flake.modules.homeManager.wolframite = {
+  flake.modules.homeManager.beets-wolframite = {
     config,
     lib,
     ...
@@ -14,6 +14,12 @@
       plugins = [
         "albumtypes"
         "the"
+      ];
+      ignore = [
+        "*.db"
+        "Beets.db*"
+        "*.m3u"
+        "*.m3u8"
       ];
 
       # Certain field behavior

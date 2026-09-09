@@ -1,7 +1,6 @@
 # Filetype conversion plugins
-# Allows for auto-changing tags
 {inputs, ...}: {
-  flake.modules.homeManager.wolframite = {
+  flake.modules.homeManager.beets-wolframite = {
     pkgs,
     config,
     lib,
@@ -9,7 +8,6 @@
   }: {
     config = lib.mkMerge [
       {
-        # This is basically the yaml array written in nix
         programs.beets.settings = {
           plugins = [
             "convert"
@@ -17,6 +15,7 @@
           ];
 
           # Conversion settings; use our conversion scripts
+          # Outputs to a folder named Lossy
           convert = {
             auto = false;
             copy_album_art = true;
@@ -28,11 +27,17 @@
             format = "opus";
             formats = {
               opus = {
-                command = "${pkgs.local.audman}/bin/audman convert lossy --single --input-file $source --output-file $dest";
+                command =
+                  "${pkgs.local.audman}/bin/audman convert lossy "
+                  + "--single --force "
+                  + "--input-file $source --output-file $dest";
                 extension = "opus";
               };
               flac = {
-                command = "${pkgs.local.audman}/bin/audman convert lossless --single --input-file $source --output-file $dest";
+                command =
+                  "${pkgs.local.audman}/bin/audman convert lossless "
+                  + "--single "
+                  + "--input-file $source --output-file $dest";
                 extension = "flac";
               };
             };
@@ -40,10 +45,10 @@
 
           # Alternatives, this allows us to encode subsets of library
           alternatives = {
-            lossy = {
-              directory = "Lossy";
+            mobile = {
+              directory = "Mobile";
               formats = ["opus" "mp3" "ogg"];
-              query = "lossy:true collection:=Main , lossy:true collection::^$";
+              query = "lossy:true";
               removable = false;
               album_art_embed = true;
               album_art_copy = true;
@@ -51,8 +56,11 @@
               album_art_format = "jpg";
             };
           };
+
+          # Add the lossy directories to beets global ignore
           ignore = [
             "Lossy"
+            "Mobile"
           ];
         };
       }
@@ -61,19 +69,25 @@
           homeDir = config.home.homeDirectory;
           musicDir = config.programs.beets.settings.directory;
         in
-          # Dispatch .mpdignore file, excluding some hosts
-          lib.mkIf
-          (
-            (lib.hasPrefix "${homeDir}/" musicDir)
-            && (!(
-              builtins.elem config.networking.hostName [
-                "su-ana"
-              ]
-            ))
-          ) {
-            home.file."${inputs.self.lib.stripRootDir homeDir musicDir}/Lossy/.mpdignore".text = ''
-              *
-            '';
+          # Dispatch .mpdignore file
+          lib.mkIf (lib.hasPrefix "${homeDir}/" musicDir) {
+            home.file =
+              ["Lossy" "Mobile"]
+              |> builtins.map (
+                f:
+                  lib.nameValuePair
+                  "beets-${f}"
+                  {
+                    target =
+                      "${inputs.self.lib.stripRootDir homeDir musicDir}/"
+                      + "${f}/.mpdignore";
+                    # These are sub-collections, mpd should in general ignore them
+                    text = ''
+                      *
+                    '';
+                  }
+              )
+              |> builtins.listToAttrs;
           }
       )
     ];
