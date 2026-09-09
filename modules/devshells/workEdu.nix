@@ -29,6 +29,21 @@
                 dvisvgm
               ])
           )
+          # Dev script for launching local server
+          (
+            pkgs.writeShellApplication {
+              name = "edullm-dev";
+              runtimeInputs = [pkgs.coreutils pkgs.findutils];
+              text = ''
+                : "''${LOCAL_CLERK_ISSUER:?set in .envrc}" "''${LOCAL_CLERK_USER:?set in .envrc}"
+                run="''${1:-$(find out -maxdepth 1 -type d -name '*-tutor-*' | sort | tail -1)}"
+                [ -n "$run" ] || { echo "no run under out/; run: pnpm run:create -- --execute" >&2; exit 1; }
+                exec pnpm dev --attach "$run" \
+                  --origin http://127.0.0.1:3000 --eve-origin http://127.0.0.1:3001 \
+                  --issuer "$LOCAL_CLERK_ISSUER" --subject "$LOCAL_CLERK_USER"
+              '';
+            }
+          )
           # Tooling for agents
           ripgrep
           shellcheck

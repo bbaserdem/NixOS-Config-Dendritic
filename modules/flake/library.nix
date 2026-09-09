@@ -1,12 +1,23 @@
 {lib, ...}: let
   # --- String functions
-  # Capitalize Strings
-  capitalize = s:
-    if s == ""
-    then ""
-    else
-      (lib.toUpper (builtins.substring 0 1 s))
-      + (builtins.substring 1 (builtins.stringLength s) s);
+  # Capitalize strings; use upper case for every word
+  capitalize = str:
+    str
+    |> builtins.split "([[:space:]]|-)"
+    |> builtins.map (
+      s:
+        if builtins.isList s
+        then builtins.head s
+        else
+          (
+            if s == ""
+            then ""
+            else
+              (lib.toUpper (builtins.substring 0 1 s))
+              + (builtins.substring 1 (builtins.stringLength s) s)
+          )
+    )
+    |> lib.concatStrings;
 
   # --- Directory traversal helpers
   # Clean up trailing slash
