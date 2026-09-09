@@ -33,14 +33,26 @@
           (
             pkgs.writeShellApplication {
               name = "edullm-dev";
-              runtimeInputs = [pkgs.coreutils pkgs.findutils];
+              runtimeInputs = with pkgs; [coreutils findutils lsof];
               text = ''
+                # Detect latest run
                 : "''${LOCAL_CLERK_ISSUER:?set in .envrc}" "''${LOCAL_CLERK_USER:?set in .envrc}"
                 run="''${1:-$(find out -maxdepth 1 -type d -name '*-tutor-*' | sort | tail -1)}"
-                [ -n "$run" ] || { echo "no run under out/; run: pnpm run:create -- --execute" >&2; exit 1; }
+                [ -n "$run" ] || { echo "no run under out/; run: pnpm run:create --execute" >&2; exit 1; }
+                # Kill holding ports
+                for port in 3000 3001; do
+                  pid="$(lsof -nP -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null | head -1 || true)"
+                  if [ -n "$pid" ] ; then
+                    echo "stopping stale listener on :$port (pid $pid)" >&2
+                    kill -TERM -- "-$(ps -o pgid= -p "$pid" | tr -d ' ')" || true
+                    sleep 1
+                  fi
+                done
+                # Start server
                 exec pnpm dev --attach "$run" \
                   --origin http://127.0.0.1:3000 --eve-origin http://127.0.0.1:3001 \
-                  --issuer "$LOCAL_CLERK_ISSUER" --subject "$LOCAL_CLERK_USER"
+                  --issuer "$LOCAL_CLERK_ISSUER" --subject "$LOCAL_CLERK_USER" \
+                  --browser-origin http://127.0.0.1:3000
               '';
             }
           )
