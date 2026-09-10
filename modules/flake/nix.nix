@@ -5,6 +5,11 @@
   ...
 }: {
   config = {
+    # Nix formatter for this flake
+    perSystem = {pkgs, ...}: {
+      formatter = pkgs.alejandra;
+    };
+
     # Auto-database fetching
     flake-file.inputs.nix-index-database = {
       url = "github:nix-community/nix-index-database";

@@ -50,6 +50,11 @@
             externalize = lib.mkDefault true;
             sync.enable = lib.mkDefault true;
           };
+          work = {
+            location = "Work";
+            externalize = lib.mkDefault true;
+            sync.enable = lib.mkDefault true;
+          };
         };
         # User icon; host dependent (decrypts from secrets/assets/<username>_<icon>.bin)
         profile.icon =

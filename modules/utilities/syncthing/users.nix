@@ -46,6 +46,11 @@
                       "[A-Z2-7]{7}(-[A-Z2-7]{7}){7}"
                     );
                   };
+                  globalShare = lib.mkOption {
+                    description = "Global share folder on this node";
+                    default = true;
+                    type = lib.types.bool;
+                  };
                 };
               };
               # Validity check

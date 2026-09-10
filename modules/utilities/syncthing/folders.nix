@@ -116,16 +116,109 @@
     aspects.syncthing = {
       provides.user-node = {
         includes = [
-          den.aspects.syncthing._.user-node._.folders
+          den.aspects.syncthing._.user-node._.media-folders
+          den.aspects.syncthing._.user-node.policies.global-share-dispatch
         ];
 
-        provides.folders = {
+        policies.global-share-dispatch = {user, ...}:
+          lib.optionals (user.syncthing.globalShare) [
+            (den.lib.policy.include den.aspects.syncthing._.user-node._.global-share)
+          ];
+
+        provides.global-share = {
+          host,
+          user,
+          ...
+        }: {
+          name = "syncthing/user-node/global-share(${user.userName}@${host.name})";
+          homeManager = {
+            syncthing-devices,
+            pkgs,
+            lib,
+            ...
+          }: let
+            sharePath =
+              if pkgs.stdenv.hostPlatform.isDarwin
+              then "Syncthing"
+              else "Shared/Syncthing";
+          in {
+            # Add global share folder to this node
+            services.syncthing.settings.folders.global-share = {
+              id = "global-share";
+              label = "Syncthing Global Share";
+              enable = true;
+              path = "~/${sharePath}";
+              type = "sendreceive";
+              versioning = {
+                type = "staggered";
+                # One week
+                params.maxAge = builtins.toString (7 * 24 * 60 * 60);
+              };
+              # Share to all nodes with global share turned on
+              devices =
+                syncthing-devices
+                |> builtins.filter (q: q.value.globalShare or false)
+                |> builtins.map (q: q.value.label)
+                |> lib.lists.unique;
+            };
+
+            # Create stignore file at location
+            home = {
+              file.globalShareStignore = {
+                target = "${sharePath}/.stignore";
+                text = ''
+                  // Ignore file for global syncthing share directory
+                  // Managed by home-manager
+                  // - Host:    ${host.name}
+                  // - User:    ${user.userName}
+                  // - Node:    ${user.syncthing.label}
+                  // - Folder:  global-share
+
+                  // Do not ignore any extra stignore files
+                  /.stignore.hm-backup
+                  !/.stignore.*
+                  // Host-specific ignore file (created empty if missing)
+                  #include .stignore.${host.name}.${user.userName}
+
+                  // No thumbnails
+                  .thumbnails
+                  .thumbnails/**
+
+                  // No VCS
+                  (?d).git
+                  (?d).gitmodules
+                  (?d).jj
+
+                  // OS Junk
+                  .Trash-*
+                  (?d).DS_Store
+                  .localized
+                '';
+              };
+
+              activation.globalSharedStignore =
+                lib.hm.dag.entryBetween
+                ["linkGeneration"]
+                ["writeBoundary"]
+                ''
+                  path="$HOME/${sharePath}/.stignore.${host.name}.${user.userName}"
+
+                  if [[ ! -e "$path" && ! -L "$path" ]]; then
+                    $DRY_RUN_CMD mkdir -p "$(dirname "$path")"
+                    $DRY_RUN_CMD touch "$path"
+                  fi
+                '';
+            };
+          };
+        };
+
+        provides.media-folders = {
           host,
           user,
           ...
         }: {
           # Collision protection
-          name = "syncthing/user-node/folders(${user.userName}@${host.name})";
+          name = "syncthing/user-node/media-folders(${user.userName}@${host.name})";
 
           # Emit our folders to the folders quirk
           syncthing-folders = {lib, ...}:
@@ -216,59 +309,88 @@
               mediaFolders;
 
             # Create default ignore files at target locations
-            home.file =
-              mediaFolders
-              |> lib.filterAttrs (_: v: (v.enable or false))
-              |> lib.filterAttrs (_: v: (v.ignore.enable or false))
-              |> lib.mapAttrs' (
-                _: v: (
-                  lib.nameValuePair
-                  "${v.mediaDir}-stignore"
-                  {
-                    target = "${v.location}/.stignore";
-                    text = ''
-                      // Global stignore for ${v.label}
-                      // Managed by home-manager
-                      // - Host:    ${host.name}
-                      // - User:    ${user.userName}
-                      // - Node:    ${user.syncthing.label}
-                      // - Folder:  ${v.id}
+            home = {
+              # Create the stignore file
+              file =
+                mediaFolders
+                |> lib.filterAttrs (_: v: (v.enable or false))
+                |> lib.filterAttrs (_: v: (v.ignore.enable or false))
+                |> lib.mapAttrs' (
+                  _: v: (
+                    lib.nameValuePair
+                    "${v.mediaDir}-stignore"
+                    {
+                      target = "${v.location}/.stignore";
+                      text = ''
+                        // Global stignore for ${v.label}
+                        // Managed by home-manager
+                        // - Host:    ${host.name}
+                        // - User:    ${user.userName}
+                        // - Node:    ${user.syncthing.label}
+                        // - Folder:  ${v.id}
 
-                      // Do not ignore any extra stignore files
-                      !/.stignore.*
-                      ${
-                        if v.ignore.external
-                        then ''
-                          // Host-specific ignore file
-                          #include .stignore.${host.name}
-                        ''
-                        else ""
-                      }
+                        // Do not ignore any extra stignore files
+                        /.stignore.hm-backup
+                        !/.stignore.*
+                        ${
+                          if v.ignore.external
+                          then ''
+                            // Host-specific ignore file
+                            #include .stignore.${host.name}
+                          ''
+                          else ""
+                        }
 
-                      // No thumbnails
-                      .thumbnails
-                      .thumbnails/**
+                        // No thumbnails
+                        .thumbnails
+                        .thumbnails/**
 
-                      // No VCS
-                      (?d).git
-                      (?d).gitmodules
-                      (?d).jj
+                        // No VCS
+                        (?d).git
+                        (?d).gitmodules
+                        (?d).jj
 
-                      // OS Junk
-                      .Trash-*
-                      (?d).DS_Store
-                      .localized
+                        // OS Junk
+                        .Trash-*
+                        (?d).DS_Store
+                        .localized
 
-                      // Ignore lines set by home-manager for this node
-                      // BEGIN (ignore lines for [${v.id}] @ [${user.syncthing.label}])
+                        // Ignore lines set by home-manager for this node
+                        // BEGIN (ignore lines for [${v.id}] @ [${user.syncthing.label}])
 
-                      ${lib.concatStringsSep "\n" v.ignore.text}
+                        ${lib.concatStringsSep "\n" v.ignore.text}
 
-                      // END   (ignore lines for [${v.id}] @ [${user.syncthing.label}])
-                    '';
-                  }
-                )
-              );
+                        // END   (ignore lines for [${v.id}] @ [${user.syncthing.label}])
+                      '';
+                    }
+                  )
+                );
+              # For files that want an external ignore file too; generate it
+              activation =
+                mediaFolders
+                |> lib.filterAttrs (_: v: (v.enable or false))
+                |> lib.filterAttrs (_: v: (v.ignore.enable or false))
+                |> lib.filterAttrs (_: v: (v.ignore.external or false))
+                |> lib.mapAttrs' (
+                  _: v: (
+                    lib.nameValuePair
+                    "${v.mediaDir}-stignore"
+                    (
+                      lib.hm.dag.entryBetween
+                      ["linkGeneration"]
+                      ["writeBoundary"]
+                      ''
+                        path="$HOME/${v.location}/.stignore.${host.name}"
+
+                        if [[ ! -e "$path" && ! -L "$path" ]]; then
+                          $DRY_RUN_CMD mkdir -p "$(dirname "$path")"
+                          $DRY_RUN_CMD touch "$path"
+                        fi
+                      ''
+                    )
+                  )
+                );
+            };
           };
         };
       };

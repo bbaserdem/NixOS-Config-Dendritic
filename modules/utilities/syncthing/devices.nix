@@ -47,10 +47,10 @@
           # Collision protection
           name = "syncthing/user-node/setup(${user.userName}@${host.name})";
 
-          # Emit our info to quirk
+          # Emit our info to quirk; all base keys except enable
           syncthing-devices = {
-            # Device label used, along with name and id
-            inherit (user.syncthing) label name id;
+            # Device label used, along with name and id; and global share
+            inherit (user.syncthing) label name id globalShare;
             # Include the ports the machine will be running from
             inherit guiPort transferPort discoveryPort;
           };
