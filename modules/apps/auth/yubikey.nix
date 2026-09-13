@@ -22,5 +22,16 @@
       # Enable yubikey hardware
       hardware.gpgSmartcards.enable = true;
     };
+
+    # Home manager; disable internal ccid - conflicts with pcscd
+    homeManager.yubikey = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+        programs.gpg.scdaemonSettings.disable-ccid = true;
+      };
+    };
   };
 }
