@@ -1,70 +1,36 @@
 # Music related apps
-{...}: {
+{inputs, ...}: {
   flake.modules = {
     # Install swmpc in darwin contexts for mpd
     darwin = {
       # Install swmpc from app store
       mpd = {...}: {
-        homebrew = {
-          masApps = {
-            "swmpc" = 6743818735;
-          };
-        };
+        imports = [
+          inputs.self.modules.darwin.mpd-gui
+        ];
       };
       # Audio player from brew
       audio = {...}: {
-        homebrew = {
-          casks = [
-            # Mask itunes
-            "music-decoy"
-            "foobar2000"
-          ];
-        };
+        imports = [
+          inputs.self.modules.darwin.music-applications
+        ];
       };
     };
 
     # Apps to install
     homeManager = {
       # Audio apps
-      audio = {
-        pkgs,
-        lib,
-        ...
-      }: {
-        # Install these apps to userspace
-        config = lib.mkMerge [
-          {
-            home.packages = with pkgs; [
-              streamrip # Music downloader
-              tenacity # Audio editor
-              musescore # Score editing
-              chromaprint # Calculate acoustic id
-            ];
-          }
-          (
-            lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-              home.packages = with pkgs; [
-                projectm-sdl-cpp # Broken on darwin
-              ];
-            }
-          )
+      audio = {...}: {
+        imports = [
+          inputs.self.modules.homeManager.audio-utilities
+          inputs.self.modules.homeManager.audio-applications
         ];
       };
 
       # MPD apps, cantata frontend
-      mpd = {
-        pkgs,
-        lib,
-        ...
-      }: {
-        config = lib.mkMerge [
-          (
-            lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-              home.packages = with pkgs; [
-                cantata
-              ];
-            }
-          )
+      mpd = {...}: {
+        imports = [
+          inputs.self.modules.homeManager.mpd-gui
         ];
       };
     };

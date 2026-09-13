@@ -28,14 +28,6 @@
         };
       }
       (
-        lib.optionalAttrs (lib.hasAttrByPath ["sops"] options)
-        {
-          # Listenbrainz credentials
-          services.listenbrainz-mpd.settings.submission.token_file =
-            config.sops.secrets."musicbrainz/listenbrainz-token".path;
-        }
-      )
-      (
         let
           homeDir = config.home.homeDirectory;
           mpdDir = config.services.mpd.musicDirectory;
