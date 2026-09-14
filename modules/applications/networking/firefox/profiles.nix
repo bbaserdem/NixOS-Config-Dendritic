@@ -291,6 +291,53 @@
                 );
             }
           )
+          (
+            # Create launchers for darwin for the separate profiles
+            lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
+              home.packages =
+                firefoxProfiles
+                |> lib.filterAttrs (_: p: !p.isDefault)
+                |> lib.mapAttrsToList (
+                  key: p: let
+                    id = "firefox-${key}";
+                    appName = "Firefox (${flib.capitalize p.name})";
+                    firefoxApp = "${config.programs.firefox.finalPackage}/Applications/Firefox.app";
+                  in (
+                    pkgs.runCommand "${id}-launcher"
+                    {
+                      launcher = pkgs.writeShellScript id ''
+                        exec /usr/bin/open -n -a ${lib.escapeShellArg firefoxApp} \
+                          --args -P ${lib.escapeShellArg p.name} "$@"
+                      '';
+                      infoPlist = pkgs.writeText "${id}.plist" (
+                        lib.generators.toPlist {escape = true;} {
+                          CFBundleName = appName;
+                          CFBundleDisplayName = appName;
+                          CFBundleIdentifier = "local.firefox-profile.${key}";
+                          CFBundlePackageType = "APPL";
+                          CFBundleExecutable = "launcher";
+                          CFBundleIconFile = "firefox.icns";
+                          CFBundleVersion = "1.0";
+
+                          # The launcher itself does not need a running Dock icon.
+                          LSUIElement = true;
+                        }
+                        ''
+                          app="$out/Applications"/${lib.escapeShellArg "${appName}.app"}
+
+                          mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
+
+                          install -m755 "$launcher" "$app/Contents/MacOS/launcher"
+                          cp "$infoPlist" "$app/Contents/Info.plist"
+                          cp ${lib.escapeShellArg "${firefoxApp}/Contents/Resources/firefox.icns"} \
+                            "$app/Contents/Resources/firefox.icns"
+                        ''
+                      );
+                    }
+                  )
+                );
+            }
+          )
         ]
       )
     );
