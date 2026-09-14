@@ -22,6 +22,11 @@
           ];
           # Disable specs
           minimal = true;
+          # Use default colorscheme
+          colorscheme = {
+            dark = "default";
+            light = "default";
+          };
         };
       };
     };

@@ -5,8 +5,6 @@
       lazy = true;
       data = with pkgs.unstable.vimPlugins; [
         nvim-dap-python
-        nvim-treesitter-parsers.python
-        nvim-treesitter-parsers.ninja
       ];
       runtimePackages = with pkgs.unstable; [
         ruff # Formatter/linter

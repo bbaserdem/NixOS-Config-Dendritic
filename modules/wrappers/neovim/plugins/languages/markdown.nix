@@ -8,8 +8,6 @@
         mkdnflow-nvim # Navigate wiki links
         glow-nvim # Render markdown in nvim terminal
         render-markdown-nvim
-        nvim-treesitter-parsers.markdown
-        nvim-treesitter-parsers.markdown_inline
       ];
       runtimePackages = with pkgs.unstable; [
         prettier # Used for markdown formatting

@@ -1,5 +1,10 @@
 -- <Leader>c: Code formatting and linting
 
+-- Disable in minimal mode
+if nixInfo(false, "settings", "minimal") then
+  return
+end
+
 -- FN actions
 vim.keymap.set("n", "<F2>", vim.lsp.buf.rename, { desc = "Rename symbol" })
 vim.keymap.set("n", "<F8>", "<cmd>lnext<CR>", { desc = "Next warning" })

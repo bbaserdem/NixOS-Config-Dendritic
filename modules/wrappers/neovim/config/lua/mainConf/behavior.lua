@@ -32,11 +32,18 @@ vim.opt.listchars = {
 
 -- Highlight on text operations
 local highlight_group = vim.api.nvim_create_augroup("TextOpHighlight", { clear = true })
-vim.api.nvim_create_autocmd({ "TextYankPost", "TextPutPost" }, {
+-- TextPutPost is not in stable 0.12.4; if this lands in stable; switch this
+local highlight_events = { "TextYankPost" }
+if vim.fn.exists("##TextPutPost") == 1 then
+  table.insert(highlight_events, "TextPutPost")
+end
+vim.api.nvim_create_autocmd(highlight_events, {
   group = highlight_group,
   pattern = "*",
   callback = function()
-    vim.hl.hl_op({
+    -- Same issue as above; can be on_yank
+    local highlight = vim.hl.hl_op or vim.hl.on_yank
+    highlight({
       higroup = "Visual",
       timeout = 300,
     })

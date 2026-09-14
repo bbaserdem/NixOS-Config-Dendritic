@@ -40,6 +40,7 @@
         # Set the vim mode as the sudo editor
         environment.variables = {
           SUDO_EDITOR = lib.getExe config.wrappers.neovim.wrapper;
+          SOPS_EDITOR = lib.getExe config.wrappers.neovim.wrapper;
         };
       };
     };

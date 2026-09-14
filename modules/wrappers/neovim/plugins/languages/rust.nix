@@ -3,9 +3,7 @@
   flake.wrappers.neovim = {pkgs, ...}: {
     config.specs.rust = {
       lazy = true;
-      data = with pkgs.vimPlugins; [
-        nvim-treesitter-parsers.rust
-      ];
+      data = null;
       runtimePackages = with pkgs.unstable; [
         rustfmt
         rust-analyzer
