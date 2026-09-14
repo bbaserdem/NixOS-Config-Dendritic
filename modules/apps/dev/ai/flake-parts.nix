@@ -1,26 +1,9 @@
 # Flake partsq inif modules
 {
-  inputs,
   config,
   lib,
   ...
 }: {
-  # Inputs to pull agents from
-  flake-file = {
-    inputs.llm-agents = {
-      url = "github:numtide/llm-agents.nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        flake-parts.follows = "flake-parts";
-      };
-    };
-  };
-
-  # Apply our nixpkgs overlay to pull in from pkgs
-  localConfig.nixpkgs.overlays = [
-    inputs.llm-agents.overlays.shared-nixpkgs
-  ];
-
   # Collect factoried modules
   flake.modules = lib.foldl lib.recursiveUpdate {} [
     (config.factory.inclusionModules "ai")

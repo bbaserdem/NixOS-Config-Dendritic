@@ -1,13 +1,9 @@
 # Codex global setup
 {inputs, ...}: {
   flake.modules = {
+    # udeprecated; chatgpt by default
     # Install desktop app in Darwin
     darwin.ai-codex = {...}: {
-      homebrew.casks = [
-        "codex-app"
-      ];
-    };
-    darwin.ai-chatgpt = {...}: {
       homebrew.casks = [
         "chatgpt"
       ];

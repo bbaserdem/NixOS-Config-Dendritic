@@ -72,7 +72,7 @@
       pkgs,
       ...
     }: {
-      local.services.caddy.virtualHosts."${localAddress}.localhost" = {
+      services.caddy.virtualHosts."${localAddress}.localhost" = {
         listen = "http://${localAddress}.localhost";
         extraConfig = ''
           bind 127.0.0.1
