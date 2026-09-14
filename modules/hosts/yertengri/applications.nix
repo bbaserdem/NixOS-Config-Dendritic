@@ -1,4 +1,4 @@
-# System applications for yertengri
+# System applications for yertengri, available on all users
 {den, ...}: {
   den = {
     aspects.yertengri = {

@@ -18,6 +18,7 @@
 
   # Some global local config
   flake.modules.homeManager.llm-settings = {lib, ...}: {
+    key = "llm-settings#homeManager";
     options = let
       linesToSpinnerList = l:
         l

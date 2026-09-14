@@ -7,6 +7,7 @@
     config,
     ...
   }: {
+    key = "llm-pi#homeManager";
     # TODO; Pi module isn't present on 26.05; after migration remove this
     imports = [
       "${inputs.home-manager-unstable}/modules/programs/pi-coding-agent.nix"

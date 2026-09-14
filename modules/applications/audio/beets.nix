@@ -9,6 +9,7 @@
     relativeParent = path:
       flib.stripRootDir config.home.homeDirectory (builtins.dirOf path);
   in {
+    key = "beets-settings#homeManager";
     config = lib.mkMerge [
       {
         # Enable beets in userspace

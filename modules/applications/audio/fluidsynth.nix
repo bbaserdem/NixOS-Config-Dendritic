@@ -5,6 +5,7 @@
     pkgs,
     ...
   }: {
+    key = "fluidsynth-settings#homeManager";
     config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       # Enable fluidsynth as midi synthesizer service
       services.fluidsynth = {

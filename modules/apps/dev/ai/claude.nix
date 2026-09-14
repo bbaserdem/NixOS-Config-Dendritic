@@ -11,24 +11,29 @@
 
     # Install claude-code
     homeManager.ai-claude = {pkgs, ...}: {
-      # Enable claude code config without installing it ourselves
-      programs.claude-code = {
-        enable = true;
-        package = pkgs.llm-agents.claude-code;
+      imports = [
+        inputs.self.modules.homeManager.sidepulse-claude
+      ];
+      config = {
+        # Enable claude code config without installing it ourselves
+        programs.claude-code = {
+          enable = true;
+          package = pkgs.llm-agents.claude-code;
 
-        # Global settings
-        settings = {
-          includeCoAuthoredBy = false;
+          # Global settings
+          settings = {
+            includeCoAuthoredBy = false;
+          };
+
+          # Agentic setup
+          context = inputs.self + /assets/ai/AGENTS.md;
+          hooksDir = inputs.self + /assets/ai/claude/hooks;
+          agentsDir = inputs.self + /assets/ai/agents;
+          commandsDir = inputs.self + /assets/ai/commands;
+          rulesDir = inputs.self + /assets/ai/rules;
+
+          enableMcpIntegration = true;
         };
-
-        # Agentic setup
-        context = inputs.self + /assets/ai/AGENTS.md;
-        hooksDir = inputs.self + /assets/ai/claude/hooks;
-        agentsDir = inputs.self + /assets/ai/agents;
-        commandsDir = inputs.self + /assets/ai/commands;
-        rulesDir = inputs.self + /assets/ai/rules;
-
-        enableMcpIntegration = true;
       };
     };
   };

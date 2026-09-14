@@ -4,14 +4,20 @@
   den = {
     aspects.collections = {
       provides.audio = {
-        # Modules to load for full audio management collection
-        homeManager = {...}: {
-          imports = with inputs.self.modules.homeManager; [
-            audio-utilities
-            audio-applications
-            # MIDI playback
-            fluidsynth-settings
-          ];
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          name = "collections/audio(${user.userName}@${host.name})";
+          # Modules to load for full audio management collection
+          homeManager = {...}: {
+            imports = with inputs.self.modules.homeManager; [
+              audio-utilities
+              audio-applications
+              # MIDI playback
+              fluidsynth-settings
+            ];
+          };
         };
       };
     };
@@ -23,6 +29,7 @@
     lib,
     ...
   }: {
+    key = "audio-utilities#homeManager";
     # Install these apps to userspace
     config = lib.mkMerge [
       {
@@ -46,9 +53,12 @@
 
   # Audio apps
   flake.modules.homeManager.audio-applications = {pkgs, ...}: {
-    # Install these apps to userspace
-    home.packages = with pkgs; [
-      musescore # Score editing
-    ];
+    key = "audio-applications#homeManager";
+    config = {
+      # Install these apps to userspace
+      home.packages = with pkgs; [
+        musescore # Score editing
+      ];
+    };
   };
 }

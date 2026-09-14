@@ -5,6 +5,7 @@
     lib,
     ...
   }: {
+    key = "mpd-settings#homeManager";
     config = lib.mkMerge [
       {
         # MPD configuration

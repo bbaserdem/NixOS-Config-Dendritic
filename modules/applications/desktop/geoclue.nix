@@ -2,17 +2,20 @@
 {inputs, ...}: {
   # Module that enables geoclue
   flake.modules.nixos.geoclue-settings = {...}: {
-    services.geoclue2 = {
-      enable = true;
-      # Common apps to allow
-      appConfig = {
-        redshift = {
-          isAllowed = true;
-          isSystem = false;
-        };
-        gammastep = {
-          isAllowed = true;
-          isSystem = false;
+    key = "geoclue-settings#nixos";
+    config = {
+      services.geoclue2 = {
+        enable = true;
+        # Common apps to allow
+        appConfig = {
+          redshift = {
+            isAllowed = true;
+            isSystem = false;
+          };
+          gammastep = {
+            isAllowed = true;
+            isSystem = false;
+          };
         };
       };
     };
@@ -26,6 +29,7 @@
     config,
     ...
   }: {
+    key = "geoclue-google#nixos";
     config = lib.optionalAttrs (options ? sops) {
       sops = {
         # Load the secret into userspace
@@ -67,6 +71,7 @@
     config,
     ...
   }: {
+    key = "geoclue-manual#nixos";
     config = lib.optionalAttrs (options ? sops) {
       sops = {
         # Load the secret into userspace
@@ -81,7 +86,7 @@
               mode = "0400";
               restartUnits = ["geoclue.service"];
             })
-          |> lib.listToAttrset;
+          |> builtins.listToAttrs;
         # Create template file to replace geoclue static files
         templates."geoclue/geolocation" = {
           owner = "root";

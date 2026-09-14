@@ -15,6 +15,8 @@
         enableFishIntegration = true;
         enableZshIntegration = true;
       };
+      # Add local bin to path
+      environment.systemPath = ["$HOME/.local/bin"];
     };
   };
 }

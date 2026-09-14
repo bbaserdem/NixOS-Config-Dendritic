@@ -1,8 +1,11 @@
 # Claude code base setup
 {inputs, ...}: {
   flake.modules.darwin.llm-claude-gui = {...}: {
-    # Gui app for claude
-    homebrew.casks = ["claude"];
+    key = "llm-claude-gui#darwin";
+    config = {
+      # Gui app for claude
+      homebrew.casks = ["claude"];
+    };
   };
 
   flake.modules.homeManager.llm-claude = {
@@ -11,6 +14,7 @@
     config,
     ...
   }: {
+    key = "llm-claude#homeManager";
     config = lib.mkMerge [
       {
         programs.claude-code = {

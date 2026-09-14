@@ -7,6 +7,7 @@
     options,
     ...
   }: {
+    key = "mpd-listenbrainz#homeManager";
     config = lib.mkMerge [
       {
         # Enable scrobbler
