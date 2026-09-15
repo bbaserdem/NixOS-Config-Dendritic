@@ -15,5 +15,6 @@
     (config.factory.inclusionModules "ai-pi")
     (config.factory.inclusionModules "ai-droid")
     (config.factory.inclusionModules "ai-forgecode")
+    (config.factory.inclusionModules "ai-sidepulse")
   ];
 }

@@ -1,5 +1,5 @@
 # AI tools global setup
-{...}: {
+{inputs, ...}: {
   flake = {
     modules = {
       darwin.ai = {...}: {
@@ -26,6 +26,14 @@
             };
           };
         };
+      };
+
+      homeManager.ai-sidepulse = {...}: {
+        imports = [
+          inputs.self.modules.homeManager.sidepulse-module
+          inputs.self.modules.homeManager.sidepulse-settings
+          inputs.self.modules.homeManager.sidepulse-claude
+        ];
       };
     };
   };

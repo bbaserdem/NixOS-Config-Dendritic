@@ -11,9 +11,6 @@
 
     # Install claude-code
     homeManager.ai-claude = {pkgs, ...}: {
-      imports = [
-        inputs.self.modules.homeManager.sidepulse-claude
-      ];
       config = {
         # Enable claude code config without installing it ourselves
         programs.claude-code = {

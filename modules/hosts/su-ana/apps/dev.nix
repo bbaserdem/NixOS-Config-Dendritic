@@ -22,6 +22,7 @@
       ai-codegraph
       ai-opencode
       ai-pi
+      ai-sidepulse
     ];
   };
 }
