@@ -23,6 +23,7 @@
             imports = with inputs.self.modules.homeManager; [
               # Metadata library management
               beets-settings
+              picard-settings
               # MPD related
               mpd-settings
               mpd-ncmpcpp

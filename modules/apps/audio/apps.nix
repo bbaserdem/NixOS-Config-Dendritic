@@ -24,6 +24,7 @@
         imports = [
           inputs.self.modules.homeManager.audio-utilities
           inputs.self.modules.homeManager.audio-applications
+          inputs.self.modules.homeManager.picard-settings
         ];
       };
 

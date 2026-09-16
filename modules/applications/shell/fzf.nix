@@ -2,8 +2,11 @@
 {...}: {
   # Enable fzf
   flake.modules.homeManager.shell-fzf = {...}: {
-    programs.fzf = {
-      enable = true;
+    key = "shell-fzf#homeManager";
+    config = {
+      programs.fzf = {
+        enable = true;
+      };
     };
   };
 

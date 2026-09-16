@@ -5,6 +5,7 @@
     lib,
     ...
   }: {
+    key = "shell-direnv#homeManager";
     config = lib.mkMerge [
       {
         # Enable direnv for our shells

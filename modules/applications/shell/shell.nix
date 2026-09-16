@@ -71,6 +71,7 @@
         host,
         user,
       }: {
+        name = "shell(${user.userName}@${host.name})";
         homeManager = {...}: {
           imports = with inputs.self.modules.homeManager; [
             shell-bash
@@ -108,6 +109,7 @@
         host,
         user,
       }: {
+        name = "shell-extra(${user.userName}@${host.name})";
         homeManager = {...}: {
           imports = with inputs.self.modules.homeManager; [
             shell-alias
@@ -137,6 +139,7 @@
   # TODO: Nuke this after den migration
   flake.modules = {
     generic.shell = {...}: {
+      key = "shell#generic";
       imports = with inputs.self.modules.generic; [
         shell-zsh
       ];

@@ -1,7 +1,6 @@
 # Neovim configuration wrapper
-# Uses nix-wrapper-modules to package multiple neovim derivations with different setup
 {inputs, ...}: {
-  # The module for configuring neovim
+  # Uses nix-wrapper-modules to package multiple neovim derivations with different setup
 
   # Pull the neovim nightly flake
   flake-file.inputs = {
@@ -12,7 +11,7 @@
     };
   };
 
-  # The wrapper
+  # The wrapper output to flake-parts
   flake = {
     wrappers.neovim = {
       pkgs,
@@ -136,7 +135,7 @@
         package = lib.mkDefault inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.neovim;
 
         settings = {
-          # Use the neovim config from the config subdirectory
+          # Use the neovim config from this config subdirectory
           config_directory = ./config;
 
           # Name the internal info plugin

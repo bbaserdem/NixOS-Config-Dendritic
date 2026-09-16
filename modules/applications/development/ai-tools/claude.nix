@@ -35,6 +35,8 @@
           settings = {
             # Disable commit message
             includeCoAuthoredBy = false;
+            # Auto-mode by default
+            permissions.defaultMode = "auto";
           };
         };
       }

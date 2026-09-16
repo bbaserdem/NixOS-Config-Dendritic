@@ -1,19 +1,38 @@
-# Configuring kitty
-{...}: {
-  flake.modules.homeManager = {
-    # Enable stylix theming for kitty
-    stylix = {...}: {
-      stylix.targets.kitty = {
-        enable = true;
-        colors.enable = true;
-        fonts.enable = true;
-        inputs.enable = true;
-        opacity.enable = true;
+# Configuring kitty terminal
+{inputs, ...}: {
+  den = {
+    aspects.applications = {
+      provides.kitty = {
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          # Dedupe guard
+          name = "applications/kitty(${user.userName}@${host.name})";
+          # Home manager settings
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.kitty-settings
+            ];
+          };
+          # Stylix; we will do color theming by our own module
+          stylix = {
+            targets.kitty = {
+              enable = true;
+              colors.enable = false;
+              fonts.enable = true;
+              opacity.enable = true;
+            };
+          };
+        };
       };
     };
+  };
 
-    # Kitty settings
-    kitty = {...}: {
+  # Module enable
+  flake.modules.homeManager.kitty-settings = {...}: {
+    name = "kitty-settings#homeManager";
+    config = {
       programs.kitty = {
         enable = true;
 

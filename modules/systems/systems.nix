@@ -8,7 +8,6 @@
     # Always include the base system and shell aspect in every host scope
     schema.host.includes = [
       den.aspects.system
-      den.aspects.shell
     ];
 
     # System aspect generic defaults

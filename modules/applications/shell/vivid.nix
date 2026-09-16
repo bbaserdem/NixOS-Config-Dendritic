@@ -1,8 +1,11 @@
 # Shell colorizer
 {...}: {
   flake.modules.homeManager.shell-vivid = {...}: {
-    programs.vivid = {
-      enable = true;
+    key = "shell-vivid#homeManager";
+    config = {
+      programs.vivid = {
+        enable = true;
+      };
     };
   };
 

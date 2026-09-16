@@ -6,6 +6,7 @@
     lib,
     ...
   }: {
+    key = "shell-man#homeManager";
     config = lib.mkMerge [
       {
         # Enable home-manager man page

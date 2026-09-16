@@ -1,7 +1,6 @@
 # Custom package definitions
-# Mainly so that we can test the minimal config with nix run .#neovim-bare
 {...}: {
-  # Custom neovim package with the minimal config
+  # Output to packages
   perSystem = {
     config,
     pkgs,
@@ -9,17 +8,16 @@
     ...
   }: {
     packages = {
-      # The bare neovim package
+      # Full output already available with nix run .#neovim
+
+      # Minimal neovim, for testing the minimal config with nix run .#neovim-bare
       neovim-bare = config.packages.neovim.wrap {
         # Use neovim from regular nixpkgs
         package = lib.mkOverride 1400 pkgs.neovim-unwrapped;
-        # Replace system vim command
-        binName = "vim";
+        # Replace
+        binName = "nvim-bare";
         settings = {
           dont_link = true;
-          aliases = [
-            "nvim-none"
-          ];
           # Disable specs
           minimal = true;
           # Use default colorscheme

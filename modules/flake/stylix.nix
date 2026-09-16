@@ -4,13 +4,12 @@
   lib,
   den,
   ...
-}: let
-  version = config.localConfig.nixVersion;
-in {
+}: {
   config = {
     # Stylix is system-wide theming tool
     flake-file.inputs = {
-      stylix.url = "github:nix-community/stylix/release-${version}";
+      stylix.url = "github:nix-community/stylix/release-${config.localConfig.nixVersion}";
+      # External tooling used to generate for stylix overrides
       base16.url = "github:SenchoPens/base16.nix";
       tinted-terminal = {
         url = "github:tinted-theming/tinted-terminal";
@@ -72,8 +71,11 @@ in {
         user.includes = [den.policies.stylix-to-user-scope];
       };
 
-      # The setup of the feature
-      aspects.stylix = {
+      # The host level setup of this feature
+      aspects.stylix = {host}: {
+        # Dedupe protection
+        name = "stylix(@${host.name})";
+        # Host level enables;
         os = {...}: {
           stylix = {
             enable = true;
