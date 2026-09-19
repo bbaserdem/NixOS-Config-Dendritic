@@ -59,6 +59,9 @@
   walkToDirRel = rootDir: targetDir:
     stripRootDir rootDir (walkToDir rootDir targetDir);
 
+  # Split dir shorthand
+  splitDir = path: walkToDirRel "~/" "~/${path}";
+
   #---MAIN LIBRARY---#
   flib = {
     # Inherit the functions we wanted to export
@@ -67,6 +70,7 @@
       stripRootDir
       walkToDir
       walkToDirRel
+      splitDir
       ;
 
     # Useful stuff

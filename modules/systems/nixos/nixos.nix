@@ -9,6 +9,7 @@
           nixos-console
           nixos-displayManager
           nixos-filesystem
+          nixos-firmware
           nixos-hardware
           nixos-keyboard
           nixos-locale

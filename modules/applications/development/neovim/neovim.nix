@@ -37,7 +37,22 @@
       };
     };
   };
+
   flake.modules = {
+    # Wrapper modules; it's a generic module for all contexts
+    generic.neovim-wrapper = {...}: {
+      key = "neovim-wrapper#generic";
+      imports = [
+        inputs.self.wrappers.neovim.install
+      ];
+    };
+    homeManager.neovim-wrapper = {...}: {
+      key = "neovim-wrapper#homeManager";
+      imports = [
+        inputs.self.wrappers.neovim.install
+      ];
+    };
+
     # Nixos and Darwin modules to replace vim command
     # Also sets sudo editor
     generic.neovim-settings = {

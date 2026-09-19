@@ -16,6 +16,15 @@
         loader = "grub";
       };
 
+      # Gaming setup
+      gaming = {
+        enable = true;
+        steam = {
+          enable = true;
+          share = true;
+        };
+      };
+
       # Users
       users = {
         # Wolframite user host-specific settings
@@ -23,6 +32,7 @@
           classes = [
             "homeManager"
             "user"
+            "games"
           ];
           syncthing = {
             enable = true;
@@ -34,6 +44,7 @@
           classes = [
             "homeManager"
             "user"
+            "games"
           ];
           syncthing = {
             enable = true;

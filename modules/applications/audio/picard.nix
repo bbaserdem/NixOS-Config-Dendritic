@@ -3,7 +3,7 @@
   flake.modules.homeManager.picard-settings = {pkgs, ...}: {
     key = "music-picard#homeManager";
     config = {
-      # TODO: Add picard config here
+      # TODO: Add importing picard config here
       home.packages = with pkgs; [
         picard
       ];

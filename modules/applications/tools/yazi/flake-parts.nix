@@ -1,4 +1,5 @@
 # Flake-Parts module for yazi config wrapper; dispatches to the home module
+# TODO: Remove after den migration
 {config, ...}: let
   yaziInstall = config.flake.wrappers.yazi.install;
 in {
