@@ -8,7 +8,7 @@
           name = "applications/virtualization/windows";
           nixos = {...}: {
             imports = [
-              inputs.self.modules.nixos.virtualization-settings
+              inputs.self.modules.nixos.virtualization-windows
             ];
           };
         };

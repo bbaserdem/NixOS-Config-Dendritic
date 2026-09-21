@@ -8,6 +8,7 @@
           macos-filesystem
           macos-homebrew
           macos-settings
+          macos-dbus
         ];
         config = {
           # Default state version for this nix-darwin
@@ -28,6 +29,7 @@
       # Submodules
       macos-homebrew
       macos-filesystem
+      macos-dbus
       inputs.self.modules.generic.filesystem
       macos-settings
       macos-local

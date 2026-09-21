@@ -15,8 +15,7 @@ The only cases I prefer to use `let in` bindings are;
 
 - Where something needs to be explicitly reused in multiple places in one file.
   Single point of reference keeps variables constant.
-  If this is needed across files, then the variable should be declared as an option,
-  but if it's only within the scope of one single file; then that is overkill.
+  (If this is needed across files, then the variable should be promoted to an option.)
 - A function that belongs in one file is overly verbose in writing, and breaks
   narrative flow in the file making it harder to read.
 - Combo of both; a large workflow can be decomposed into multiple functions,
@@ -36,14 +35,12 @@ improves readability (for me).
 
 Flake output schema has a `lib` output for libraries for other flakes to consume.
 I use this space to keep boilerplate code, and it's available as a flake-parts
-module argument `flib`.
-
-Boilerplate functionality should be registered in `config.flake.lib`,
-and used from `flib` always.
+module argument `flib` to be pulled in as well.
 
 Boilerplate functions should be defined in the file they are used in
 if they are only used in that one file.
-If it's used in multiple places, it should go in `modules/flake/library.nix`.
+If it's used in multiple places, it should go in `modules/flake/library.nix`
+where `flib` is wired.
 
 ## Modules
 
@@ -57,15 +54,15 @@ If it's used in multiple places, it should go in `modules/flake/library.nix`.
   Only if `config` is the only definition, is it allowed to be implicit.
   Anti-pattern is `{...}: {imports = [...]; <option>.enable = true; }`,
   correct way is `{...}: {imports = [...]; config = {<option>.enable = true;}; }`
+  (Coupled with the next item, this means we have explicit `config` almost all the time.)
+
+- Modules should have the top-level `key` defined to make use of module deduplication.
+  Usually, this key is to be set to `<module-name>$<module-class>` but other naming
+  can be followed when appropriate.
 
 - `config` and `options` should always be top level attrsets, not dot notationed.
   Anti-pattern is `{...}: {config.<option>.enable = true;}`;
   correct way is `{...}: { config = { <option>.enable = true;};}`
-
-- For deduplication, modules should set the top-level `key` property.
-  Whenever this could be an issue, set this top-level key.
-  Naming for this should use `category[/subcategory]-feature[/subfeature]#class[@user/host]`,
-  dedupes on module level (part of nix modules spec)
 
 This may be too verbose, and sometimes hard to read.
 But shorthand conventions mess up with my brain,
@@ -75,11 +72,18 @@ explicitness makes things easier to follow for me.
 
 Styling in `den`
 
-### Entities
+### Entity
 
-- No bare home entities allowed; all home entities must use `<username>@<hostname>`.
+- **No bare `home` entities allowed.**
+  We have not set it up yet; but for standalone home-manager outputs
+  a record-only host of class `homeManager` is to be used.
+  Every `user` record on hosts produces a standalone output as well.
+  (Not set up yet)
 
 ### Aspects
+
+- Den doesn't resolve parametric aspects until later, so don't have parametric
+  aspects with provides; they are not reachable.
 
 - For parametric aspects, _context_ arguments should always be divorced
   from _module_ arguments.
@@ -100,29 +104,6 @@ Correct usage is;
 den.aspects.<feature> = {host}: {
   nixos = {config, ...}: {
     ...
-  };
-};
-```
-
-As a result, mixing parametric aspects for different contexts can't happen.
-This should be done with `provides`, and includes.
-
-```
-den.aspects.<feature> = {
-  includes = [
-    den.aspects.<feature>._.for-home
-  ];
-
-  nixos = {config, ...}: {
-    ...
-  };
-
-  for-home = {
-    standalone = {home}: {
-      homeManager = {config, ...}: {
-        ...
-      };
-    };
   };
 };
 ```

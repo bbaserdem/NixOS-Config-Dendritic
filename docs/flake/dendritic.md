@@ -40,7 +40,7 @@ I personally organized my _features_ into several **types**.
 - **Applications**: Programs that can be setup for one on one interactive use.
   User facing apps, such as _mpd_, _obsidian_ etc.
   Applications have `domains` such as _documents_, _music_ etc.
-- **Utilities**: Not exactly programes, but more like runners and processes.
+- **Utilities**: Not exactly programs, but more like runners and processes.
   Things such as _networkmanager_, _avahi_, _syncthing_ etc.
 - **Services**: Programs that are _serving_ functions, not just direct point of contact.
   Things such as _paperless_ etc.
@@ -61,27 +61,6 @@ The setup guide of den in this flake.
 
 ### Aspects
 
-- Features should use aspect names and nesting for containerization.
-- Framework features should not use `categories`, others should.
-- Dispatch operations should use `provides` (or `_` directly)
-- Sub-categories can be nested without worry.
-- Collection should use naming such as `base`, `extras`, `full`, `minimal`.
+The top level aspects are the following;
 
-```
-# Use category and subcategory name for an aspect
-den.aspects.<category>[.<subcategory>].<feature> = { ... };
-
-# For the matcher-dependent features; needs to be done explicity
-# Prefer _ when top-level, and provides otherwise
-den.aspects.<category>.<feature>._.<user> = {
-    provides.to-hosts = {...};
-};
-# Collection aspects
-den.aspects.<category>.<collection> = {
-    includes = with den.aspects.<category>; [
-        <feature-1>
-        <feature-2>
-        ...
-    ];
-};
-```
+- **system**:
