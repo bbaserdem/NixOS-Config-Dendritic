@@ -90,28 +90,70 @@
       modules = {
         # Module for common settings to the nix daemon; all contexnt
         generic = {
-          nix-common = {...}: {
+          nix-common = {
+            lib,
+            options,
+            config,
+            ...
+          }: {
             key = "frameworks-nix#all";
-            config = {
-              nix = {
-                settings = {
-                  auto-optimise-store = true;
-                  experimental-features = [
-                    "nix-command"
-                    "flakes"
-                    "pipe-operators"
-                    "ca-derivations"
-                  ];
-                  # For dev related things
-                  keep-outputs = true;
-                  keep-derivations = true;
+            config = lib.mkMerge [
+              {
+                nix = {
+                  settings = {
+                    auto-optimise-store = true;
+                    experimental-features = [
+                      "nix-command"
+                      "flakes"
+                      "pipe-operators"
+                      "ca-derivations"
+                    ];
+                    # For dev related things
+                    keep-outputs = true;
+                    keep-derivations = true;
+                  };
+                  gc = {
+                    automatic = true;
+                    options = "--delete-older-than 60d";
+                  };
                 };
-                gc = {
-                  automatic = true;
-                  options = "--delete-older-than 60d";
-                };
-              };
-            };
+              }
+              (
+                # SOPS auth token
+                lib.optionalAttrs (options ? sops) (
+                  let
+                    tokens = {
+                      github = "github.com";
+                    };
+                  in {
+                    sops = {
+                      secrets =
+                        tokens
+                        |> lib.mapAttrs' (
+                          name: url:
+                            lib.nameValuePair
+                            "nix-tokens/${name}"
+                            {
+                              sopsFile = inputs.self + /secrets/secrets.yaml;
+                            }
+                        );
+                      templates."nix-tokens.conf" = {
+                        content =
+                          tokens
+                          |> lib.mapAttrsToList (
+                            name: url: "extra-access-tokens = ${url}=${config.sops.placeholder."nix-tokens/${name}"}"
+                          )
+                          |> builtins.concatStringsSep "\n";
+                      };
+                    };
+                    # Push to nix
+                    nix.extraOptions = ''
+                      !include ${config.sops.templates."nix-tokens.conf".path}
+                    '';
+                  }
+                )
+              )
+            ];
           };
           nix-extras = {pkgs, ...}: {
             key = "frameworks-nix/extras#os";
