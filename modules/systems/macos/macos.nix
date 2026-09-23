@@ -1,14 +1,20 @@
 # Configuring OS defaults for macos systems
-{inputs, ...}: {
+{
+  inputs,
+  den,
+  ...
+}: {
   den.aspects = {
     system = {host}: {
       darwin = {lib, ...}: {
+        includes = [
+          den.aspects.system._.macos-dbus
+        ];
         imports = with inputs.self.modules.darwin; [
           # Base modules to configure the system
           macos-filesystem
           macos-homebrew
           macos-settings
-          macos-dbus
         ];
         config = {
           # Default state version for this nix-darwin
@@ -21,7 +27,11 @@
   };
 
   # TODO: Delete after den migration
-  flake.modules.darwin.macos = {...}: {
+  flake.modules.darwin.macos = {
+    lib,
+    options,
+    ...
+  }: {
     imports = with inputs.self.modules.darwin; [
       nix
       homeManager
@@ -35,6 +45,11 @@
       macos-local
       macos-networking
     ];
+    config = lib.mkIf (options ? home-manager) {
+      home-manager.sharedModules = [
+        inputs.self.modules.homeManager.macos-dbus
+      ];
+    };
   };
 
   flake.modules.darwin.macos-local = {lib, ...}: {

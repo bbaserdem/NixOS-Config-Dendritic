@@ -1,4 +1,5 @@
 # Setup the android syncthing folder
+# TODO: Transition generic password storage work-based to work directory
 {lib, ...}: let
   dirName = "documents";
 in {
@@ -19,9 +20,6 @@ in {
               .obsidian/workspace.json
               .obsidian/workspace-mobile.json
 
-              // Zoom deposits files here, do not track
-              /Zoom
-
               // Do not track auxillary latex files
               (?d)*.aux
               (?d)*.bbl
@@ -38,6 +36,24 @@ in {
               (?d)*.out
               (?d)*.synctex.gz
               (?d)*.xdv
+
+              // Lots of apps deposit random files in Documents folder
+              // We want to follow a whitelist approach for folders
+              // For easy access documents; will be superceded by Paperless
+              !/Administration
+              // Calibre
+              !/Books
+              // Obsidian
+              !/Notes
+              // Zotero
+              !/Papers
+              // Staging directories
+              !/Sort
+              !/Staging
+              // Passwords
+              !/Vaults
+              // Ignore all top level directories not mentioned
+              /*/
             '';
           };
         };
@@ -50,13 +66,20 @@ in {
         erlik = {
           enable = true;
           ignore.text = ''
-            // Ignore everything for now
+            // Ignore everything not accounted for; for the time being
             *
           '';
         };
         yertengri = {enable = true;};
         # yel-ana = {enable = true;};
-        # su-ana = {enable = true;};
+        # su-ana = {
+        #   enable = true;
+        #   ignore.text = ''
+        #     // Ignore all non-work related passwords
+        #     !/Vaults/Work.kdbx
+        #     /Vaults/**
+        #   '';
+        # };
       }
       |> lib.mapAttrs (_: v: {users.wolframite.mediaDirs.${dirName}.sync = v;});
   };

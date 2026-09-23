@@ -19,6 +19,24 @@ in {
               !*.pdf
               !*.odf
               !*.xls
+
+              // Ignore all temporary code-related files
+              .direnv/
+              result
+
+              // Env stuff should be synced; we are private
+              !.env
+
+              // Single workspace related syncing
+
+              // Superbuilders; get the base level shared config
+              !/SuperBuilders/.envrc
+              !/SuperBuilders/opencode.json*
+              !/SuperBuilders/Passwords.kdbx
+              !/SuperBuilders/secretspect.toml
+              !/SuperBuilders/SuperBuilders.envrc
+              // Whitelist approach; ignore everything else
+              /SuperBuilders/*
             '';
           };
         };
