@@ -27,8 +27,10 @@
             targets.firefox = {
               # Can only enable when profiles are non-empty
               enable = lib.mkOptionDefault false;
+              # Need this to set the colors
               colorTheme.enable = true;
-              firefoxGnomeTheme.enable = true;
+              # This breaks some stuff actually
+              firefoxGnomeTheme.enable = false;
             };
           };
         };
@@ -72,6 +74,7 @@
   }: let
     # Pull our configuration from the namespace
     cfg = config.local.firefox;
+    #
   in {
     key = "firefox-profiles#homeManager";
     # Options that can be configured for firefox locally
@@ -169,9 +172,21 @@
             default = false;
           };
 
-          isStylix = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
+          stylix = lib.mkOption {
+            default = {};
+            description = "Stylix related options";
+            type = lib.types.submodule {
+              options = {
+                enable = lib.mkOption {
+                  type = lib.types.bool;
+                  default = true;
+                };
+                themeOverride = lib.mkOption {
+                  type = lib.types.nullOr lib.types.path;
+                  default = null;
+                };
+              };
+            };
           };
 
           settings = lib.mkOption {
@@ -238,13 +253,13 @@
           name = profileItem.name;
           value =
             (
-              # Strip non-firefox metadata; and get the attrset
+              # Strip non-firefox metadata; and get the full attrset
               builtins.removeAttrs
               profileItem.value
-              ["isStylix"]
+              ["stylix"]
             )
             // {
-              # Merge in overrides
+              # Merge in general overrides
 
               # Explicitly establish these if not defined
               name = profileItem.value.name or profileItem.name;
@@ -293,6 +308,57 @@
           |> lib.attrsToList
           |> lib.imap0 mkProfile
           |> builtins.listToAttrs;
+
+        # Color theme generator function; pulled in from stylix
+        base16-lib = pkgs.callPackage inputs.base16.lib {};
+        mkFirefoxColorTheme = palette: {
+          title = "Stylix ${palette.description}";
+          images.additional_backgrounds = ["./bg-000.svg"];
+          # Generate colors from palette
+          colors =
+            {
+              toolbar = "base00";
+              toolbar_text = "base05";
+              frame = "base01";
+              tab_background_text = "base05";
+              toolbar_field = "base02";
+              toolbar_field_text = "base05";
+              tab_line = "base0D";
+              popup = "base00";
+              popup_text = "base05";
+              button_background_active = "base04";
+              frame_inactive = "base00";
+              icons_attention = "base0D";
+              icons = "base05";
+              ntp_background = "base00";
+              ntp_text = "base05";
+              popup_border = "base0D";
+              popup_highlight_text = "base05";
+              popup_highlight = "base04";
+              sidebar_border = "base0D";
+              sidebar_highlight_text = "base05";
+              sidebar_highlight = "base0D";
+              sidebar_text = "base05";
+              sidebar = "base00";
+              tab_background_separator = "base0D";
+              tab_loading = "base05";
+              tab_selected = "base00";
+              tab_text = "base05";
+              toolbar_bottom_separator = "base00";
+              toolbar_field_border_focus = "base0D";
+              toolbar_field_border = "base00";
+              toolbar_field_focus = "base00";
+              toolbar_field_highlight_text = "base00";
+              toolbar_field_highlight = "base0D";
+              toolbar_field_separator = "base0D";
+              toolbar_vertical_separator = "base0D";
+            }
+            |> lib.mapAttrs (_: color: {
+              r = palette."${color}-rgb-r";
+              g = palette."${color}-rgb-g";
+              b = palette."${color}-rgb-b";
+            });
+        };
       in (
         lib.mkMerge [
           {
@@ -302,18 +368,44 @@
             };
           }
           (
-            # Dispatch profile names to stylix
+            # Stylix options
             lib.optionalAttrs (options ? stylix) {
+              # Dispatch enabled profile names
               stylix.targets.firefox = let
                 profileNames =
                   cfg.profiles
-                  |> lib.filterAttrs (_: v: (v.isStylix or false))
+                  |> lib.filterAttrs (_: v: (v.stylix.enable or false))
                   |> lib.attrNames;
               in {
                 # Enable stylix profile management for select profiles
                 enable = lib.mkOverride 1400 (profileNames != []);
                 inherit profileNames;
               };
+              # Do theme overrides if requested
+              programs.firefox.profiles =
+                lib.mkIf (
+                  config.stylix.enable
+                  && config.stylix.targets.firefox.enable
+                  && config.stylix.targets.firefox.inputs.enable
+                  && config.stylix.targets.firefox.colors.enable
+                  && config.stylix.targets.firefox.colorTheme.enable
+                ) (
+                  cfg.profiles
+                  |> lib.filterAttrs (
+                    n: v:
+                      (v.stylix.enable or false)
+                      && (v.stylix.themeOverride != null)
+                      && (builtins.elem n config.stylix.targets.firefox.profileNames)
+                  )
+                  |> lib.mapAttrs (_: p: {
+                    extensions.settings."FirefoxColor@mozilla.com".settings.theme =
+                      p.stylix.themeOverride
+                      # Pull from base16 the library function for parsing yamlW
+                      |> base16-lib.mkSchemeAttrs
+                      |> mkFirefoxColorTheme
+                      |> lib.mkOverride 55;
+                  })
+                );
             }
           )
           (

@@ -74,11 +74,13 @@
               work = {
                 id = 1;
                 containersForce = true;
+                stylix.themeOverride = "${pkgs.base16-schemes}/share/themes/digital-rain.yaml";
               };
 
               explicit = {
                 id = 2;
                 containersForce = true;
+                stylix.themeOverride = "${pkgs.base16-schemes}/share/themes/caroline.yaml";
               };
             };
 

@@ -9,6 +9,18 @@
       # Enable features
       localWeb.enable = true;
       stylix.enable = true;
+      geolocation = {
+        enable = true;
+        backend = "manual";
+      };
+      containerization = {
+        enable = true;
+        backend = "podman";
+      };
+      virtualization = {
+        enable = true;
+        windows = true;
+      };
 
       # Boot settings
       boot = {
@@ -33,6 +45,8 @@
             "homeManager"
             "user"
             "games"
+            "containerization"
+            "virtualization"
           ];
           syncthing = {
             enable = true;

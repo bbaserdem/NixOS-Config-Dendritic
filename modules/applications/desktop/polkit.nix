@@ -1,5 +1,45 @@
 # Policy kit config
-{...}: {
+{
+  inputs,
+  den,
+  ...
+}: {
+  den = {
+    aspects.desktop = {
+      # Auto include us
+      includes = [
+        den.aspects.desktop._.polkit
+      ];
+      # Our aspect
+      provides.polkit = {
+        # Nixos policy kit settings
+        nixos = {...}: {
+          imports = [
+            inputs.self.modules.nixos.polkit-settings
+          ];
+        };
+        provides.to-user = {
+          host,
+          user,
+        }: {
+          name = "desktop/inputs(${user.userName}@${host.name})";
+          darwin = {...}: {
+            imports = [
+              inputs.self.modules.darwin.inputs-karabiner
+            ];
+          };
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.inputs-fcitx5
+              inputs.self.modules.homeManager.inputs-spelling
+            ];
+          };
+        };
+      };
+    };
+  };
+
+  # Module
   flake.modules.nixos.polkit-settings = {...}: {
     key = "polkit-settings#nixos";
     config = {

@@ -8,7 +8,8 @@
         stylix.targets.firefox = {
           enable = true;
           colorTheme.enable = true;
-          firefoxGnomeTheme.enable = true;
+          # TODO: Testing this
+          firefoxGnomeTheme.enable = false;
         };
       };
 

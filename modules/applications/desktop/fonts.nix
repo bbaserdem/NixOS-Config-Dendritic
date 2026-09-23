@@ -1,5 +1,71 @@
-# Fonts to install to system
-{...}: {
+# Fonts to install to system with desktop
+{
+  inputs,
+  den,
+  ...
+}: {
+  den = {
+    aspects.desktop = {
+      # Load by default
+      includes = [
+        den.aspects.desktop._.fonts
+      ];
+      provides.fonts = let
+        # Stylix block for nixos and home-manager
+        stylixConf = {
+          targets = {
+            fontconfig = {
+              enable = true;
+              fonts.enable = true;
+            };
+            font-packages = {
+              enable = true;
+              fonts.enable = true;
+            };
+          };
+        };
+      in {
+        # For standalone home and nixos; turn on the desktop portal in linux
+        nixos = {...}: {
+          imports = [
+            inputs.self.modules.nixos.desktop-fonts
+          ];
+        };
+        darwin = {...}: {
+          imports = [
+            inputs.self.modules.darwin.desktop-fonts
+          ];
+        };
+        # Enable stylix for nixos
+        stylix = {
+          host,
+          lib,
+          ...
+        }:
+          lib.mkIf (host.class == "nixos") stylixConf;
+        # User dispatch
+        provides.to-users = {
+          user,
+          host,
+        }: {
+          name = "desktop/xdg(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.xdg-settings
+            ];
+          };
+          # Enable stylix font management in linux
+          stylix = {
+            pkgs,
+            lib,
+            ...
+          }:
+            lib.mkIf pkgs.stdenv.hostPlatform.isLinux stylixConf;
+        };
+      };
+    };
+  };
+
   flake.modules = let
     fontPackages = {
       pkgs,
@@ -47,8 +113,7 @@
         fonts.packages = fontPackages {inherit pkgs lib;};
       };
     };
-
-    # Install fonts to user
+    # Install fonts to nixos
     nixos.desktop-fonts = {
       pkgs,
       lib,
@@ -68,32 +133,6 @@
       key = "desktop-fonts#homeManager";
       config = {
         home.packages = fontPackages {inherit pkgs lib;};
-      };
-    };
-
-    # Stylix stuff
-    nixos.stylix2 = {...}: {
-      stylix.targets = {
-        fontconfig = {
-          enable = true;
-          fonts.enable = true;
-        };
-        font-packages = {
-          enable = true;
-          fonts.enable = true;
-        };
-      };
-    };
-    homeManager.stylix2 = {...}: {
-      stylix.targets = {
-        fontconfig = {
-          enable = true;
-          fonts.enable = true;
-        };
-        font-packages = {
-          enable = true;
-          fonts.enable = true;
-        };
       };
     };
   };

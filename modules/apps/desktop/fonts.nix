@@ -7,6 +7,7 @@
       ...
     }:
       (with pkgs; [
+        corefonts
         nerd-fonts.symbols-only
         noto-fonts-monochrome-emoji # Emoji fonts
         noto-fonts-color-emoji

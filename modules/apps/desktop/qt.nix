@@ -4,7 +4,6 @@
     homeManager = {
       # Stylix method of theming qt
       stylix = {
-        config,
         lib,
         pkgs,
         ...
