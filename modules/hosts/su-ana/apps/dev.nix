@@ -18,7 +18,6 @@
       # AI tools
       ai
       ai-claude
-      ai-codex
       ai-codegraph
       ai-opencode
       ai-pi

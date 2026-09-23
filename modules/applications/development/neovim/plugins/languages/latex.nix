@@ -13,7 +13,6 @@
       ];
       runtimePackages = with pkgs.unstable; [
         # Latex environment should be provided on a project basis
-        pplatex # Latex log parsing tool
         texlivePackages.chktex # Linter, for nvim-lint
         bibtex-tidy # Bibtex cleaner, for conform
         tex-fmt # Latex cleaner, for conform

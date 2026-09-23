@@ -28,7 +28,8 @@ local M = {
         aux_dir = "LatexAux",
       }
       vim.g.vimtex_compiler_progname = "nvr"
-      vim.g.vimtex_quickfix_method = "pplatex"
+      -- TODO: Used to use pplatex; but removed from nixpkgs. maybe find alternative?
+      vim.g.vimtex_quickfix_method = "latexlog"
       vim.g.vimtex_quickfix_autoclose_after_keystrokes = 1
       vim.g.vimtex_quickfix_ignore_filters = {
         "Underfull",
