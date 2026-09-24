@@ -89,7 +89,9 @@
         ];
         runtimePackages = with pkgs.unstable; [
           harper # Grammar checking lsp, for all not just tex
-          fixjson # Json linter
+          prettier # Formatter for config types
+          jq # Linter for json
+          taplo # Toml linter
         ];
       };
 

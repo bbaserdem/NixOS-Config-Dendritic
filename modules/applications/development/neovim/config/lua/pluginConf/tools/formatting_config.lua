@@ -14,39 +14,27 @@ local M = {
       require("conform").setup({
         -- Formatters by filetype; this has to be defined here
         formatters_by_ft = {
-          lua = {
-            "stylua",
-          },
+          lua = { "stylua" },
           python = {
             "ruff_fix",
             "ruff_format",
             "ruff_organize_imports",
           },
-          rust = {
-            "rustfmt",
-          },
+          rust = { "rustfmt" },
           go = {
             "goimports",
             "gofmt",
           },
-          json = {
-            "fixjson",
-          },
-          markdown = {
-            "prettier",
-          },
-          nix = {
-            "alejandra",
-          },
-          bib = {
-            "bibtex-tidy",
-          },
-          c = {
-            "clang-format",
-          },
-          tex = {
-            "tex-fmt",
-          },
+          json = { "prettier" },
+          jsonc = { "prettier" },
+          markdown = { "prettier" },
+          nix = { "alejandra" },
+          bib = { "bibtex-tidy" },
+          c = { "clang-format" },
+          tex = { "tex-fmt" },
+          sh = { "shfmt" },
+          yaml = { "prettier" },
+          toml = { "taplo" },
         },
         -- Default options
         default_format_opts = {
@@ -90,11 +78,12 @@ local M = {
     on_require = "lint",
     after = function(profile)
       require("lint").linters_by_ft = {
+        sh = { "shellcheck" },
         bash = { "bash", "shellcheck" },
         dash = { "dash", "shellcheck" },
-        zsh = { "zsh", "shellcheck" },
+        zsh = { "zsh" },
         dotenv = { "dotenv_linter" },
-        yaml = { "yq" },
+        yaml = { "yamllint" },
         python = { "ruff" },
         -- lua = { "luacheck" }, -- Not working for some reason
         latex = { "chktex" },

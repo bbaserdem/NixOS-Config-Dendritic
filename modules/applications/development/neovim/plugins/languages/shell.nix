@@ -7,8 +7,10 @@
       runtimePackages = with pkgs.unstable; [
         bash
         dash
+        zsh
         dotenv-linter
         shellcheck
+        shfmt
       ];
     };
   };

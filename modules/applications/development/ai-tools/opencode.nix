@@ -21,7 +21,8 @@
     # Gui app for opencode, only on linux (not working in darwin)
     config = lib.mkMerge [
       (
-        lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+        lib.mkIf pkgs.stdenv.hostPlatform.isLinux
+        {
           home.packages = with pkgs; [
             llm-agents.opencode-desktop
           ];
@@ -55,11 +56,24 @@
 
           # Configure permissions for reading nix store
           permission = {
-            external_directory."/nix/**" = "allow";
-            read."/nix/**" = "allow";
-            glob."/nix/**" = "allow";
-            grep."/nix/**" = "allow";
-            edit."/nix/**" = "deny";
+            external_directory = {
+              # Nix locations
+              "/nix/**" = "allow";
+              "/run/current-system/**" = "allow";
+              # Credentials
+              "~/.ssh/**" = "deny";
+              "~/.gnupg/**" = "deny";
+              "~/.config/sops-nix/**" = "deny";
+              "~/Library/Keychains/**" = "deny";
+              "/private/var/run/secrets/**" = "deny";
+              "/var/lib/sops-nix/**" = "deny";
+            };
+            edit = {
+              "/nix/**" = "deny";
+              "/run/current-system/**" = "deny";
+              "/etc/**" = "deny";
+              "~/.config/**" = "deny";
+            };
           };
         };
       };

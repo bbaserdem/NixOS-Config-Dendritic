@@ -24,18 +24,23 @@ in {
               .direnv/
               result
 
-              // Env stuff should be synced; we are private
+              // Env stuff should be synced
               !.env
 
-              // Single workspace related syncing
+              // Single workspace related ignores
 
-              // Superbuilders; get the base level shared config
+              // SuperBuilders
+              // -- Get the base level shared config and tooling
               !/SuperBuilders/.envrc
+              !/SuperBuilders/claude-settings.json
+              !/SuperBuilders/opencode-models.jpy
               !/SuperBuilders/opencode.json*
               !/SuperBuilders/Passwords.kdbx
               !/SuperBuilders/secretspect.toml
               !/SuperBuilders/SuperBuilders.envrc
-              // Whitelist approach; ignore everything else
+              // -- Sync non-code directories
+              !/SuperBuilders/Notes
+              // -- Whitelist approach; ignore everything else
               /SuperBuilders/*
             '';
           };

@@ -9,7 +9,7 @@
       runtimePackages = with pkgs.unstable; [
         ruff # Formatter/linter
         ty # LSP & type checker
-        yq # yaml parser
+        yamllint # yaml parser
         # uv and debugpy should be provided by the environment
       ];
     };

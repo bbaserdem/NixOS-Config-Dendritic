@@ -34,7 +34,8 @@
           # Python
           uv # Python for running analysis
           # AWS
-          awscli2 # For AWS
+          awscli2 # For AWS access
+          ssm-session-manager-plugin # Sessionmanager plugin
           # Postgres
           postgresql_18 # We use postgres as db
           # TikZ
@@ -44,6 +45,9 @@
           ripgrep
           shellcheck
           socat
+          curl
+          jq
+          yq
           # Documentation
           mdbook
           mdbook-mermaid
