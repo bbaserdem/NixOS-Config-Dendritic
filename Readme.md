@@ -2,22 +2,9 @@
 
 My nix flake used to configure my computer systems.
 
-## Design
+## Documentation
 
-- Uses flake-parts
-- Follows dendritic pattern
-- Using jujutsu for vcs
-
-## Todo
-
-- [ ] Kayra: LiveUSB iso.
-- [ ] Neovim: setup localleader commands to render markdown.
-- [ ] Hyprland: migrate to lua
-- [ ] Configure joey's user
-- [ ] Fix polkit issues in hyprland
-- [ ] Test nixos modules on laptop
-- [ ] Remove nofail mount options after confirming mounts etc. work
-- [ ] Redo beets library organization
+All information on what this flake provides/does is available in [`docs/`](./docs).
 
 ## Development
 
