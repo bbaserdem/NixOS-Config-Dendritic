@@ -19,6 +19,7 @@ Documentation includes this flake, how I use software etc.
         but not run syncthing.)
 - [ ] New hardware
   - [ ] Better GPU goes in yertengri.
+  - [ ] Document, name, and see what I can do with the new BOOX.
   - [ ] Redo qmk, integrate user overlay to flake maybe
   - [ ] Document keyboards
   - [ ] Monitor alignment as metadata; should be consumable through den
@@ -35,6 +36,7 @@ Documentation includes this flake, how I use software etc.
   - [ ] Write den machinery for android
   - [ ] Deploy to erlik
 - [ ] New software
+  - [ ] Either configure, or retire, aria download manager for firefox
   - [ ] Migrate passwords from pass to keepassxc
   - [ ] Nixos container for vpn locked torrent server
   - [ ] Paperless-ngx server on local network
