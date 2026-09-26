@@ -18,23 +18,6 @@
             inputs.self.modules.nixos.polkit-settings
           ];
         };
-        provides.to-user = {
-          host,
-          user,
-        }: {
-          name = "desktop/inputs(${user.userName}@${host.name})";
-          darwin = {...}: {
-            imports = [
-              inputs.self.modules.darwin.inputs-karabiner
-            ];
-          };
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.inputs-fcitx5
-              inputs.self.modules.homeManager.inputs-spelling
-            ];
-          };
-        };
       };
     };
   };

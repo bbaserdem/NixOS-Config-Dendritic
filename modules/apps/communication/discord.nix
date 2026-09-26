@@ -1,10 +1,5 @@
 # Discord through nixcord
 {inputs, ...}: {
-  # Flake source for nixcord
-  flake-file = {
-    inputs.nixcord.url = "github:FlameFlag/nixcord";
-  };
-
   flake.modules = {
     # In darwin, install legcord from homebrew instead
     darwin.discord = {...}: {

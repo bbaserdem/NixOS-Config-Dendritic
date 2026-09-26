@@ -48,10 +48,10 @@
           user,
           host,
         }: {
-          name = "desktop/xdg(${user.userName}@${host.name})";
+          name = "desktop/fonts(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
-              inputs.self.modules.homeManager.xdg-settings
+              inputs.self.modules.homeManager.desktop-fonts
             ];
           };
           # Enable stylix font management in linux

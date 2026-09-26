@@ -12,7 +12,7 @@
       ];
       # Our aspect
       provides.inputs = {
-        provides.to-user = {
+        provides.to-users = {
           host,
           user,
         }: {
@@ -69,19 +69,22 @@
 
     # Spelling functionality
     homeManager.inputs-spelling = {pkgs, ...}: {
-      # Install spellcheckers to userspace
-      home.packages = with pkgs; [
-        enchant # Spellchecker library that can use nuspell
-        nuspell # Spellchecker hunspell alternative that can do agglutinative
-      ];
+      key = "inputs-spelling#homeManager";
+      config = {
+        # Install spellcheckers to userspace
+        home.packages = with pkgs; [
+          enchant # Spellchecker library that can use nuspell
+          nuspell # Spellchecker hunspell alternative that can do agglutinative
+        ];
 
-      # Spellchecker; enchant should use nuspell backend
-      xdg.configFile."enchant/enchant.ordering" = {
-        enable = true;
-        text = ''
-          # Use nuspell for everything first, then fall back to hunspell
-          *:nuspell,hunspell,aspell
-        '';
+        # Spellchecker; enchant should use nuspell backend
+        xdg.configFile."enchant/enchant.ordering" = {
+          enable = true;
+          text = ''
+            # Use nuspell for everything first, then fall back to hunspell
+            *:nuspell,hunspell,aspell
+          '';
+        };
       };
     };
 

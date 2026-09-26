@@ -48,7 +48,7 @@
             targets.qt = {
               # Soft default to true; plasma inclusion will set this false
               # (Stylix qt breaks plasma)
-              enable = lib.mkOverride 1400 true;
+              enable = true;
               platform = "qtct";
               standardDialogs = "default";
             };
@@ -77,7 +77,7 @@
       pkgs,
       ...
     }: {
-      key = "desktop-gtk#homeManager";
+      key = "desktop-qt#homeManager";
       config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
         home.packages = with pkgs; [
           kdePackages.qt6ct

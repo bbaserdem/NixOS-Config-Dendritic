@@ -1,15 +1,5 @@
 # Plasma desktop for nixos
 {inputs, ...}: {
-  flake-file.inputs = {
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        home-manager.follows = "home-manager";
-      };
-    };
-  };
-
   flake.modules = {
     # NixOS settings
     nixos.kde = {pkgs, ...}: {

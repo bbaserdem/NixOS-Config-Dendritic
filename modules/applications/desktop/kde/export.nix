@@ -1,5 +1,6 @@
-# Workflow to export plasma configuration
+# Script to dump current settings
 {inputs, ...}: {
+  # Inject package to linux package sets directly since we are vendor-bound
   perSystem = {
     lib,
     pkgs,
@@ -17,13 +18,13 @@
         text = ''
           set -euo pipefail
 
-          out_dir="''${_tmp}"
+          out_dir="$PWD"
           rc2nix_args=()
 
           while [ "$#" -gt 0 ]; do
             case "$1" in
               --output-dir)
-                if [ "$#" -lt 2 ]; then
+                if [ "$#" -lt 2 ] || [ -z "$2" ]; then
                   printf 'error: --output-dir requires a directory\n' >&2
                   exit 2
                 fi
@@ -32,6 +33,10 @@
                 ;;
               --output-dir=*)
                 out_dir="''${1#--output-dir=}"
+                if [ -z "$out_dir" ]; then
+                  printf 'error: --output-dir cannot be empty\n' >&2
+                  exit 2
+                fi
                 shift
                 ;;
               --)
@@ -46,11 +51,6 @@
             esac
           done
 
-          if [ -z "$out_dir" ]; then
-            printf 'error: --output-dir cannot be empty\n' >&2
-            exit 2
-          fi
-
           mkdir -p "$out_dir"
 
           timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -58,7 +58,7 @@
 
           rc2nix "''${rc2nix_args[@]}" > "$out"
 
-          printf 'Settings export created at:' "$(realpath "$out")"
+          printf 'Settings export created at: %s\n' "$(realpath "$out")"
         '';
       };
     };

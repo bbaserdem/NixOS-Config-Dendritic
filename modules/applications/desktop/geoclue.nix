@@ -9,7 +9,7 @@
     # Define host schema option that allows the type dispatch
     schema.host = {
       includes = [
-        den.aspects.desktops.policies.desktop-geolocation-dispatch
+        den.aspects.desktop.policies.desktop-geolocation-dispatch
       ];
       imports = [
         {
@@ -202,7 +202,7 @@
           staticLatitude = 0.0;
           staticLongitude = 0.0;
           staticAltitude = 0.0;
-          staticAccuracy = 0.0;
+          staticAccuracy = 1.0;
         };
         # Override the file geoclue generates for static config with our secrets
         environment.etc.geolocation = {

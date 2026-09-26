@@ -37,6 +37,7 @@ Documentation includes this flake, how I use software etc.
   - [ ] Deploy to erlik
 - [ ] New software
   - [ ] Either configure, or retire, aria download manager for firefox
+  - [ ] Switch to librewolf?
   - [ ] Migrate passwords from pass to keepassxc
   - [ ] Nixos container for vpn locked torrent server
   - [ ] Paperless-ngx server on local network
@@ -53,6 +54,7 @@ Documentation includes this flake, how I use software etc.
   - [ ] Local network with services
   - [ ] Set up `deploy-rs` for flake deployment across network
 - [ ] Ricing
+  - [ ] Firefox static splash pages.
   - [ ] Abandon hyprland, move to niri or some other wayland compositor
   - [ ] Re-configure noctalia shell; consider other options
   - [ ] Harden environments to be frame-buffer friendly?

@@ -178,11 +178,13 @@
       }: {
         key = "gnome-behavior#homeManager";
         config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-          # Disable gnome auto-mount behavior
-          "org/gnome/desktop/media-handling" = {
-            automount = false;
-            automount-open = false;
-            autorun-never = true;
+          dconf.settings = {
+            # Disable gnome auto-mount behavior
+            "org/gnome/desktop/media-handling" = {
+              automount = false;
+              automount-open = false;
+              autorun-never = true;
+            };
           };
         };
       };
