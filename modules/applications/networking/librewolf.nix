@@ -1,30 +1,30 @@
-# Firefox setup in den
+# LibreWolf setup in den
 {
   inputs,
   flib,
   ...
 }: {
-  # Hook up firefox to den
+  # Hook up librewolf to den
   den = {
     aspects.applications = {
-      provides.firefox = {
+      provides.librewolf = {
         # Just dispatch aspect to the user scope
         provides.to-users = {
           host,
           user,
         }: {
           # Collission protection
-          name = "applications/firefox(${user.userName}@${host.name})";
+          name = "applications/librewolf(${user.userName}@${host.name})";
           # Dispatch the home manager modules
           homeManager = {...}: {
             imports = [
-              inputs.self.modules.homeManager.firefox-settings
-              inputs.self.modules.homeManager.firefox-profiles
+              inputs.self.modules.homeManager.librewolf-settings
+              inputs.self.modules.homeManager.librewolf-profiles
             ];
           };
           # Establish theming
           stylix = {lib, ...}: {
-            targets.firefox = {
+            targets.librewolf = {
               # Can only enable when profiles are non-empty
               enable = lib.mkOptionDefault false;
               # Need this to set the colors
@@ -38,26 +38,26 @@
     };
   };
 
-  # Firefox setting module
-  flake.modules.homeManager.firefox-settings = {
+  # LibreWolf setting module
+  flake.modules.homeManager.librewolf-settings = {
     pkgs,
     lib,
     ...
   }: {
-    key = "firefox-settings#homeManager";
+    key = "librewolf-settings#homeManager";
     config = lib.mkMerge [
       {
-        programs.firefox.enable = true;
+        programs.librewolf.enable = true;
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-          programs.firefox.package = pkgs.firefox;
+          programs.librewolf.package = pkgs.librewolf;
         }
       )
       (
         # Sometimes the nixpkgs version is broken on darwin
         lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-          programs.firefox.package = pkgs.firefox;
+          programs.librewolf.package = pkgs.librewolf;
         }
       )
     ];
@@ -65,7 +65,7 @@
 
   # Modules for declaratively configuring profiles in a more ordered fashion
   # We provide home-manager module for configuring profiles
-  flake.modules.homeManager.firefox-profiles = {
+  flake.modules.homeManager.librewolf-profiles = {
     lib,
     pkgs,
     config,
@@ -73,11 +73,11 @@
     ...
   }: let
     # Pull our configuration from the namespace
-    cfg = config.local.firefox;
+    cfg = config.local.librewolf;
     #
   in {
-    key = "firefox-profiles#homeManager";
-    # Options that can be configured for firefox locally
+    key = "librewolf-profiles#homeManager";
+    # Options that can be configured for librewolf locally
     options = let
       # Types to build the options from
       extensionsType = {profile ? false}:
@@ -99,7 +99,7 @@
               type = lib.types.listOf lib.types.package;
               default = [];
               description = ''
-                Firefox extension packages, or a function returning them.
+                LibreWolf extension packages, or a function returning them.
 
                 Function form is intended for system-dependent packages:
                   {pkgs, lib, ...}: with pkgs.nur.repos.rycee.firefox-addons; [ ... ]
@@ -144,7 +144,7 @@
 
           id = lib.mkOption {
             type = lib.types.ints.unsigned;
-            description = "Unique Firefox container ID within the profile.";
+            description = "Unique LibreWolf container ID within the profile.";
           };
 
           icon = lib.mkOption {
@@ -164,7 +164,7 @@
           id = lib.mkOption {
             type = lib.types.nullOr lib.types.ints.unsigned;
             default = null;
-            description = "Firefox profile ID. If null, the dispatcher must assign one.";
+            description = "LibreWolf profile ID. If null, the dispatcher must assign one.";
           };
 
           isDefault = lib.mkOption {
@@ -212,8 +212,8 @@
       });
     in {
       # Local option definition
-      local.firefox = lib.mkOption {
-        description = "Declarative Firefox configuration";
+      local.librewolf = lib.mkOption {
+        description = "Declarative LibreWolf configuration";
         default = null;
         type = lib.types.nullOr (lib.types.submodule {
           options = {
@@ -253,7 +253,7 @@
           name = profileItem.name;
           value =
             (
-              # Strip non-firefox metadata; and get the full attrset
+              # Strip non-librewolf metadata; and get the full attrset
               builtins.removeAttrs
               profileItem.value
               ["stylix"]
@@ -303,7 +303,7 @@
                 };
             };
         };
-        firefoxProfiles =
+        librewolfProfiles =
           cfg.profiles
           |> lib.attrsToList
           |> lib.imap0 mkProfile
@@ -311,7 +311,7 @@
 
         # Color theme generator function; pulled in from stylix
         base16-lib = pkgs.callPackage inputs.base16.lib {};
-        mkFirefoxColorTheme = palette: {
+        mkLibreWolfColorTheme = palette: {
           title = "Stylix ${palette.description}";
           images.additional_backgrounds = ["./bg-000.svg"];
           # Generate colors from palette
@@ -362,16 +362,16 @@
       in (
         lib.mkMerge [
           {
-            programs.firefox = {
+            programs.librewolf = {
               # Create profiles from our config
-              profiles = firefoxProfiles;
+              profiles = librewolfProfiles;
             };
           }
           (
             # Stylix options
             lib.optionalAttrs (options ? stylix) {
               # Dispatch enabled profile names
-              stylix.targets.firefox = let
+              stylix.targets.librewolf = let
                 profileNames =
                   cfg.profiles
                   |> lib.filterAttrs (_: v: (v.stylix.enable or false))
@@ -382,27 +382,27 @@
                 inherit profileNames;
               };
               # Do theme overrides if requested
-              programs.firefox.profiles =
+              programs.librewolf.profiles =
                 lib.mkIf (
                   config.stylix.enable
-                  && config.stylix.targets.firefox.enable
-                  && config.stylix.targets.firefox.inputs.enable
-                  && config.stylix.targets.firefox.colors.enable
-                  && config.stylix.targets.firefox.colorTheme.enable
+                  && config.stylix.targets.librewolf.enable
+                  && config.stylix.targets.librewolf.inputs.enable
+                  && config.stylix.targets.librewolf.colors.enable
+                  && config.stylix.targets.librewolf.colorTheme.enable
                 ) (
                   cfg.profiles
                   |> lib.filterAttrs (
                     n: v:
                       (v.stylix.enable or false)
                       && (v.stylix.themeOverride != null)
-                      && (builtins.elem n config.stylix.targets.firefox.profileNames)
+                      && (builtins.elem n config.stylix.targets.librewolf.profileNames)
                   )
                   |> lib.mapAttrs (_: p: {
                     extensions.settings."FirefoxColor@mozilla.com".settings.theme =
                       p.stylix.themeOverride
                       # Pull from base16 the library function for parsing yamlW
                       |> base16-lib.mkSchemeAttrs
-                      |> mkFirefoxColorTheme
+                      |> mkLibreWolfColorTheme
                       |> lib.mkOverride 55;
                   })
                 );
@@ -412,14 +412,14 @@
             # Create launchers for linux for the separate profiles
             lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
               xdg.desktopEntries =
-                firefoxProfiles
+                librewolfProfiles
                 |> lib.filterAttrs (_: p: !p.isDefault)
                 |> lib.mapAttrs' (
                   key: p: let
-                    id = "firefox-${key}";
+                    id = "librewolf-${key}";
                     cmd = pkgs.writeShellScript id ''
                       export MOZ_APP_REMOTINGNAME=${lib.escapeShellArg id}
-                      exec ${lib.getExe config.programs.firefox.finalPackage} \
+                      exec ${lib.getExe config.programs.librewolf.finalPackage} \
                         -P ${lib.escapeShellArg p.name} \
                         --name ${lib.escapeShellArg id} \
                         --class ${lib.escapeShellArg id} \
@@ -429,12 +429,12 @@
                     lib.nameValuePair
                     id
                     {
-                      name = "Firefox (${flib.capitalize p.name})";
+                      name = "LibreWolf (${flib.capitalize p.name})";
                       genericName = "Web Browser";
-                      comment = "Launch Firefox with the ${p.name} profile";
+                      comment = "Launch LibreWolf with the ${p.name} profile";
                       exec = "${cmd} %U";
                       settings.StartupWMClass = id;
-                      icon = "firefox";
+                      icon = "librewolf";
                       terminal = false;
                       startupNotify = true;
                       categories = [
@@ -450,25 +450,25 @@
             # Create launchers for darwin for the separate profiles
             lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
               home.packages =
-                firefoxProfiles
+                librewolfProfiles
                 |> lib.filterAttrs (_: p: !p.isDefault)
                 |> lib.mapAttrsToList (
                   key: p: let
-                    id = "firefox-${key}";
-                    appName = "Firefox (${flib.capitalize p.name})";
-                    firefoxApp = "${config.programs.firefox.finalPackage}/Applications/Firefox.app";
+                    id = "librewolf-${key}";
+                    appName = "LibreWolf (${flib.capitalize p.name})";
+                    librewolfApp = "${config.programs.librewolf.finalPackage}/Applications/LibreWolf.app";
                   in (
                     pkgs.runCommand "${id}-launcher"
                     {
                       launcher = pkgs.writeShellScript id ''
-                        exec /usr/bin/open -n -a ${lib.escapeShellArg firefoxApp} \
+                        exec /usr/bin/open -n -a ${lib.escapeShellArg librewolfApp} \
                           --args -P ${lib.escapeShellArg p.name} "$@"
                       '';
                       infoPlist = pkgs.writeText "${id}.plist" (
                         lib.generators.toPlist {escape = true;} {
                           CFBundleName = appName;
                           CFBundleDisplayName = appName;
-                          CFBundleIdentifier = "local.firefox-profile.${key}";
+                          CFBundleIdentifier = "local.librewolf-profile.${key}";
                           CFBundlePackageType = "APPL";
                           CFBundleExecutable = "launcher";
                           CFBundleIconFile = "firefox.icns";
@@ -486,7 +486,7 @@
 
                       install -m755 "$launcher" "$app/Contents/MacOS/launcher"
                       cp "$infoPlist" "$app/Contents/Info.plist"
-                      cp ${lib.escapeShellArg "${firefoxApp}/Contents/Resources/firefox.icns"} \
+                      cp ${lib.escapeShellArg "${librewolfApp}/Contents/Resources/firefox.icns"} \
                         "$app/Contents/Resources/firefox.icns"
                     ''
                   )

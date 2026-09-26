@@ -4,6 +4,7 @@
     aspects.yertengri = {
       includes = with den.aspects; [
         applications._.firefox
+        applications._.librewolf
       ];
     };
   };

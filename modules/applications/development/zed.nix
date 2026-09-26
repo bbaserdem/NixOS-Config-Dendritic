@@ -23,7 +23,7 @@
       (
         # In Linux, we need fhs to make plugins work
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-          programs.vscodium = {
+          programs.zed-editor = {
             package = pkgs.zed-editor-fhs;
           };
         }

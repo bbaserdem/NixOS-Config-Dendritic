@@ -31,7 +31,7 @@
 
   # Module enable
   flake.modules.homeManager.kitty-settings = {...}: {
-    name = "kitty-settings#homeManager";
+    key = "kitty-settings#homeManager";
     config = {
       programs.kitty = {
         enable = true;

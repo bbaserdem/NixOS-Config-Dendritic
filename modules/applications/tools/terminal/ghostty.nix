@@ -109,7 +109,7 @@
         lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
           programs.ghostty = {
             # Package pull from nixpkgs
-            packages = pkgs.ghostty;
+            package = pkgs.ghostty;
 
             # Integration only available if ghostty.package != null
             installVimSyntax = true;

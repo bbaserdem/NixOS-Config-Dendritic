@@ -1,18 +1,18 @@
-# Configuring firefox for wolframite
+# Configuring librewolf for wolframite
 {inputs, ...}: {
-  # Load our firefox account configuring module to den
+  # Load our librewolf account configuring module to den
   den = {
     aspects.wolframite = {
       homeManager = {
         imports = [
-          inputs.self.modules.homeManager.firefox-wolframite
+          inputs.self.modules.homeManager.librewolf-wolframite
         ];
       };
     };
   };
 
-  # Configure global firefox settings
-  flake.modules.homeManager.firefox-wolframite = {
+  # Configure global librewolf settings
+  flake.modules.homeManager.librewolf-wolframite = {
     pkgs,
     lib,
     options,
@@ -20,8 +20,17 @@
   }: {
     config = lib.mkMerge [
       {
-        # Configuration for firefox here
-        programs.firefox = {
+        # Configuration for librewolf here
+        programs.librewolf = {
+          # Some common shared settings
+          settings = {
+            # Enable mozilla sync
+            "identity.fxaccounts.enabled" = true;
+            # DRM enable
+            "media.gmp-manager.updateEnabled" = true;
+            "media.gmp-widevinecdm.enabled" = true;
+            "media.gmp-widevinecdm.autoupdate" = true;
+          };
           nativeMessagingHosts = with pkgs; [
             tridactyl-native
           ];
@@ -29,24 +38,22 @@
       }
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-          programs.firefox = {
+          programs.librewolf = {
             # Darwin doesn't use wrapper, language packs only available in linux
-            languagePacks = [
-              "en-US"
-              "tr"
-            ];
+            # Needs patched; but fetcher gets unpatched; can't use this
+            # languagePacks = [ "en-US" "tr" ];
             nativeMessagingHosts = with pkgs; [
               gnome-browser-connector
               kdePackages.plasma-browser-integration
-              pywalfox-native # Patched to work with custom overlay
+              pywalfox-native
             ];
           };
         }
       )
       (
         # Configure with local config here
-        lib.optionalAttrs ((options.local or {}) ? firefox) {
-          local.firefox = {
+        lib.optionalAttrs ((options.local or {}) ? librewolf) {
+          local.librewolf = {
             # Different profiles
             profiles = {
               personal = {
@@ -82,8 +89,6 @@
                     multi-account-containers
                     containerise
                     # Privacy
-                    ublock-origin
-                    duckduckgo-privacy-essentials
                     mullvad
                     # Passwords
                     keepassxc-browser

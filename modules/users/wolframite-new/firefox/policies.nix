@@ -133,7 +133,6 @@
           "media.gmp-widevinecdm.visible" = _default true;
           "media.gmp-manager.updateEnabled" = _default true;
           "media.gmp-widevinecdm.autoupdate" = _default true;
-          "media.gmp-widevinecdm.force-chromium-update" = _default true;
 
           # Don't ask for download dir
           "browser.download.useDownloadDir" = _default true;

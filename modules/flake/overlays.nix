@@ -11,6 +11,21 @@
       modifications = final: prev: {
         # Modifications to existing packages
 
+        # Pywalfox is broken; badly packaged and needs patching
+        pywalfox-native = prev.pywalfox-native.overrideAttrs (old: {
+          nativeBuildInputs = (old.nativeBuildInputs or []) ++ [prev.jq];
+          postInstall =
+            (old.postInstall or "")
+            + ''
+              mkdir -p $out/lib/mozilla/native-messaging-hosts
+
+              jq --arg bin "$out/bin/pywalfox" \
+                '.path = $bin' \
+                "${old.src}/pywalfox/assets/manifest.json" \
+                > "$out/lib/mozilla/native-messaging-hosts/pywalfox.json"
+            '';
+        });
+
         # yt-dlp fails on darwin right now
         pythonPackagesExtensions =
           (prev.pythonPackagesExtensions or [])

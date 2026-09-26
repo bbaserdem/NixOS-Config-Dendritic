@@ -15,7 +15,7 @@
     config = {
       programs.pi-coding-agent = {
         enable = true;
-        packages = pkgs.llm-agents.pi;
+        package = pkgs.llm-agents.pi;
 
         # Set config dir to XDG
         configDir = "${config.xdg.configHome}/pi/agent";

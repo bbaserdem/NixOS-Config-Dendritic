@@ -41,7 +41,7 @@
           enable = true;
           lfs.enable = true;
           settings = {
-            core = {editor = config.home.sessionVariables.EDITOR;};
+            core = {editor = config.home.sessionVariables.EDITOR or "nvim";};
             pull = {rebase = false;};
             push = {autoSetupRemote = true;};
             init = {defaultBranch = "main";};
@@ -72,7 +72,9 @@
                 "master"
               ];
             };
-            os = {edit = "${config.home.sessionVariables.EDITOR} {{filename}}";};
+            os = {
+              edit = "${config.home.sessionVariables.EDITOR or "nvim"} {{filename}}";
+            };
           };
         };
 
