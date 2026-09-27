@@ -18,6 +18,7 @@
     options,
     ...
   }: {
+    key = "firefox-wolframite#homeManager";
     config = lib.mkMerge [
       {
         # Configuration for firefox here

@@ -44,12 +44,16 @@
       };
 
       nixos = {...}: {
-        imports = with inputs.self.modules.nixos; [
-          shell-bash
-          shell-path
-          shell-starship
-          shell-zsh
-        ];
+        imports = with inputs.self.modules.nixos;
+          [
+            shell-bash
+            shell-path
+            shell-starship
+            shell-zsh
+          ]
+          ++ [
+            inputs.self.modules.generic.shell-starship
+          ];
       };
 
       darwin = {...}: {
@@ -60,7 +64,7 @@
       };
 
       homeManager = {...}: {
-        # imports = with inputs.self.modules.homeManager; [ ];
+        # imports = with inputs.self.modules.homeManager; [];
       };
 
       stylix = {...}: {
@@ -73,11 +77,15 @@
       }: {
         name = "shell(${user.userName}@${host.name})";
         homeManager = {...}: {
-          imports = with inputs.self.modules.homeManager; [
-            shell-bash
-            shell-starship
-            shell-zsh
-          ];
+          imports = with inputs.self.modules.homeManager;
+            [
+              shell-bash
+              shell-starship
+              shell-zsh
+            ]
+            ++ [
+              inputs.self.modules.generic.shell-starship
+            ];
         };
         stylix = {...}: {
           targets = {
@@ -145,13 +153,17 @@
       ];
     };
     nixos.shell = {...}: {
-      imports = with inputs.self.modules.nixos; [
-        shell-bash
-        shell-path
-        shell-starship
-        shell-zsh
-        shell-zsh-default
-      ];
+      imports = with inputs.self.modules.nixos;
+        [
+          shell-bash
+          shell-path
+          shell-starship
+          shell-zsh
+          shell-zsh-default
+        ]
+        ++ [
+          inputs.self.modules.generic.shell-starship
+        ];
     };
     darwin.shell = {...}: {
       imports = with inputs.self.modules.darwin; [
@@ -160,19 +172,23 @@
       ];
     };
     homeManager.shell = {...}: {
-      imports = with inputs.self.modules.homeManager; [
-        shell-alias
-        shell-apps
-        shell-bash
-        shell-direnv
-        shell-fzf
-        shell-man
-        shell-starship
-        shell-tmux
-        shell-vivid
-        shell-zsh
-        shell-zoxide
-      ];
+      imports = with inputs.self.modules.homeManager;
+        [
+          shell-alias
+          shell-apps
+          shell-bash
+          shell-direnv
+          shell-fzf
+          shell-man
+          shell-starship
+          shell-tmux
+          shell-vivid
+          shell-zsh
+          shell-zoxide
+        ]
+        ++ [
+          inputs.self.modules.generic.shell-starship
+        ];
     };
   };
 }

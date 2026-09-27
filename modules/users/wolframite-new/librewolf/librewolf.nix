@@ -18,6 +18,7 @@
     options,
     ...
   }: {
+    key = "librewolf-wolframite#homeManager";
     config = lib.mkMerge [
       {
         # Configuration for librewolf here
