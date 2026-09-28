@@ -12,7 +12,7 @@
       # Audio player from brew
       audio = {...}: {
         imports = [
-          inputs.self.modules.darwin.music-applications
+          inputs.self.modules.darwin.foobar
         ];
       };
     };
@@ -23,7 +23,8 @@
       audio = {...}: {
         imports = [
           inputs.self.modules.homeManager.audio-utilities
-          inputs.self.modules.homeManager.audio-applications
+          inputs.self.modules.homeManager.tenacity
+          inputs.self.modules.homeManager.musescore
           inputs.self.modules.homeManager.picard-settings
         ];
       };

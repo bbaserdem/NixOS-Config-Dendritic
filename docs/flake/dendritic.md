@@ -83,29 +83,43 @@ in aspects as configuration.
 When the configuration depends on den context, or we can use den machinery
 (quirks, custom classes, etc.) we inline them in den aspects.
 
+### Systems
+
+The top-level `den.aspects.system` is the aspect that configures the base of
+a type of system; and included unconditionally in hosts.
+
+Each type of system is configured through `den.aspects.system._.<type>`.
+Features either describe further config aspects nested under this aspect,
+or use policies (scoped to the base of `system` aspect) for dispatching.
+
+Each actual configuration morsel needed by a system is a flake-parts module
+with the module naming `<system>-<feature>.
+
+For complicated, and potentially forked backend configuration;
+
+- Define needed metadata to `den.schema.host` if needed.
+- Define needed modules as `flake.modules.<class>.<system-name>-<feature>[-<backend>]`.
+- Provide a new (non-parametric) aspect directly under the type; `system._.<type>._.<feature>`
+- Provide a full dispatch policy under this aspect; `<feature>.policies.<policy-name>`
+- Include this policy in the parent `system._.<type>` aspect. (All hosts will execute this policy.)
+
 ### Hosts
 
 The `/modules/hosts` folder contain the entity and aspect definitions for hosts.
-The entity record is usually reserved for metadata that is used to policy dispatch.
-The aspect is used to actually dispatch configuration to the specific host.
-
-Some aspects are pretty simple and are just one inclusion; so they are done
-with host aspect inclusion.
-Some are not though; so they have policies that depend on the entity.
+The entity record is usually reserved for metadata that is used for policy dispatch.
+The aspect should be used to include relevant feature aspects.
 
 ### Users
 
 The `/modules/users` folder contain the aspect definitions corresponding to users.
 
-#### User Entity Record
-
 Since user entities are sub-entities for each host; the user entity definition
 is defined in each hosts' configuration usually.
 The meta-data of each users' capability on a given machine is host-specific data,
-so it makes sense there.
+so it makes sense to put it there only.
 
 Den has no built-in way to treat a user across a fleet collectively; since
-user entities are tied to hosts, are are not fleet wide.
+user entities are tied to hosts, and are not fleet wide.
 To do a users' entity record globally; or where I want host-specific behavior
 but contained in a users' config directory; I use a conditional entity module.
 
@@ -135,43 +149,30 @@ but contained in a users' config directory; I use a conditional entity module.
 
 This pattern is to be used as sparingly as possible though.
 
-### Systems
-
-The top-level `den.aspects.system` is the aspect that configures the base of
-a type of system; and included unconditionally in hosts.
-
-Each type of system is configured through `den.aspects.system._.<type>`.
-Features either describe further config aspects nested under this aspect,
-or use policies (scoped to the base of `system` aspect) for dispatching.
-
-Each actual configuration morsel needed by a system is a flake-parts module
-with the naming `<system>-<feature>.
-
-For complicated, and potentially different backend configuration;
-
-- Define needed metadata to `den.schema.host` if needed.
-- Define needed modules as `flake.modules.<class>.<system-name>-<feature>[-<backend>]`.
-- Provide a new (non-parametric) aspect directly under system; `system._.<feature>`
-- Provide a full dispatch policy under this aspect; `system._.<feature>.policies.<policy-name>`
-- Include this policy in the parent `system` aspect. (All hosts will execute this policy.)
-- Forking behavior should be done with provides; `system._.<feature>._.<backend>`
-
-IMPLICATIONS:
-
-- For different systems; each system will need a different class and can't be reused;
-  since i'm using aspect class key as my system differentiator.
-  (Might need to change this when I try to do rp5 and vms for example; right now it's bespoke).
-
 ### Applications
 
-There is a top-level `den.aspects.applications` aspect for collecting specific
+There is usually a top-level `den.aspects.<domain>` aspect for collecting specific
 application configurations.
-All apps, no matter their domain, should declare individual `applications._.<app>`
-sub-aspects.
-All app aspects should be non-parametric, and actually have a `provides.to-users`
-that does their userspace configuration; even for os level config.
-This enables the apps to be enabled user-specific with including the sub-aspect,
-or to all users in a system with the following;
+Apps should declare individual `applications._.<app>` sub-aspects.
+
+The actual configuration module can follow several naming schemes;
+
+- If an app has involved configuration module; usually name it `<app>[-<subModule>]`.
+- If some apps are just basic installs to packages and provide similar functionality,
+  they probably are going to be in one module and named `<domain>[-<functionality>]`.
+
+> [!NOTE]
+> Right now, we are in mid-migration; so a lot of modules are named <app>-settings
+> That will be later changed to <app> instead.
+
+Usually, we want to use parametric `provides.to-users` for app configuration.
+The base aspect, when included in host scope, will provide the functionality to
+all users; which makes sense in not gating functionality to users.
+If a user needs an aspect only on it's scope and not others; _to-users_ can be
+included in `aspects.<user>.provides.<hostname>` anyway.
+(The `nixos`, `darwin` and `os` class modules get merged to host level,
+and will be deduped by module key so fanning out multiple OS modules for each host
+is fine.)
 
 ```
 # Dispatch application to one user on one host
@@ -184,19 +185,12 @@ den.aspects.<hostname> = {
 }
 ```
 
-If existence of a feature needs system config, the os level classes do walk up;
-so if they are enabled the modules will be included.
-Duplication of modules coming in from fanned out user scopes shouldn't be a problem
-due to every module getting a top level `key` attribute; all module resolution
-dedupes these.
-
 The only config at the bare app aspect level should be for classes dependent on
 context; and that's preferably done through policies.
 If an app needs policies and schema info to dispatch; they can do it in their aspect.
 
-There is also a top level `collections` aspect, which works as a container for bulking
-applications together.
+For complicated feature dispatch; policies and entity schema are used.
 
-### Utilities
+### Services
 
-Each utility should get their top level aspect; because it can get complicated.
+Each service should get their own top-level aspect.

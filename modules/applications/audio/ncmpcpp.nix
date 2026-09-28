@@ -1,5 +1,6 @@
 # Configuring terminal music player for mpd
 {...}: {
+  # Module
   flake.modules.homeManager.mpd-ncmpcpp = {
     config,
     pkgs,
@@ -29,6 +30,10 @@
         mpdMusicDir = config.services.mpd.musicDirectory;
 
         settings = {
+          # MPD
+          mpd_host = config.services.mpd.network.listenAddress;
+          mpd_port = config.services.mpd.network.port;
+
           # Lyrics
           lyrics_directory = "${config.xdg.dataHome}/${cacheSubdir}";
           lyrics_fetchers = "genius, metrolyrics";
@@ -37,8 +42,8 @@
           follow_now_playing_lyrics = true;
 
           # Visualizer
-          visualizer_data_source = "/tmp/mpd.fifo";
-          visualizer_output_name = "FIFO";
+          visualizer_data_source = "/tmp/mpd.fifo-${config.home.username}";
+          visualizer_output_name = "FIFO Visualizer";
           visualizer_in_stereo = true;
           visualizer_type = "ellipse";
           visualizer_look = "▊▊";

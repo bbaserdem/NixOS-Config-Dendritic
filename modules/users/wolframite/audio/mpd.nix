@@ -20,10 +20,6 @@
           mpd = {
             musicDirectory = srcDir;
             playlistDirectory = "${srcDir}";
-            network = {
-              listenAddress = "localhost";
-              port = 6600;
-            };
           };
         };
       }

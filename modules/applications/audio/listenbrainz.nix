@@ -14,6 +14,11 @@
         services.listenbrainz-mpd = {
           enable = true;
           settings = {
+            mpd = let
+              mpdNet = config.services.mpd.network;
+            in {
+              address = "${mpdNet.listenAddress}:${builtins.toString mpdNet.port}";
+            };
             submission = {
               cache_file = "${config.xdg.cacheHome}/mpd/listenbrainz-mpd-cache.sqlite3";
             };

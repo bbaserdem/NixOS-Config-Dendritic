@@ -90,6 +90,10 @@ walks to the following scopes;
 
 The attrset of the contents of the current scope is called the **context**; or **ctx**.
 
+> [!WARNING]
+> Policies fire once at a scope; and that scope is marked as resolved.
+> Which means that nested policy invokations cannot work; so don't nest policies.
+
 ### Schema
 
 Schema is used to declare global behaviors to entities;

@@ -1,29 +1,18 @@
 # Configuring MPD for batuhan
 {...}: {
   flake.modules.homeManager.batuhan = {
-    pkgs,
     config,
     lib,
     options,
     ...
-  }: let
-    # userDirs is only allowed on linux
-    srcDir =
-      if pkgs.stdenv.hostPlatform.isLinux
-      then config.xdg.userDirs.music
-      else "${config.home.homeDirectory}/Media/Music";
-  in {
+  }: {
     config = lib.mkMerge [
       {
         # MPD configuration
         services = {
           mpd = {
-            musicDirectory = srcDir;
-            playlistDirectory = "${srcDir}/Playlists";
-            network = {
-              listenAddress = "localhost";
-              port = 6601;
-            };
+            musicDirectory = "${config.home.homeDirectory}/Music";
+            playlistDirectory = "${config.home.homeDirectory}/Music/Playlists";
           };
         };
       }
