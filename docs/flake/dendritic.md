@@ -140,9 +140,12 @@ This pattern is to be used as sparingly as possible though.
 The top-level `den.aspects.system` is the aspect that configures the base of
 a type of system; and included unconditionally in hosts.
 
-Right now, each configuration morsel needed by a system is a flake-parts module
-with the naming `<system>-<feature>` and imported in the top-level module
-`den.aspects.system.<class>`, granted they are simple static configurations.
+Each type of system is configured through `den.aspects.system._.<type>`.
+Features either describe further config aspects nested under this aspect,
+or use policies (scoped to the base of `system` aspect) for dispatching.
+
+Each actual configuration morsel needed by a system is a flake-parts module
+with the naming `<system>-<feature>.
 
 For complicated, and potentially different backend configuration;
 

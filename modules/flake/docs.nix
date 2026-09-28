@@ -67,7 +67,7 @@
     };
 
     # In darwin, the service is caddy
-    darwin.caddy = {
+    darwin.caddy-local = {
       lib,
       pkgs,
       ...

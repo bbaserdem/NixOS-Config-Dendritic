@@ -9,75 +9,77 @@
   den = {
     # Add to host schema ability to punch in fingerprintd settings
     schema.host = {
-      # Policy that enables
-      includes = [
-        den.aspects.system._.powerManagement.policies.power-management-enable
-      ];
-      imports = [
-        ({...}: {
-          options = {
-            powerManagement = lib.mkOption {
-              description = "Options for enabling power management";
-              default = {};
-              type = lib.types.submodule {
-                options = {
-                  enable = lib.mkOption {
-                    description = "Enable power management on this host";
-                    default = false;
-                    type = lib.types.bool;
-                  };
-                  backend = lib.mkOption {
-                    description = "Power management backend to use";
-                    default = "ppd";
-                    type = lib.types.enum [
-                      "ppd"
-                      "tuned"
-                    ];
-                  };
-                };
+      options = {
+        powerManagement = lib.mkOption {
+          description = "Options for enabling power management";
+          default = {};
+          type = lib.types.submodule {
+            options = {
+              enable = lib.mkOption {
+                description = "Enable power management on this host";
+                default = false;
+                type = lib.types.bool;
+              };
+              backend = lib.mkOption {
+                description = "Power management backend to use";
+                default = "ppd";
+                type = lib.types.enum [
+                  "ppd"
+                  "tuned"
+                ];
               };
             };
           };
-        })
-      ];
+        };
+      };
     };
 
     # Aspect to setup fingerprints
     aspects.system = {
-      provides.powerManagement = {
-        name = "system/powerManagement";
+      provides.nixos = {
+        includes = [
+          den.aspects.system._.nixos.policies.nixos-power-management-dispatch
+        ];
         # Policy for auto-dispatch
-        policies.power-management-enable = {host, ...}:
+        policies.nixos-power-management-dispatch = {host, ...}: (
           lib.optionals
           host.powerManagement.enable
           [
-            (den.lib.policy.include den.aspects.system._.powerManagement)
             (
               den.lib.policy.include
-              den.aspects.system._.powerManagement._.${host.powerManagement.backend}
+              den.aspects.system._.nixos._.powerManagement
             )
-          ];
-        # Aspect module
-        nixos = {...}: {
-          imports = [
-            inputs.self.modules.nixos.powerManagement-settings
-          ];
-        };
-        # Load specific backend modules
-        provides.ppd = {
-          name = "system/powerManagement/ppd";
+            (
+              den.lib.policy.include
+              den.aspects.system._.nixos._.powerManagement._.${host.powerManagement.backend}
+            )
+          ]
+        );
+
+        provides.powerManagement = {
+          name = "system/nixos/powerManagement";
+          # Aspect module
           nixos = {...}: {
             imports = [
-              inputs.self.modules.nixos.powerManagement-ppd
+              inputs.self.modules.nixos.nixos-power
             ];
           };
-        };
-        provides.tuned = {
-          name = "system/powerManagement/tuned";
-          nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.powerManagement-tuned
-            ];
+          # Load specific backend modules
+          provides.ppd = {
+            name = "system/nixos/powerManagement/ppd";
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.nixos-ppd
+              ];
+            };
+          };
+          provides.tuned = {
+            name = "system/nixos/powerManagement/tuned";
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.nixos-tuned
+              ];
+            };
           };
         };
       };
@@ -86,8 +88,8 @@
 
   flake.modules.nixos = {
     # General enabling of power management
-    powerManagement-settings = {pkgs, ...}: {
-      key = "powerManagement-settings#nixos";
+    nixos-power = {pkgs, ...}: {
+      key = "nixos-power#nixos";
       config = {
         powerManagement = {
           enable = true;
@@ -111,8 +113,8 @@
       };
     };
     # Power Profiles Daemon setup
-    powerManagement-ppd = {...}: {
-      key = "powerManagement-ppd#nixos";
+    nixos-ppd = {...}: {
+      key = "nixos-ppd#nixos";
       config = {
         services = {
           # Enable PPD
@@ -125,8 +127,8 @@
       };
     };
     # Tuned setup
-    powerManagement-tuned = {lib, ...}: {
-      key = "powerManagement-tuned#nixos";
+    nixos-tuned = {lib, ...}: {
+      key = "nixos-tuned#nixos";
       config = {
         services = {
           # Enable tuned with ppd compatibility

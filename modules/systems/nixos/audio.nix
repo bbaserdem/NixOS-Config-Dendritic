@@ -46,13 +46,11 @@
     };
 
     aspects.system = {
-      # Hook our policy to system aspect
-      includes = [
-        den.aspects.system._.audio.policies.nixos-audio-dispatch
-      ];
-
-      provides.audio = {
-        # Policy to enable main module on nixos
+      provides.nixos = {
+        # Policy to enable audio module on nixos
+        includes = [
+          den.aspects.system._.nixos.policies.nixos-audio-dispatch
+        ];
         policies.nixos-audio-dispatch = {host, ...}:
           lib.optionals
           (
@@ -60,36 +58,38 @@
             && (host.audio.enable or false)
           ) (
             [
-              (den.lib.policy.include den.aspects.system._.audio._.pipewire)
+              (den.lib.policy.include den.aspects.system._.nixos._.audio)
             ]
             ++ (
               lib.optional
               (host.audio.airplay or false)
-              (den.lib.policy.include den.aspects.system._.audio._.airplay)
+              (den.lib.policy.include den.aspects.system._.nixos._.audio._.airplay)
             )
           );
-        # Aspect that provides pipewire
-        provides.pipewire = {host}: {
-          name = "system/audio/pipewire(@${host.name})";
+
+        # Full audio aspect
+        provides.audio = {
+          name = "system/nixos/audio";
+          # Provides pipewire
           nixos = {...}: {
             imports = [
               inputs.self.modules.nixos.nixos-pipewire
             ];
           };
-        };
-        # Aspect that provides airplay integration to pipewire
-        provides.airplay = {host}: {
-          name = "system/audio/airplay(@${host.name})";
-          nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.nixos-airplay
-            ];
-          };
-          # Open local discovery ports
-          local-ports = {
-            from = 6001;
-            to = 6002;
-            proto = "udp";
+          # Provide airplay integration to pipewire
+          provides.airplay = {
+            name = "system/nixos/audio/airplay";
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.nixos-pipewire-airplay
+              ];
+            };
+            # Open local discovery ports
+            local-ports = {
+              from = 6001;
+              to = 6002;
+              proto = "udp";
+            };
           };
         };
       };
@@ -118,8 +118,8 @@
         };
       };
     };
-    nixos-airplay = {...}: {
-      key = "nixos-airplay#nixos";
+    nixos-pipewire-airplay = {...}: {
+      key = "nixos-pipewire-airplay#nixos";
       config = {
         # Sets up pipewire; but needs avahi configured for this
         services.pipewire.extraConfig.pipewire = {

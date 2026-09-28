@@ -1,14 +1,68 @@
 # Nixos; input settings
-{...}: {
-  flake.modules.nixos.nixos-keyboard = {...}: {
-    # Default my systems to dvorak
-    services.xserver.xkb = {
-      layout = "us,tr,us";
-      variant = "dvorak-alt-intl,f,altgr-intl";
-      options = "grp:alt_caps_toggle";
+{
+  inputs,
+  den,
+  lib,
+  ...
+}: {
+  den = {
+    # Host schema for declaring system-wide xkb keymap defaults
+    schema.host = {
+      options = {
+        xkb = lib.mkOption {
+          description = "Default XKB settings for NixOS. (Follows services.xserver.xkb)";
+          default = {};
+          type = lib.types.submodule {
+            options = {
+              layout = lib.mkOption {
+                description = "XKB keyboard layout";
+                type = lib.types.str;
+                default = "us,tr,us";
+              };
+              variant = lib.mkOption {
+                description = "XKB keyboard layout variant";
+                type = lib.types.str;
+                default = "dvorak-alt-intl,f,altgr-intl";
+              };
+              options = lib.mkOption {
+                description = "XKB keyboard layout options";
+                type = lib.types.str;
+                default = "grp:alt_caps_toggle";
+              };
+            };
+          };
+        };
+      };
     };
 
-    # Enable uinput; kernel interface for synthesizing inputs
-    hardware.uinput.enable = true;
+    # Aspect
+    aspects.system = {
+      provides.nixos = {
+        includes = [
+          den.aspects.system._.nixos._.input
+        ];
+        provides.input = {host}: {
+          name = "system/nixos/input(#${host.name})";
+          nixos = {...}: {
+            imports = [
+              inputs.self.modules.nixos.nixos-input
+            ];
+            config = {
+              services.xserver = {
+                inherit (host) xkb;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+
+  flake.modules.nixos.nixos-input = {...}: {
+    key = "nixos-input#nixos";
+    config = {
+      # Enable uinput; kernel interface for synthesizing inputs directly
+      hardware.uinput.enable = true;
+    };
   };
 }

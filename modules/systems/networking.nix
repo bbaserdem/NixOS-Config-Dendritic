@@ -1,4 +1,4 @@
-# Networking information, local or total around the system
+# Networking setup for global quirks collecting information
 {
   den,
   lib,
@@ -6,27 +6,31 @@
 }: {
   den = {
     quirks = {
+      # Registry quirk for local services
       local-web.description = "Host-local DNS records for local services.";
-      local-pages.description = "Normalized host-local web routes";
       local-ports.description = "Host-local port registry.";
+      # Derived; it's one attrset that houses info on what should be available
+      local-pages.description = "Normalized host-local web routes";
     };
 
     schema = {
-      # For a host, collect the network info emitted by it's user scopes
       user = {
+        # Collect the network info emitted by user scopes for a host
         includes = [
           den.aspects.system._.networking.policies.expose-local-network-records
         ];
       };
       host = {
+        # Create one collected local-pages registry
         includes = [
           den.aspects.system._.networking.policies.normalize-local-pages
         ];
-        options.localWeb = lib.mkOption {
-          description = "Local webpage serving functionality.";
+        # Host option to serve the local web pages
+        options.networking = lib.mkOption {
+          description = "Network related metadata";
           type = lib.types.submodule {
             options = {
-              enable = lib.mkOption {
+              enableLocalWeb = lib.mkOption {
                 description = "Whether to enable local page serving.";
                 type = lib.types.bool;
                 default = false;
@@ -39,15 +43,12 @@
     };
 
     aspects.system = {
+      # Auto include networking aspect in all host scopes
       includes = [
         den.aspects.system._.networking
       ];
 
       provides.networking = {
-        includes = [
-          den.aspects.system._.networking._.local-web
-        ];
-
         policies = {
           # Push host-user info to the parent host scope
           expose-local-network-records = {user, ...}:

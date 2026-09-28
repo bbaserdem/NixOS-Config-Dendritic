@@ -59,6 +59,9 @@
 
         # Extra config to set
         extraConfig = ''
+          # Layout priority
+          enabled_layouts tall,grid,fat
+
           # Liberate ctrl+tab
           map ctrl+tab        send_text normal,application \x1b[9;5u
           map ctrl+shift+tab  send_text normal,application \x1b[9;6u

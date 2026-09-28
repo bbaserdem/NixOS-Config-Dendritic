@@ -2,6 +2,7 @@
 {
   lib,
   den,
+  inputs,
   ...
 }: {
   # Den options
@@ -50,119 +51,138 @@
     };
 
     aspects.system = {
-      includes = [
-        den.aspects.system._.displayManager.policies.nixos-displayManager-dispatch
-      ];
-
-      # Display manager policies
-      provides.displayManager = {
-        policies.nixos-displayManager-dispatch = {host, ...}:
-          if
+      provides.nixos = {
+        # Base aspect; and type dispatch policy
+        includes = [
+          den.aspects.system._.nixos.policies.nixos-dm-dispatch
+        ];
+        # Policy that enables the dispatch of display managers
+        policies.nixos-dm-dispatch = {host, ...}:
+          lib.optionals
+          (
+            (host.class == "nixos")
+            && (host.displayManager != null)
+            && (host.displayManager.name != null)
+          )
+          [
             (
-              (host.class == "nixos")
-              && (host.displayManager != null)
-              && (host.displayManager.name != null)
+              den.lib.policy.include
+              den.aspects.system._.nixos._.dm
             )
-          then [
-            (den.lib.policy.include den.aspects.system._.displayManager._.${host.displayManager.name})
-          ]
-          else [];
+            (
+              den.lib.policy.include
+              den.aspects.system._.nixos._.dm._.${host.displayManager.name}
+            )
+          ];
 
-        provides.gdm = {host}: {
-          nixos = {lib, ...}: {
-            services.displayManager.gdm.enable = lib.mkOverride 900 (host.displayManager.name == "gdm");
+        # Display manager aspects
+        provides.dm = {
+          name = "system/nixos/dm";
+          # Base aspect to disable all by default
+          nixos = {...}: {
+            imports = [
+              inputs.self.modules.nixos.nixos-dm
+            ];
           };
-          # Enable stylix theming too
-          stylix = {
-            targets.gnome.enable = true;
+          # Gnome display manager
+          provides.gdm = {host}: {
+            name = "system/nixos/dm/gdm(@${host.name})";
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.nixos-gdm
+              ];
+            };
+            # Enable stylix for gdm
+            stylix = {
+              targets.gnome.enable = true;
+            };
           };
-        };
-
-        provides.sddm = {host}: {
-          nixos = {
-            lib,
-            pkgs,
-            config,
-            options,
-            ...
-          }: {
-            config = lib.mkMerge [
-              {
-                services.displayManager.sddm.enable = lib.mkOverride 900 (host.displayManager.name == "sddm");
-                services.displayManager.sddm = {
-                  enableHidpi = true;
-                  wayland.enable = true;
-                  settings.General.InputMethod = "qtvirtualkeyboard";
-                };
-                environment.systemPackages = with pkgs; [
-                  kdePackages.qtvirtualkeyboard
-                ];
-              }
-              (
-                lib.optionalAttrs (options ? stylix) (
-                  # Theming done here; no stylix theming yet we do cattpuccin
-                  let
-                    flavor = host.displayManager.config.flavor or "mocha";
-                    accent = host.displayManager.config.accent or "mauve";
-                  in {
-                    services.displayManager.sddm.theme = "catppuccin-${flavor}-${accent}";
-                    # Add the desired theme with overrides into the userspace
-                    environment.systemPackages = [
+          # Simple desktop display manager
+          provides.sddm = {host}: {
+            name = "system/nixos/dm/sddm(@${host.name})";
+            nixos = {
+              lib,
+              pkgs,
+              config,
+              options,
+              ...
+            }: {
+              imports = [
+                inputs.self.modules.nixos.nixos-sddm
+              ];
+              # Theming config
+              config = lib.mkMerge [
+                (
+                  lib.optionalAttrs (options ? stylix) (
+                    # Theming done here, not in stylix; no stylix theme yet!
+                    let
+                      flavor = host.displayManager.config.flavor or "mocha";
+                      accent = host.displayManager.config.accent or "mauve";
+                    in {
+                      services.displayManager.sddm.theme = "catppuccin-${flavor}-${accent}";
+                      # Add the desired theme with overrides into the userspace
+                      environment.systemPackages = [
+                        (
+                          pkgs.catppuccin-sddm.override {
+                            inherit flavor accent;
+                            font = config.stylix.fonts.sansSerif.name;
+                            fontSize = toString config.stylix.fonts.sizes.desktop;
+                            background = config.stylix.image;
+                            loginBackground = host.displayManager.config.loginBackground or true;
+                            userIcon = host.displayManager.config.userIcon or true;
+                            clockEnabled = host.displayManager.config.clockEnabled or true;
+                          }
+                        )
+                      ];
+                    }
+                  )
+                )
+                (
+                  # Fallback theme if stylix is not available
+                  lib.optionalAttrs (! (options ? stylix)) {
+                    services.displayManager.sddm.theme = "sddm-astronaut-theme";
+                    environment.systemPackages = with pkgs; [
                       (
-                        pkgs.catppuccin-sddm.override {
-                          inherit flavor accent;
-                          font = config.stylix.fonts.sansSerif.name;
-                          fontSize = toString config.stylix.fonts.sizes.desktop;
-                          background = config.stylix.image;
-                          loginBackground = host.displayManager.config.loginBackground or true;
-                          userIcon = host.displayManager.config.userIcon or true;
-                          clockEnabled = host.displayManager.config.clockEnabled or true;
+                        sddm-astronaut.override {
+                          embeddedTheme = host.displayManager.config.embeddedTheme or "pixel_sakura";
                         }
                       )
+                      kdePackages.qtsvg
+                      kdePackages.qtmultimedia
                     ];
                   }
                 )
-              )
-              (
-                # Fallback theme if stylix is not available
-                lib.optionalAttrs (! (options ? stylix)) {
-                  services.displayManager.sddm.theme = "sddm-astronaut-theme";
-                  environment.systemPackages = with pkgs; [
-                    (
-                      sddm-astronaut.override {
-                        embeddedTheme = host.displayManager.config.embeddedTheme or "pixel_sakura";
-                      }
-                    )
-                    kdePackages.qtsvg
-                    kdePackages.qtmultimedia
-                  ];
-                }
-              )
-            ];
+              ];
+            };
           };
-        };
-
-        provides.plm = {host}: {
-          nixos = {lib, ...}: {
-            services.displayManager.plasma-login-manager.enable =
-              lib.mkOverride 900 (host.displayManager.name == "plm");
+          # Plasma login manager
+          provides.plm = {host}: {
+            name = "system/nixos/dm/plm(@${host.name})";
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.nixos-plm
+              ];
+            };
           };
-        };
-
-        provides.regreet = {host}: {
-          nixos = {lib, ...}: {
-            programs.regreet.enable = lib.mkOverride 900 (host.displayManager.name == "regreet");
-          };
-          # Stylix theming too
-          stylix = {
-            targets.regreet = {
-              enable = true;
-              colors.enable = true;
-              cursor.enable = true;
-              fonts.enable = true;
-              icons.enable = true;
-              image.enable = true;
-              imageScalingMode.enable = true;
+          # Regreet uses greetd
+          provides.regreet = {host}: {
+            name = "system/nixos/dm/regreet(@${host.name})";
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.nixos-regreet
+              ];
+            };
+            # Stylix theming
+            stylix = {
+              targets.regreet = {
+                enable = true;
+                colors.enable = true;
+                cursor.enable = true;
+                fonts.enable = true;
+                icons.enable = true;
+                image.enable = true;
+                imageScalingMode.enable = true;
+              };
             };
           };
         };
@@ -170,67 +190,35 @@
     };
   };
 
-  flake.modules.nixos.nixos-displayManager = {lib, ...}: {
-    # Application of the selected options
-    services.displayManager.gdm.enable = lib.mkOverride 950 false;
-    services.displayManager.sddm.enable = lib.mkOverride 950 false;
-    programs.regreet.enable = lib.mkOverride 950 false;
-    services.displayManager.plasma-login-manager.enable = lib.mkOverride 950 false;
-  };
-
-  # TODO: Remove these after den migration
-  flake.modules.nixos.nixos-displayManager-local = {lib, ...}: {
-    # Local option for hosts to set the display manager
-    options = {
-      local.displayManager = {
-        name = lib.mkOption {
-          type = lib.types.nullOr (lib.types.enum [
-            "gdm"
-            "sddm"
-            "regreet"
-            "plm"
-          ]);
-          default = null;
-          description = ''
-            Display manager to be used by the nixos system
-          '';
-        };
-        config = lib.mkOption {
-          type = lib.types.attrs;
-          default = {};
-          description = ''
-            Config options to be passed to the display manager
-          '';
+  # Modules
+  flake.modules.nixos = {
+    nixos-dm = {lib, ...}: {
+      key = "nixos-dm#nixos";
+      config = {
+        # Application of the selected options
+        services.displayManager.gdm.enable = lib.mkOverride 950 false;
+        services.displayManager.sddm.enable = lib.mkOverride 950 false;
+        programs.regreet.enable = lib.mkOverride 950 false;
+        services.displayManager.plasma-login-manager.enable = lib.mkOverride 950 false;
+      };
+    };
+    nixos-gdm = {lib, ...}: {
+      key = "nixos-gdm#nixos";
+      config = {
+        services.displayManager.gdm = {
+          enable = lib.mkOverride 900 true;
         };
       };
     };
-  };
-
-  flake.modules.nixos.nixos-displayManager-gdm = {
-    lib,
-    config,
-    ...
-  }: let
-    cfg = config.local.displayManager;
-  in {
-    config = lib.mkIf (cfg.name == "gdm") {
-      services.displayManager.gdm.enable = lib.mkOverride 900 true;
-    };
-  };
-
-  flake.modules.nixos.nixos-displayManager-sddm = {
-    lib,
-    config,
-    pkgs,
-    options,
-    ...
-  }: let
-    cfg = config.local.displayManager;
-  in {
-    config = lib.mkIf (cfg.name == "sddm") (lib.mkMerge [
-      {
-        services.displayManager.sddm.enable = lib.mkOverride 900 true;
+    nixos-sddm = {
+      lib,
+      pkgs,
+      ...
+    }: {
+      key = "nixos-sddm#nixos";
+      config = {
         services.displayManager.sddm = {
+          enable = lib.mkOverride 900 true;
           enableHidpi = true;
           wayland.enable = true;
           settings.General.InputMethod = "qtvirtualkeyboard";
@@ -238,106 +226,23 @@
         environment.systemPackages = with pkgs; [
           kdePackages.qtvirtualkeyboard
         ];
-      }
-      (
-        # Fallback theme if stylix is not available
-        lib.mkIf (! (lib.hasAttrByPath ["stylix"] options)) {
-          services.displayManager.sddm.theme = "sddm-astronaut-theme";
-          environment.systemPackages = with pkgs; [
-            (
-              sddm-astronaut.override {
-                embeddedTheme = cfg.config.embeddedTheme ? "pixel_sakura";
-              }
-            )
-            kdePackages.qtsvg
-            kdePackages.qtmultimedia
-          ];
-        }
-      )
-    ]);
-  };
-
-  flake.modules.nixos.nixos-displayManager-plm = {
-    lib,
-    config,
-    ...
-  }: let
-    cfg = config.local.displayManager;
-  in {
-    config = lib.mkIf (cfg.name == "plm") {
-      services.displayManager.plasma-login-manager.enable = lib.mkOverride 900 true;
+      };
     };
-  };
-
-  flake.modules.nixos.nixos-displayManager-regreet = {
-    lib,
-    config,
-    ...
-  }: let
-    cfg = config.local.displayManager;
-  in {
-    config = lib.mkIf (cfg.name == "regreet") {
-      programs.regreet.enable = lib.mkOverride 900 true;
+    nixos-plm = {lib, ...}: {
+      key = "nixos-plm#nixos";
+      config = {
+        services.displayManager.plasma-login-manager = {
+          enable = lib.mkOverride 900 true;
+        };
+      };
     };
-  };
-
-  # Theming using stylix
-  flake.modules.nixos.stylix = {
-    config,
-    lib,
-    pkgs,
-    ...
-  }: let
-    cfg = config.local.displayManager;
-  in {
-    config = lib.mkMerge [
-      (
-        lib.mkIf (cfg.name == "gdm") {
-          # The nixos option themes gdm, not gnome
-          stylix.targets.gnome.enable = true;
-        }
-      )
-      (
-        lib.mkIf (cfg.name == "sddm") (let
-          flavor = cfg.config.flavor or "mocha";
-          accent = cfg.config.accent or "mauve";
-        in {
-          # There is no stylix target for SDDM, but we can do the cattpuccin theme
-          services.displayManager.sddm.theme = "catppuccin-${flavor}-${accent}";
-          # Add the desired theme with overrides into the userspace
-          environment.systemPackages = [
-            (
-              pkgs.catppuccin-sddm.override {
-                inherit flavor accent;
-                font = config.stylix.fonts.sansSerif.name;
-                fontSize = toString config.stylix.fonts.sizes.desktop;
-                background = config.stylix.image;
-                loginBackground = cfg.config.loginBackground or true;
-                userIcon = cfg.config.userIcon or true;
-                clockEnabled = cfg.config.clockEnabled or true;
-              }
-            )
-          ];
-        })
-      )
-      (
-        lib.mkIf (cfg.name == "regreet") {
-          stylix.targets.regreet = {
-            enable = true;
-            colors.enable = true;
-            cursor.enable = true;
-            fonts.enable = true;
-            icons.enable = true;
-            image.enable = true;
-            imageScalingMode.enable = true;
-          };
-        }
-      )
-      (
-        lib.mkIf (cfg.name == "plm") {
-          # Not in stylix yet
-        }
-      )
-    ];
+    nixos-regreet = {lib, ...}: {
+      key = "nixos-regreet#nixos";
+      config = {
+        programs.regreet = {
+          enable = lib.mkOverride 900 true;
+        };
+      };
+    };
   };
 }

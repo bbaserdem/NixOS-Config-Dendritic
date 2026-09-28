@@ -7,7 +7,9 @@
       description = "Yertengri: Homestation PC";
 
       # Enable features
-      localWeb.enable = true;
+      networking = {
+        enableLocalWeb = true;
+      };
       stylix.enable = true;
       geolocation = {
         enable = true;

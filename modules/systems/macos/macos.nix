@@ -4,63 +4,92 @@
   den,
   ...
 }: {
-  den.aspects = {
-    system = {host}: {
-      darwin = {lib, ...}: {
+  den = {
+    aspects.system = {
+      provides.macos = {
+        name = "system/macos";
         includes = [
-          den.aspects.system._.macos-dbus
+          den.aspects.system._.macos._.system-info
         ];
-        imports = with inputs.self.modules.darwin; [
-          # Base modules to configure the system
-          macos-filesystem
-          macos-homebrew
-          macos-settings
-        ];
-        config = {
-          # Default state version for this nix-darwin
-          system.stateVersion = lib.mkDefault 7;
-          # Full computer name
-          networking.computerName = host.description;
+        darwin = {...}: {
+          imports = [
+            inputs.self.modules.darwin.macos-defaults
+            # TODO: Migrate to a wolframite specific module
+            inputs.self.modules.darwin.macos-behavior
+          ];
+        };
+        # Defaults aspect
+        provides.system-info = {host}: {
+          name = "system/macos/system-info(@${host.name})";
+          darwin = {lib, ...}: {
+            config = lib.mkMerge [
+              ( # Full computer name
+                lib.mkIf (host.description != null) {
+                  # Default state version for this nix-darwin version
+                  networking.computerName = host.description;
+                }
+              )
+              ( # Default state version for this nix-darwin version
+                lib.mkIf (host.stateVersion != null) {
+                  system.stateVersion = host.stateVersion;
+                }
+              )
+            ];
+          };
         };
       };
     };
   };
 
-  # TODO: Delete after den migration
-  flake.modules.darwin.macos = {
-    lib,
-    options,
-    ...
-  }: {
-    imports = with inputs.self.modules.darwin; [
-      nix
-      homeManager
-      shell
-      # Submodules
-      macos-homebrew
-      macos-filesystem
-      macos-dbus
-      inputs.self.modules.generic.filesystem
-      macos-settings
-      macos-local
-      macos-networking
-    ];
-    config = lib.mkIf (options ? home-manager) {
-      home-manager.sharedModules = [
-        inputs.self.modules.homeManager.macos-dbus
-      ];
+  # Modules
+  flake.modules.darwin = {
+    macos-defaults = {lib, ...}: {
+      key = "macos-defaults#darwin";
+      config = {
+        # Default state version for this nix-darwin version
+        system.stateVersion = lib.mkDefault 7;
+      };
     };
-  };
+    # TODO: These settings should be migrated to a wolframite specific module
+    macos-behavior = {...}: {
+      key = "macos-behavior#darwin";
+      config = {
+        system = {
+          # Don't need this with flakes
+          checks.verifyNixPath = false;
+          defaults = {
+            LaunchServices = {
+              LSQuarantine = false;
+            };
+            NSGlobalDomain = {
+              AppleShowAllExtensions = true;
+              ApplePressAndHoldEnabled = false;
 
-  flake.modules.darwin.macos-local = {lib, ...}: {
-    # Mirrors the "to-be-deprecated" system.primaryUser option
-    options = {
-      local.mainUser = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = null;
-        description = ''
-          The user that can be configured by modules in this flake.
-        '';
+              # 120, 90, 60, 30, 12, 6, 2
+              KeyRepeat = 2;
+
+              # 120, 94, 68, 35, 25, 15
+              InitialKeyRepeat = 15;
+            };
+            finder = {
+              _FXShowPosixPathInTitle = true;
+            };
+            loginwindow = {
+              DisableConsoleAccess = false;
+              GuestEnabled = false;
+            };
+            menuExtraClock = {
+              Show24Hour = true;
+            };
+            screencapture = {
+              # location = "";
+              type = "png";
+            };
+          };
+          keyboard = {
+            enableKeyMapping = true;
+          };
+        };
       };
     };
   };

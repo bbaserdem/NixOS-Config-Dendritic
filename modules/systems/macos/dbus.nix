@@ -1,19 +1,33 @@
 # D-Bus for darwin
-{inputs, ...}: {
+{
+  inputs,
+  den,
+  ...
+}: {
   den.aspects = {
     system = {
-      # This dispatch handled by system.darwin parametric aspect
-      provides.macos-dbus = {
-        darwin = {...}: {
-          imports = [
-            inputs.self.modules.darwin.macos-dbus
-          ];
-        };
-        provides.to-users = {
-          homeManager = {...}: {
+      provides.macos = {
+        includes = [
+          den.aspects.system._.macos._.dbus
+        ];
+        provides.dbus = {
+          name = "system/macos/dbus";
+          darwin = {...}: {
             imports = [
-              inputs.self.modules.homeManager.macos-dbus
+              inputs.self.modules.darwin.macos-dbus
             ];
+          };
+          # Need to dispatch the session bus to users as well
+          provides.to-users = {
+            host,
+            user,
+          }: {
+            name = "system/macos/dbus(${user.userName}@${host.name})";
+            homeManager = {...}: {
+              imports = [
+                inputs.self.modules.homeManager.macos-dbus
+              ];
+            };
           };
         };
       };
