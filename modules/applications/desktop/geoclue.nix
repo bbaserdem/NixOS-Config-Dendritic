@@ -65,12 +65,14 @@
 
       # Aspects import the necessary modules
       provides.geolocation = {
+        name = "desktop/geolocation";
         nixos = {...}: {
           imports = [
             inputs.self.modules.nixos.geoclue-settings
           ];
         };
         provides.google = {
+          name = "desktop/geolocation/google";
           nixos = {...}: {
             imports = [
               inputs.self.modules.nixos.geoclue-google
@@ -78,6 +80,7 @@
           };
         };
         provides.manual = {
+          name = "desktop/geolocation/manual";
           nixos = {...}: {
             imports = [
               inputs.self.modules.nixos.geoclue-manual

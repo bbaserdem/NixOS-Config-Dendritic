@@ -9,12 +9,13 @@
   # };
   den = {
     aspects.desktop = {
-      provides.voxtype = {
+      provides.stt = {
+        name = "desktop/stt";
         provides.to-users = {
           user,
           host,
         }: {
-          name = "desktop/voxtype(${user.userName}@${host.name})";
+          name = "desktop/stt(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
               inputs.self.modules.homeManager.voxtype-settings

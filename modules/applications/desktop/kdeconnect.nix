@@ -3,6 +3,7 @@
   den = {
     aspects.desktop = {
       provides.kdeconnect = {
+        name = "desktop/kdeconnect";
         # System module config for nixos
         nixos = {...}: {
           imports = [

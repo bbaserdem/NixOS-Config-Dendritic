@@ -4,6 +4,7 @@
     # Our aspect
     aspects.desktop = {
       provides.gnome = {
+        name = "desktop/gnome";
         nixos = {...}: {
           imports = [
             inputs.self.modules.nixos.gnome-settings

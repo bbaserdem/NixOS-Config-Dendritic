@@ -6,6 +6,7 @@
 }: {
   den = {
     aspects.desktop = {
+      # Auto include us
       includes = [
         den.aspects.desktop._.gtk
         den.aspects.desktop._.qt
@@ -44,7 +45,7 @@
               inputs.self.modules.homeManager.desktop-qt
             ];
           };
-          stylix = {lib, ...}: {
+          stylix = {...}: {
             targets.qt = {
               # Soft default to true; plasma inclusion will set this false
               # (Stylix qt breaks plasma)

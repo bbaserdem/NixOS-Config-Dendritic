@@ -1,4 +1,4 @@
-# Fonts to install to system with desktop
+# Fonts to install to systems
 {
   inputs,
   den,
@@ -25,7 +25,6 @@
           };
         };
       in {
-        # For standalone home and nixos; turn on the desktop portal in linux
         nixos = {...}: {
           imports = [
             inputs.self.modules.nixos.desktop-fonts

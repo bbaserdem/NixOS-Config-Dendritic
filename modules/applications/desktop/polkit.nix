@@ -5,17 +5,20 @@
   ...
 }: {
   den = {
-    aspects.desktop = {
-      # Auto include us
+    # Always load this aspect
+    schema.host = {
       includes = [
         den.aspects.desktop._.polkit
       ];
-      # Our aspect
+    };
+    # Our aspect
+    aspects.desktop = {
       provides.polkit = {
+        name = "desktop/polkit";
         # Nixos policy kit settings
         nixos = {...}: {
           imports = [
-            inputs.self.modules.nixos.polkit-settings
+            inputs.self.modules.nixos.desktop-polkit
           ];
         };
       };
@@ -23,8 +26,8 @@
   };
 
   # Module
-  flake.modules.nixos.polkit-settings = {...}: {
-    key = "polkit-settings#nixos";
+  flake.modules.nixos.desktop-polkit = {...}: {
+    key = "desktop-polkit#nixos";
     config = {
       security.polkit = {
         enable = true;

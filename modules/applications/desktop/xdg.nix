@@ -5,12 +5,16 @@
   ...
 }: {
   den = {
-    aspects.desktop = {
-      # Load xdg by default
+    # Always load this aspect
+    schema.host = {
       includes = [
         den.aspects.desktop._.xdg
       ];
+    };
+    # The aspect
+    aspects.desktop = {
       provides.xdg = {
+        name = "desktop/xdg";
         # For standalone home and nixos; turn on the desktop portal in linux
         nixos = {...}: {
           imports = [

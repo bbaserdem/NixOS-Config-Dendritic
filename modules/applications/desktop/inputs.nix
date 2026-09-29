@@ -6,7 +6,7 @@
 }: {
   den = {
     aspects.desktop = {
-      # Auto include us
+      # Auto include us in desktop
       includes = [
         den.aspects.desktop._.inputs
       ];
