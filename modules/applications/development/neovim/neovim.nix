@@ -1,13 +1,64 @@
-# Configuring neovim the editor, using the neovim wrapper from this flake
-{inputs, ...}: {
-  # Den config
+# Configuring neovim
+{
+  inputs,
+  lib,
+  den,
+  ...
+}: {
+  # Den
   den = {
-    aspects.applications = {
+    schema.host = {
+      includes = [
+        den.aspects.development.policies.neovim-dispatch
+      ];
+      options = {
+        development = lib.mkOption {
+          type = lib.types.submodule {
+            options = {
+              neovim = lib.mkOption {
+                description = "Neovim settings";
+                default = {};
+                type = lib.types.submodule {
+                  options = {
+                    enable = lib.mkOption {
+                      description = "Whether to install neovim to this host.";
+                      default = true;
+                      type = lib.types.bool;
+                    };
+                    guiEnable = lib.mkOption {
+                      description = "Whether to install neovide as nvim GUI";
+                      default = false;
+                      type = lib.types.bool;
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+
+    # Aspect
+    aspects.development = {
+      policies.neovim-dispatch = {host, ...}:
+        lib.optionals
+        host.development.neovim.enable
+        (
+          [
+            (den.lib.policy.include den.aspects.development._.neovim)
+          ]
+          ++ (
+            lib.optional host.development.neovim.guiEnable
+            (den.lib.policy.include den.aspects.development._.neovim._.neovide)
+          )
+        );
+
       provides.neovim = {
+        name = "development/neovim";
         # System level module for installing neovim to the system
         os = {...}: {
           imports = with inputs.self.modules.generic; [
-            neovim-wrapper
             neovim-settings
           ];
         };
@@ -16,15 +67,13 @@
           host,
           user,
         }: {
-          # Collision protection
-          name = "applications/neovim(${user.userName}@${host.name})";
+          name = "development/neovim(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = with inputs.self.modules.homeManager; [
-              neovim-wrapper
               neovim-settings
             ];
           };
-          # Explicitly disable stylix; we do our own integration
+          # Explicitly disable stylix; we do our own integration for this
           stylix = {
             targets = {
               neovim.enable = false;

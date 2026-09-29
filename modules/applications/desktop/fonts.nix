@@ -2,6 +2,7 @@
 {
   inputs,
   den,
+  lib,
   ...
 }: {
   den = {
@@ -65,12 +66,10 @@
     };
   };
 
+  # Modules
   flake.modules = let
-    fontPackages = {
-      pkgs,
-      lib,
-      ...
-    }:
+    # One function to create the font set to install from pkgs.
+    fontPackages = pkgs:
       with pkgs; (
         [
           corefonts # Web rendering fonts
@@ -84,7 +83,6 @@
           carlito #   Calibri/georgia alternative
           inconsolata # Monospace font, for prints
           iosevka # Monospace font, for terminal mostly
-          fira-code
           victor-mono
           noto-fonts
           source-code-pro
@@ -100,38 +98,26 @@
       );
   in {
     # Put fonts into darwin system (using nix-darwin)
-    darwin.desktop-fonts = {
-      pkgs,
-      lib,
-      ...
-    }: {
+    darwin.desktop-fonts = {pkgs, ...}: {
       key = "desktop-fonts#darwin";
       config = {
         homebrew.casks = [
         ];
-        fonts.packages = fontPackages {inherit pkgs lib;};
+        fonts.packages = fontPackages pkgs;
       };
     };
     # Install fonts to nixos
-    nixos.desktop-fonts = {
-      pkgs,
-      lib,
-      ...
-    }: {
+    nixos.desktop-fonts = {pkgs, ...}: {
       key = "desktop-fonts#nixos";
       config = {
-        environment.systemPackages = fontPackages {inherit pkgs lib;};
+        environment.systemPackages = fontPackages pkgs;
       };
     };
     # Install to user as well
-    homeManager.desktop-fonts = {
-      pkgs,
-      lib,
-      ...
-    }: {
+    homeManager.desktop-fonts = {pkgs, ...}: {
       key = "desktop-fonts#homeManager";
       config = {
-        home.packages = fontPackages {inherit pkgs lib;};
+        home.packages = fontPackages pkgs;
       };
     };
   };

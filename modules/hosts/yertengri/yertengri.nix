@@ -6,22 +6,53 @@
       system = "x86_64-linux";
       description = "Yertengri: Homestation PC";
 
-      # Enable features
+      # Features
+      desktop = {
+        enable = true;
+        defaultSession = "plasma";
+        geolocation = {
+          enable = true;
+          backend = "manual";
+        };
+      };
       networking = {
         enableLocalWeb = true;
       };
       stylix.enable = true;
-      geolocation = {
+
+      # Dev environment
+      development = {
         enable = true;
-        backend = "manual";
-      };
-      containerization = {
-        enable = true;
-        backend = "podman";
-      };
-      virtualization = {
-        enable = true;
-        windows = true;
+        containerization = {
+          enable = true;
+          backend = "podman";
+        };
+        virtualization = {
+          enable = true;
+          windows = true;
+        };
+        secretspec = {
+          enable = true;
+          isGlobal = false;
+        };
+        direnv.enable = true;
+        vcs = {
+          enable = true;
+          tools = ["git" "jujutsu"];
+          providers = ["github" "forgejo" "gitlab"];
+        };
+        neovim = {
+          enable = true;
+          guiEnable = true;
+        };
+        agents = {
+          enable = true;
+          harnesses = [
+            "claude"
+            "opencode"
+            "pi"
+          ];
+        };
       };
 
       # Boot settings

@@ -122,7 +122,7 @@
           imports = with inputs.self.modules.homeManager; [
             shell-alias
             shell-apps
-            shell-direnv
+            development-direnv
             shell-fzf
             shell-man
             shell-tmux
@@ -177,7 +177,7 @@
           shell-alias
           shell-apps
           shell-bash
-          shell-direnv
+          development-direnv
           shell-fzf
           shell-man
           shell-starship

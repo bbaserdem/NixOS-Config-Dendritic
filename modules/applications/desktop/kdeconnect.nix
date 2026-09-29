@@ -85,8 +85,8 @@
             ) {
               # Turn off the kdeconnect module; wont be using kdeconnect binary
               services.kdeconnect = {
-                enable = lib.mkOverride 500 false;
-                indicator = lib.mkOverride 500 false;
+                enable = lib.mkOverride 90 false;
+                indicator = lib.mkOverride 90 false;
               };
               # Add gsconnect to gnome extensions
               programs.gnome-shell.extensions = [

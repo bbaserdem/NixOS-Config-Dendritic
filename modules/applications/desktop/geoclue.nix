@@ -14,28 +14,34 @@
       imports = [
         {
           options = {
-            geolocation = lib.mkOption {
-              description = "Geolocation related metadata";
-              default = {};
+            desktop = lib.mkOption {
               type = lib.types.submodule {
                 options = {
-                  enable = lib.mkOption {
-                    description = "Enable geoclue on this host";
-                    default = false;
-                    type = lib.types.bool;
-                  };
-                  backend = lib.mkOption {
-                    description = ''
-                      Backend to use for geolocation in geoclue
-                      null (default) leaves defaults
-                      google uses a google/geoclue-api-key
-                      manual needs location.{latitude,longitude,altitude,accuracy}
-                    '';
-                    default = null;
-                    type = lib.types.nullOr (lib.types.enum [
-                      "google"
-                      "manual"
-                    ]);
+                  geolocation = lib.mkOption {
+                    description = "Geolocation related metadata";
+                    default = {};
+                    type = lib.types.submodule {
+                      options = {
+                        enable = lib.mkOption {
+                          description = "Enable geoclue on this host";
+                          default = false;
+                          type = lib.types.bool;
+                        };
+                        backend = lib.mkOption {
+                          description = ''
+                            Backend to use for geolocation in geoclue
+                            null (default) leaves defaults
+                            google uses a google/geoclue-api-key
+                            manual needs location.{latitude,longitude,altitude,accuracy}
+                          '';
+                          default = null;
+                          type = lib.types.nullOr (lib.types.enum [
+                            "google"
+                            "manual"
+                          ]);
+                        };
+                      };
+                    };
                   };
                 };
               };
@@ -47,7 +53,7 @@
 
     aspects.desktop = {
       policies.desktop-geolocation-dispatch = {host, ...}: let
-        geo = host.geolocation;
+        geo = host.desktop.geolocation;
       in (
         lib.optionals
         geo.enable

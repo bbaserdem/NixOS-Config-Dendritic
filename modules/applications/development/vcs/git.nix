@@ -1,24 +1,28 @@
 # Git VCS setup
 {inputs, ...}: {
   den = {
-    aspects.applications = {
-      provides.git = {
-        provides.to-users = {
-          host,
-          user,
-        }: {
-          name = "applications/git(${user.userName}@${host.name})";
-          # Import to user profile
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.vcs-git
-            ];
-          };
-          # Enable stylix theming
-          stylix = {
-            targets.lazygit = {
-              enable = true;
-              colors.enable = true;
+    # Dispatch done by vcs.nix
+    aspects.development = {
+      provides.vcs = {
+        provides.git = {
+          name = "development/vcs/git";
+          provides.to-users = {
+            host,
+            user,
+          }: {
+            name = "development/vcs/git(${user.userName}@${host.name})";
+            # Import to user profile
+            homeManager = {...}: {
+              imports = [
+                inputs.self.modules.homeManager.vcs-git
+              ];
+            };
+            # Enable stylix theming
+            stylix = {
+              targets.lazygit = {
+                enable = true;
+                colors.enable = true;
+              };
             };
           };
         };
@@ -34,10 +38,10 @@
     ...
   }: {
     key = "vcs-git#homeManager";
-    config = lib.mkMerge [
-      {
+    config = {
+      programs = {
         # Main git config
-        programs.git = {
+        git = {
           enable = true;
           lfs.enable = true;
           settings = {
@@ -61,7 +65,7 @@
         };
 
         # TUI for git
-        programs.lazygit = {
+        lazygit = {
           enable = true;
           settings = {
             git = {
@@ -78,22 +82,26 @@
           };
         };
 
-        # Install hook packages
-        home.packages = with pkgs; [
+        # Worktree switcher.
+        git-worktree-switcher.enable = true;
+        # TODO: Move integrations to shell module
+        git-worktree-switcher = {
+          enableBashIntegration = true;
+          enableFishIntegration = true;
+          enableZshIntegration = true;
+        };
+      };
+
+      # Install hook packages
+      home.packages = with pkgs; ([
           pre-commit
           pre-commit-hook-ensure-sops
           gitleaks
-        ];
-      }
-      (
-        # Linux-only tooling
-        lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-          home.packages = with pkgs; [
-            # Git tree visualizer
-            gitg
-          ];
-        }
-      )
-    ];
+        ]
+        ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+          # Linux-only
+          gitg
+        ]));
+    };
   };
 }

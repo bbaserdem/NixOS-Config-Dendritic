@@ -2,16 +2,17 @@
 {inputs, ...}: {
   # Add new aspect
   den = {
-    aspects.applications = {
+    aspects.development = {
       provides.neovim = {
         # Neovide accessible through aspects.applications._.neovim._.neovide
         provides.neovide = {
+          name = "development/neovim/neovide";
           provides.to-users = {
             host,
             user,
           }: {
             # Collission protection
-            name = "applications/neovim/neovide(${user.userName}@${host.name})";
+            name = "development/neovim/neovide(${user.userName}@${host.name})";
             # Dispatch the home-manager module
             homeManager = {...}: {
               imports = [
@@ -20,6 +21,7 @@
             };
             # Establish stylix theme
             stylix = {lib, ...}: {
+              # Stylix helps out a bit with neovide config
               targets.neovide = {
                 enable = true;
                 fonts.enable = lib.mkDefault true;
@@ -51,7 +53,7 @@
         };
       }
       (
-        # Link to neovim wrapper editor if enabled
+        # Link to neovim wrapper editor if enabled; we are agnostic
         lib.optionalAttrs (lib.hasAttrByPath ["wrappers" "neovim"] options) {
           programs.neovide.settings.neovim-bin =
             lib.getExe

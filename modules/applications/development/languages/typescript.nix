@@ -1,8 +1,37 @@
 # Configuring typescript
-{...}: {
+{
+  inputs,
+  den,
+  ...
+}: {
+  # Aspect config
+  den = {
+    aspects.development = {
+      provides.languages = {
+        includes = [
+          den.aspects.development._.languages._.typescript
+        ];
+        provides.lean = {
+          name = "development/languages/typescript";
+          provides.to-users = {
+            user,
+            host,
+          }: {
+            name = "development/languages/typescript(${user.userName}@${host.name})";
+            homeManager = {...}: {
+              imports = [
+                inputs.self.modules.homeManager.languages-typescript
+              ];
+            };
+          };
+        };
+      };
+    };
+  };
+
   # Node config
-  flake.modules.homeManager.languages-ts = {config, ...}: {
-    key = "languages-ts#homeManager";
+  flake.modules.homeManager.languages-typescript = {config, ...}: {
+    key = "languages-typescript#homeManager";
     config = {
       # Define global node install directory
       # As long as pnpm is used, executables won't be duplicated
@@ -21,7 +50,7 @@
       '';
 
       # Configure bun package manager with safety overrides
-      # Don't install it though; it should be project-based
+      # Don't install it though; it should be in devshells
       programs = {
         bun = {
           enable = true;
