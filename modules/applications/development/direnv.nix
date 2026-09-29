@@ -42,7 +42,7 @@
       # Policy dispatch
       policies.direnv-host-dispatch = {host, ...}:
         lib.optionals
-        host.development.direnv.enable
+        (host.development.enable && host.development.direnv.enable)
         [
           (den.lib.policy.include den.aspects.development._.direnv)
         ];

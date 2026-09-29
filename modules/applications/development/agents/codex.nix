@@ -37,7 +37,11 @@
       };
     };
 
-    flake.modules.homeManager.agents-codex = {pkgs, ...}: {
+    homeManager.agents-codex = {
+      pkgs,
+      lib,
+      ...
+    }: {
       key = "agents-codex#homeManager";
       config = {
         programs.codex = {

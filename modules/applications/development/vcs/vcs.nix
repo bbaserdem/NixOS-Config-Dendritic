@@ -26,7 +26,7 @@
                     };
                     tools = lib.mkOption {
                       description = "Which VCS'es to install";
-                      default = ["git" "jj"];
+                      default = ["git" "jujutsu"];
                       type = lib.types.listOf (lib.types.enum [
                         "git"
                         "jujutsu"
@@ -52,7 +52,7 @@
 
     aspects.development = {
       # Policy for enables
-      policy.vcs-dispatch = {host, ...}:
+      policies.vcs-dispatch = {host, ...}:
         lib.optionals
         host.development.vcs.enable
         (

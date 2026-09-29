@@ -11,9 +11,9 @@
     schema = {
       host = {
         includes = [
-          den.aspects.applications._.steam.policies.steam-host-dispatch
+          den.aspects.gaming.policies.steam-host-dispatch
         ];
-        # New options under gaming metadata is steam
+        # New options under gaming metadata for steam
         imports = [
           ({config, ...}: {
             options = {
@@ -49,6 +49,16 @@
                             default = "/opt/steam-common";
                             type = lib.types.str;
                           };
+                          remotePlay = lib.mkOption {
+                            description = "Enable steam remote play from this host";
+                            default = false;
+                            type = lib.types.bool;
+                          };
+                          gamescope = lib.mkOption {
+                            description = "Enable gamescope desktop session";
+                            default = false;
+                            type = lib.types.bool;
+                          };
                         };
                       };
                     };
@@ -61,159 +71,177 @@
       };
       user = {
         includes = [
-          den.aspects.applications._.steam.policies.steam-user-dispatch
+          den.aspects.gaming.policies.steam-user-dispatch
         ];
       };
     };
 
     # Aspect for setting steam
-    aspects.applications = {
-      # Steam aspect
-      provides.steam = {
-        # Policies for dispatching
-        # Enable steam for this user
-        policies.steam-user-dispatch = {
-          host,
-          user,
-          ...
-        }:
-          lib.optionals
-          ( # This dispatch is conditional on the games being enabled on this host
-            (builtins.elem "games" user.classes)
-            && (host.gaming.enable)
-            && (host.gaming.steam.enable)
-          )
-          (
-            [
-              # Set steam for this user
-              (den.lib.policy.include den.aspects.applications._.steam._.to-users)
-              # Create shared steam directory if set
-            ]
-            ++ (
-              lib.optionals
-              host.gaming.steam.share
-              [
-                (den.lib.policy.include den.aspects.applications._.steam._.steam-common._.to-users)
-              ]
-            )
-          );
-        # Enable steam share for this host
-        policies.steam-host-dispatch = {host, ...}:
-          lib.optionals
-          ( # Enable if steam common is enabled and there is a gamer
-            (host.class == "nixos")
-            && (host.gaming.enable)
-            && (host.gaming.steam.enable)
-            && (host.gaming.steam.share)
-            && (
-              host.users
-              |> builtins.attrValues
-              |> lib.any (u: builtins.elem "games" u.classes)
-            )
-          )
+    aspects.gaming = {
+      # Policies for dispatching
+      policies.steam-host-dispatch = {host, ...}:
+        lib.optionals
+        (host.gaming.enable && host.gaming.steam.enable)
+        (
           [
-            # Set steam share folder for this host
-            (den.lib.policy.include den.aspects.applications._.steam._.steam-common._.root-dir)
-            # Create shared steam directory if set
-          ];
+            (den.lib.policy.include den.aspects.gaming._.steam)
+            (den.lib.policy.include den.aspects.gaming._.steam._.host-setup)
+          ]
+          ++ (
+            lib.optional
+            host.gaming.steam.gamescope
+            (den.lib.policy.include den.aspects.gaming._.steam._.gamescope)
+          )
+          ++ (
+            lib.optional
+            (
+              host.gaming.steam.share
+              && (
+                host.users
+                |> builtins.attrValues
+                |> lib.any (u: builtins.elem "games" u.classes)
+              )
+            )
+            (den.lib.policy.include den.aspects.gaming._.steam._.share-host-setup)
+          )
+        );
+      policies.steam-user-dispatch = {
+        host,
+        user,
+        ...
+      }:
+        lib.optionals
+        ( # This dispatch is conditional on the games being enabled on this host
+          (builtins.elem "games" user.classes)
+          && host.gaming.enable
+          && host.gaming.steam.enable
+        )
+        (
+          [(den.lib.policy.include den.aspects.gaming._.steam._.user-setup)]
+          ++ (
+            lib.optionals
+            host.gaming.steam.share
+            [
+              (den.lib.policy.include den.aspects.applications._.steam._.share-user-setup)
+            ]
+          )
+        );
 
-        # Aspects for setting things up
-        provides.to-users = {
+      provides.steam = {
+        # TODO: Dispatch port settings through our quirk as well
+        name = "gaming/steam";
+        # Steam modules for system
+        nixos = {...}: {
+          imports = [
+            inputs.self.modules.nixos.steam-settings
+          ];
+        };
+        darwin = {...}: {
+          imports = [
+            inputs.self.modules.darwin.steam-settings
+          ];
+        };
+
+        # Gamescope feature
+        provides.gamescope = {
+          name = "gaming/steam/gamescope";
+          nixos = {...}: {
+            imports = [
+              inputs.self.modules.nixos.steam-gamescope
+            ];
+          };
+        };
+        # Host-specific configuration
+        provides.host-setup = {host}: {
+          name = "gaming/steam/host-setup(@${host.name})";
+          nixos = {...}: {
+            config = {
+              programs.steam = {
+                remotePlay.openFirewall = host.gaming.steam.remotePlay;
+              };
+            };
+          };
+        };
+
+        # Host share setup
+        provides.share-host-setup = {host}: {
+          name = "gaming/steam/share-host-setup(@${host.name})";
+          nixos = {config, ...}: {
+            config = let
+              grp =
+                if config.users.groups ? games
+                then "games"
+                else "users";
+            in {
+              # Create a shared directory for steam common data
+              systemd.tmpfiles.settings."20-steam-common" = {
+                "${host.gaming.steam.shareDir}" = {
+                  d = {
+                    user = "root";
+                    # TODO: This is conditional on games aspect; should be users?
+                    group = grp;
+                    mode = "2770";
+                  };
+                  # Everyone should be able to write here in games
+                  "A+".argument = "g:${grp}:rwX,m::rwX";
+                  "a+".argument = "d:g:${grp}:rwx,d:m::rwx";
+                };
+              };
+            };
+          };
+        };
+
+        # Aspects for setting users
+        provides.user-setup = {
           host,
           user,
         }: {
-          name = "applications/steam(${user.userName}@${host.name})";
+          name = "gaming/steam/user-setup(${user.userName}@${host.name})";
           # Set up steam with this parametric aspect
-          nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.steam-settings
-            ];
-          };
-          darwin = {...}: {
-            imports = [
-              inputs.self.modules.darwin.steam-settings
-            ];
-          };
           homeManager = {...}: {
             imports = [
               inputs.self.modules.homeManager.steam-settings
             ];
           };
         };
-
-        # Aspect that sets up shared directory and mounts
-        provides.steam-common = {
-          # Parametric module to create common mount directory
-          includes = [
-            den.aspects.applications._.steam._.steam-common._.root-dir
-          ];
-          provides.root-dir = {host}: {
-            name = "applications/steam/steam-common/root-dir(@${host.name})";
-            nixos = {config, ...}: {
-              config = let
-                grp =
-                  if config.users.groups ? games
-                  then "games"
-                  else "users";
-              in {
-                # Create a shared directory for steam common data
-                systemd.tmpfiles.settings."20-steam-common" = {
-                  "${host.gaming.steam.shareDir}" = {
+        # Aspect setting up user share
+        provides.share-user-setup = {
+          host,
+          user,
+        }: {
+          name = "gaming/steam/share-user-setup(${user.userName}@${host.name})";
+          nixos = {lib, ...}: let
+            steamCommon = ".local/share/Steam/steamapps/common";
+          in {
+            config = lib.mkIf true {
+              # Create the file hierarchy
+              systemd.tmpfiles.settings."25-steam-user-${user.userName}" =
+                "${user.homeDirectory}/${steamCommon}"
+                |> flib.walkToDir user.homeDirectory
+                |> builtins.map (dir:
+                  lib.nameValuePair
+                  "${dir}"
+                  {
                     d = {
-                      user = "root";
-                      # TODO: This is conditional on games aspect; should be users?
-                      group = grp;
-                      mode = "2770";
+                      user = user.userName;
+                      group = "users";
+                      mode = "0750";
                     };
-                    # Everyone should be able to write here in games
-                    "A+".argument = "g:${grp}:rwX,m::rwX";
-                    "a+".argument = "d:g:${grp}:rwx,d:m::rwx";
-                  };
-                };
-              };
-            };
-          };
-
-          # Parametric module to setup users with the bind mounts
-          provides.to-users = {
-            host,
-            user,
-          }: {
-            name = "applications/steam/steam-common(${user.userName}@${host.name})";
-            nixos = {lib, ...}: let
-              steamCommon = ".local/share/Steam/steamapps/common";
-            in {
-              # TODO: make this conditional to the user setting
-              config = lib.mkIf true {
-                # Create the file hierarchy
-                systemd.tmpfiles.settings."25-steam-user-${user.userName}" =
-                  "${user.homeDirectory}/${steamCommon}"
-                  |> flib.walkToDir user.homeDirectory
-                  |> builtins.map (dir:
-                    lib.nameValuePair
-                    "${dir}"
-                    {
-                      d = {
-                        user = user.userName;
-                        group = "users";
-                        mode = "0750";
-                      };
-                    })
-                  |> builtins.listToAttrs;
-                # Create the bind mount to the common directory
-                fileSystems."${user.homeDirectory}/${steamCommon}" = {
-                  device = host.gaming.steam.shareDir;
-                  fsType = "none";
-                  options = [
-                    "bind"
-                    "nofail"
-                    "x-systemd.after=systemd-tmpfiles-setup.service"
-                  ];
-                  depends = [
-                    host.gaming.steam.shareDir
-                    user.homeDirectory
-                  ];
-                };
+                  })
+                |> builtins.listToAttrs;
+              # Create the bind mount to the common directory
+              fileSystems."${user.homeDirectory}/${steamCommon}" = {
+                device = host.gaming.steam.shareDir;
+                fsType = "none";
+                options = [
+                  "bind"
+                  "nofail"
+                  "x-systemd.after=systemd-tmpfiles-setup.service"
+                ];
+                depends = [
+                  host.gaming.steam.shareDir
+                  user.homeDirectory
+                ];
               };
             };
           };
@@ -222,7 +250,7 @@
     };
   };
 
-  # Modules for setting up steam
+  # Modules
   flake.modules = {
     # We install steam using brew in darwin
     darwin.steam-settings = {...}: {
@@ -235,39 +263,50 @@
       };
     };
     # In nixos; we use the global steam module
-    nixos.steam-settings = {lib, ...}: {
-      key = "steam-settings#nixos";
-      config = {
-        # Include hardware support for steam devices
-        hardware.steam-hardware.enable = true;
-        # Enable steam
-        programs = {
-          steam = {
+    nixos = {
+      steam-settings = {lib, ...}: {
+        key = "steam-settings#nixos";
+        config = {
+          # Include hardware support for steam devices
+          hardware.steam-hardware.enable = true;
+          # Enable steam
+          programs.steam = {
             enable = true;
             extest.enable = true;
             dedicatedServer.openFirewall = true;
-            # Enable a desktop session for steam
-            gamescopeSession = {
-              enable = true;
-            };
             # Enable network transfer of steamgames
             localNetworkGameTransfers = {
               openFirewall = true;
             };
             # By default, don't enable remotePlay
             remotePlay = {
-              openFirewall = lib.mkOverride 1400 false;
+              openFirewall = lib.mkDefault false;
             };
           };
-          # Enable gamescope: steam session
-          gamescope = {
-            enable = true;
-            capSysNice = true;
+        };
+      };
+      steam-gamescope = {...}: {
+        key = "steam-gamescope#nixos";
+        config = {
+          # Enable steam
+          programs = {
+            steam = {
+              # Enable a desktop session for steam
+              gamescopeSession = {
+                enable = true;
+              };
+            };
+            # Enable gamescope: steam session
+            gamescope = {
+              enable = true;
+              capSysNice = true;
+            };
           };
         };
       };
     };
-    # In home-manager, we set lutris steam to nixos steam if it's set
+
+    # In home-manager, we set lutris steam to nixos's steam
     homeManager.steam-settings = {
       pkgs,
       lib,
@@ -278,7 +317,8 @@
         (
           lib.optionalAttrs (lib.hasAttrByPath ["osConfig"] args) (
             lib.mkIf (
-              (pkgs.stdenv.hostPlatform.isLinux)
+              pkgs.stdenv.hostPlatform.isLinux
+              && args.osConfig.programs.steam.enable
               && (args.osConfig.programs.steam.package != null)
             ) {
               programs.lutris.steamPackage = args.osConfig.programs.steam.package;

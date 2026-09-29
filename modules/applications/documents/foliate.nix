@@ -2,13 +2,14 @@
 {inputs, ...}: {
   # Application setup with den
   den = {
-    aspects.applications = {
+    aspects.documents = {
       provides.foliate = {
+        name = "documents/foliate";
         provides.to-users = {
           user,
           host,
         }: {
-          name = "applications/foliate(${user.userName}@${host.name})";
+          name = "documents/foliate(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
               inputs.self.modules.homeManager.foliate-settings

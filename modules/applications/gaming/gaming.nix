@@ -12,6 +12,9 @@
     schema = {
       # For a host, create options for creating a steam share
       host = {
+        includes = [
+          den.aspects.gaming.policies.gaming-host-dispatch
+        ];
         imports = [
           ({...}: {
             options = {
@@ -36,62 +39,70 @@
       # User schema should include the user dispatch
       user = {
         includes = [
-          den.aspects.applications._.gaming.policies.games-user-dispatch
+          den.aspects.gaming.policies.gaming-user-dispatch
         ];
       };
     };
 
-    aspects.applications = {
-      provides.gaming = {
-        # Enable gaming for this user
-        policies.games-user-dispatch = {
-          host,
-          user,
+    aspects.gaming = {
+      name = "gaming";
+      # Policy enabling gaming on a host
+      policies.gaming-host-dispatch = {host, ...}:
+        lib.optionals
+        host.gaming.enable
+        [
+          (den.lib.policy.include den.aspects.gaming)
+        ];
+      # Dispatch gaming setup for users who opted in
+      policies.gaming-user-dispatch = {
+        host,
+        user,
+        ...
+      }:
+        lib.optionals
+        ((builtins.elem "games" user.classes) && (host.gaming.enable))
+        [
+          (den.lib.policy.include den.aspects.gaming._.user-setup)
+        ];
+
+      # Class modules for system configuration
+      nixos = {...}: {
+        imports = [
+          inputs.self.modules.nixos.gaming-settings
+        ];
+      };
+
+      # Base aspect that provides gaming access
+      provides.user-setup = {
+        host,
+        user,
+      }: {
+        name = "gaming/user-setup(${user.userName}@${host.name})";
+        nixos = {...}: {
+          # Will be deduped by module key if imported multiple times; it's ok
+          imports = [
+            inputs.self.modules.nixos.gaming-settings
+          ];
+        };
+        # Add the den users to the gaming group
+        user = {
+          lib,
+          osConfig,
           ...
         }:
-          lib.optionals
-          ((builtins.elem "games" user.classes) && (host.gaming.enable))
-          [
-            # Set gaming for this user
-            (den.lib.policy.include den.aspects.applications._.gaming._.to-users)
-          ];
-        # Base aspect that provides gaming access
-        provides.to-users = {
-          host,
-          user,
-        }: {
-          name = "applications/gaming(${user.userName}@${host.name})";
-          nixos = {...}: {
-            # Will be deduped by module key if imported multiple times; it's ok
-            imports = [
-              inputs.self.modules.nixos.gaming-settings
-            ];
+          lib.optionalAttrs (host.class == "nixos") {
+            extraGroups =
+              [
+                "games"
+                "gamemode"
+              ]
+              |> builtins.filter (n: lib.hasAttrByPath ["users" "groups" n] osConfig);
           };
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.gaming-settings
-            ];
-          };
-          # Add the den users to the gaming group
-          user = {
-            lib,
-            osConfig,
-            ...
-          }:
-            lib.optionalAttrs (host.class == "nixos") {
-              extraGroups =
-                [
-                  "games"
-                  "gamemode"
-                ]
-                |> builtins.filter (n: lib.hasAttrByPath ["users" "groups" n] osConfig);
-            };
-        };
       };
     };
   };
 
-  # Modules for gaming setup
+  # Modules
   flake.modules = {
     nixos.gaming-settings = {pkgs, ...}: {
       key = "gaming-settings#nixos";
@@ -129,6 +140,7 @@
         ];
       };
     };
+
     homeManager.gaming-settings = {
       pkgs,
       lib,
@@ -136,7 +148,7 @@
     }: {
       key = "gaming-settings#homeManager";
       config = lib.mkMerge [
-        ( # Linux only settings
+        ( # Lutris is Linux only
           lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
             # Enable lutris, only in linux
             programs.lutris = {

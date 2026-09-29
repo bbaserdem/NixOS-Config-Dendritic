@@ -112,9 +112,9 @@
 
     # Aspect config
     aspects.development = {
-      development.policies.agents-dispatch = {host, ...}:
+      policies.agents-dispatch = {host, ...}:
         lib.optionals
-        host.development.agents.enable
+        (host.development.enable && host.development.agents.enable)
         (
           [
             (den.lib.policy.include den.aspects.development._.agents)

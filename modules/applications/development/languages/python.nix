@@ -11,7 +11,7 @@
         includes = [
           den.aspects.development._.languages._.python
         ];
-        provides.lean = {
+        provides.python = {
           name = "development/languages/python";
           provides.to-users = {
             user,

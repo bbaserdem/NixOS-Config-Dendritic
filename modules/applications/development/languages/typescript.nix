@@ -11,7 +11,7 @@
         includes = [
           den.aspects.development._.languages._.typescript
         ];
-        provides.lean = {
+        provides.typescript = {
           name = "development/languages/typescript";
           provides.to-users = {
             user,

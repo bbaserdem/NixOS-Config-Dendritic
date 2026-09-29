@@ -1,5 +1,25 @@
 # Newsboat, CLI rss feed
-{...}: {
+{inputs, ...}: {
+  # Aspect
+  den = {
+    aspects.documents = {
+      provides.newsboat = {
+        name = "documents/newsboat";
+        provides.to-users = {
+          user,
+          host,
+        }: {
+          name = "documents/newsboat(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.newsboat-settings
+            ];
+          };
+        };
+      };
+    };
+  };
+
   # Module
   flake.modules.homeManager.newsboat-settings = {...}: {
     key = "newsboat-settings#homeManager";

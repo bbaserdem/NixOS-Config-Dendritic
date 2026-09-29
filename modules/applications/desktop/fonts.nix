@@ -26,9 +26,9 @@
           };
         };
       in {
-        nixos = {...}: {
+        os = {...}: {
           imports = [
-            inputs.self.modules.nixos.desktop-fonts
+            inputs.self.modules.generic.desktop-fonts
           ];
         };
         darwin = {...}: {
@@ -97,20 +97,19 @@
         ])
       );
   in {
-    # Put fonts into darwin system (using nix-darwin)
+    # Put fonts into both os' fonts packages
+    generic.desktop-fonts = {pkgs, ...}: {
+      key = "desktop-fonts#generic";
+      config = {
+        fonts.packages = fontPackages pkgs;
+      };
+    };
+    # Fonts to install through brew; when they break
     darwin.desktop-fonts = {pkgs, ...}: {
       key = "desktop-fonts#darwin";
       config = {
         homebrew.casks = [
         ];
-        fonts.packages = fontPackages pkgs;
-      };
-    };
-    # Install fonts to nixos
-    nixos.desktop-fonts = {pkgs, ...}: {
-      key = "desktop-fonts#nixos";
-      config = {
-        environment.systemPackages = fontPackages pkgs;
       };
     };
     # Install to user as well

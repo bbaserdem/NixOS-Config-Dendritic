@@ -8,7 +8,7 @@ local M = {
     before = function(plugin)
       -- Check if there is a nix override for this
       local _viewer
-      nixInfo("zathura", "settings", "latex", "pdfViewer")
+      nixInfo("zathura", "settings", "latex", "viewer")
 
       -- Use a backend
       if _viewer == "okular" then

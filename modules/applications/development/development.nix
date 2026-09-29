@@ -32,7 +32,7 @@
       # Base aspect
       name = "development";
       includes = [
-        den.aspects.desktop._.defaults
+        den.aspects.development._.defaults
       ];
       # Policy for adding base aspect to user scope
       policies.development-dispatch = {host, ...}:

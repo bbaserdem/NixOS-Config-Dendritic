@@ -20,6 +20,7 @@
       };
       # Applications
       provides.tenacity = {
+        name = "audio/tenacity";
         provides.to-users = {
           host,
           user,
@@ -34,6 +35,7 @@
         };
       };
       provides.musescore = {
+        name = "audio/musescore";
         provides.to-users = {
           host,
           user,
@@ -48,6 +50,7 @@
         };
       };
       provides.foobar = {
+        name = "audio/foobar";
         provides.to-users = {
           host,
           user,

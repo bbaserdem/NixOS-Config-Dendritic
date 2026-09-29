@@ -1,14 +1,15 @@
 # Zathura; minimal pdf viewer
 {inputs, ...}: {
-  # Application setup with den
+  # Aspect
   den = {
-    aspects.applications = {
+    aspects.documents = {
       provides.zathura = {
+        name = "documents/zathura";
         provides.to-users = {
           user,
           host,
         }: {
-          name = "applications/zathura(${user.userName}@${host.name})";
+          name = "documents/zathura(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
               inputs.self.modules.homeManager.zathura-settings
@@ -24,7 +25,8 @@
     };
   };
 
-  # Modules
+  # Module
+  # TODO: Confirm zathura synctex works on darwin
   flake.modules.homeManager.zathura-settings = {...}: {
     key = "zathura-settings#homeManager";
     config = {

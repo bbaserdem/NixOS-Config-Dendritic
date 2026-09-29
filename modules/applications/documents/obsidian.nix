@@ -1,19 +1,22 @@
 # Obsidian; note taking software
+# TODO: Set up obsidian
 {inputs, ...}: {
-  # Application setup with den
+  # Aspect
   den = {
-    aspects.applications = {
+    aspects.documents = {
       provides.obsidian = {
+        name = "documents/obsidian";
         provides.to-users = {
           user,
           host,
         }: {
-          name = "applications/obsidian(${user.userName}@${host.name})";
+          name = "documents/obsidian(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
               inputs.self.modules.homeManager.obsidian-settings
             ];
           };
+          # Stylix theming as well
           stylix = {
             targets.obsidian = {
               enable = true;

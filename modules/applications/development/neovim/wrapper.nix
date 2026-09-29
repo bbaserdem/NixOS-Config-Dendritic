@@ -107,7 +107,7 @@
 
           # Latex settings
           latex = {
-            editor = lib.mkOption {
+            viewer = lib.mkOption {
               type = lib.types.nullOr (lib.types.enum [
                 "zathura"
                 "okular"
