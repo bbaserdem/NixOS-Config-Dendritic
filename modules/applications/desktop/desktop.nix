@@ -1,6 +1,5 @@
 # Desktop setup
 {
-  inputs,
   den,
   lib,
   ...

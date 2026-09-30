@@ -1,4 +1,5 @@
 # Nixos; graphics tooling
+# TODO: Move this out to hardware
 {
   inputs,
   den,

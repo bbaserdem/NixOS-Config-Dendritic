@@ -1,5 +1,75 @@
 # Yubikey setup
-{...}: {
+{
+  inputs,
+  den,
+  lib,
+  ...
+}: {
+  den = {
+    # Host config option
+    schema.host = {
+      includes = [
+        den.aspects.hardware._.yubikey.policies.yubikey-dispatch
+      ];
+      options = {
+        hardware = lib.mkOption {
+          type = lib.types.submodule {
+            options = {
+              yubikey = lib.mkOption {
+                description = "YubiKey interaction";
+                default = {};
+                type = lib.types.submodule {
+                  options = {
+                    enable = lib.mkOption {
+                      description = "Enable yubikey on this host";
+                      default = true;
+                      type = lib.types.bool;
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+
+    aspects.hardware = {
+      provides.yubikey = {
+        name = "hardware/yubikey";
+        # Dispatch policy
+        policies.yubikey-dispatch = {host, ...}:
+          lib.optionals
+          host.hardware.yubikey.enable
+          (den.lib.policy.include den.aspects.hardware._.yubikey);
+
+        # Modules
+        os = {...}: {
+          imports = [
+            inputs.self.modules.generic.yubikey-settings
+          ];
+        };
+        nixos = {...}: {
+          imports = [
+            inputs.self.modules.nixos.yubikey-settings
+          ];
+        };
+        # QMK userspace tooling install to all users
+        provides.to-users = {
+          user,
+          host,
+        }: {
+          name = "hardware/yubikey(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.yubikey-settings
+            ];
+          };
+        };
+      };
+    };
+  };
+
   # Modules
   flake.modules = {
     # Generic module for both nixos and darwin

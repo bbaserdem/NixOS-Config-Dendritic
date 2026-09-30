@@ -129,6 +129,7 @@
       treesitter = {
         lazy = true;
         data = with pkgs.unstable.vimPlugins; [
+          nvim-treesitter-context
           nvim-treesitter-textobjects
           nvim-treesitter.withAllGrammars
         ];

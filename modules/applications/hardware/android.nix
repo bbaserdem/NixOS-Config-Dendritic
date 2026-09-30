@@ -1,14 +1,64 @@
 # Configuring ADB
-{inputs, ...}: {
+{
+  inputs,
+  den,
+  lib,
+  ...
+}: {
   # Configuration aspect for this hardware
   den = {
+    # Host config option
+    schema.host = {
+      includes = [
+        den.aspects.hardware._.android.policies.android-dispatch
+      ];
+      options = {
+        hardware = lib.mkOption {
+          type = lib.types.submodule {
+            options = {
+              android = lib.mkOption {
+                description = "Android access tools";
+                default = {};
+                type = lib.types.submodule {
+                  options = {
+                    enable = lib.mkOption {
+                      description = "Whether to enable ADB tooling";
+                      default = false;
+                      type = lib.types.bool;
+                    };
+                    droidcam = lib.mkOption {
+                      description = "Whether to enable droidcam (phone as webcam)";
+                      default = false;
+                      type = lib.types.bool;
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+
     aspects.hardware = {
       provides.android = {
         name = "hardware/android";
-        # Android configuration
+        # Dispatch policy
+        policies.android-dispatch = {host, ...}:
+          (
+            lib.optional
+            host.hardware.android.enable
+            (den.lib.policy.include den.aspects.hardware._.android)
+          )
+          ++ (
+            lib.optional
+            host.hardware.android.droidcam
+            (den.lib.policy.include den.aspects.hardware._.android._.droidcam)
+          );
+
         nixos = {...}: {
           imports = [
-            inputs.self.modules.nixos.android-settings
+            inputs.self.modules.nixos.android-adb
           ];
         };
         # Home-manager configuration
@@ -19,17 +69,26 @@
           name = "hardware/android(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
-              inputs.self.modules.homeManager.android-settings
+              inputs.self.modules.homeManager.android-adb
             ];
           };
         };
-        # Emit port quirk for opening access for adb networking
-        local-ports = [
-          {
-            port = 4747;
-            proto = "all";
-          }
-        ];
+        # Droidcam enable
+        provides.droidcam = {
+          name = "hardware/android/droidcam";
+          nixos = {...}: {
+            imports = [
+              inputs.self.modules.nixos.android-droidcam
+            ];
+          };
+          # Emit port quirk for opening access for adb networking
+          local-ports = [
+            {
+              port = 4747;
+              proto = "all";
+            }
+          ];
+        };
       };
     };
   };
@@ -37,29 +96,31 @@
   # Modules
   flake.modules = {
     # Nixos module (only nixos available for now)
-    nixos.android-settings = {pkgs, ...}: {
-      key = "android-settings#nixos";
+    nixos.android-droidcam = {pkgs, ...}: {
+      key = "android-droidcam#nixos";
       config = {
-        # Enable droidcam; and set up kernel modules
         programs.droidcam.enable = true;
-
-        # Enable the gui for droidcam (use android phone as webcam)
         environment.systemPackages = with pkgs; [
           v4l-utils
+        ];
+      };
+    };
+    nixos.android-adb = {pkgs, ...}: {
+      key = "android-adb#nixos";
+      config = {
+        environment.systemPackages = with pkgs; [
           android-tools
         ];
       };
     };
     # Home manager; install go-mtpfs
-    homeManager.android-settings = {pkgs, ...}: {
-      key = "android-settings#homeManager";
+    homeManager.android-adb = {pkgs, ...}: {
+      key = "android-adb#homeManager";
       config = {
-        # Enable mtpfs in userspace
         home.packages = with pkgs; (
           [
           ]
-          ++ (
-            # go-mtpfs, and mtpfs is broken on darwin
+          ++ ( # go-mtpfs, and mtpfs is broken on darwin
             lib.optionals pkgs.stdenv.hostPlatform.isLinux [
               go-mtpfs
               mtpfs

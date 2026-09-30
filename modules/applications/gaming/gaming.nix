@@ -78,10 +78,10 @@
         user,
       }: {
         name = "gaming/user-setup(${user.userName}@${host.name})";
-        nixos = {...}: {
+        homeManager = {...}: {
           # Will be deduped by module key if imported multiple times; it's ok
           imports = [
-            inputs.self.modules.nixos.gaming-settings
+            inputs.self.modules.homeManager.gaming-settings
           ];
         };
         # Add the den users to the gaming group

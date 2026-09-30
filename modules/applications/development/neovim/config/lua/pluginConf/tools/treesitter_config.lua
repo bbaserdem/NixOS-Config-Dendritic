@@ -2,11 +2,9 @@
 
 local M = {
   {
-    -- This is archived, but having this here is not a problem due to lze
     "nvim-treesitter-context",
     lazy = false,
     auto_enable = true,
-    event = { "DeferredUIEnter" },
     after = function(plugin)
       require("treesitter-context").setup({
         enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
@@ -26,7 +24,6 @@ local M = {
     end,
   },
   {
-    -- This is archived, but having this here is not a problem due to lze
     "nvim-treesitter",
     lazy = false,
     auto_enable = true,
@@ -35,9 +32,8 @@ local M = {
       "nabla.nvim",
       "render-markdown.nvim",
       "telescope.nvim",
-      "nvim-dap.nvim",
-      "nvim-cmp",
-      "sidekick.nvim",
+      "nvim-dap",
+      "blink.cmp",
       "codecompanion.nvim",
     },
     after = function(plugin)
@@ -62,9 +58,8 @@ local M = {
         vim.o.foldlevel = 99
 
         -- enables treesitter based indentation
-        -- disable on nix files, weird issues here with alejandra formatter
         if language ~= "nix" then
-          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end
 
         return true

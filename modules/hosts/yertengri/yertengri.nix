@@ -9,16 +9,29 @@
       # Features
       desktop = {
         enable = true;
-        defaultSession = "plasma";
         geolocation = {
           enable = true;
           backend = "manual";
         };
       };
+      hardware = {
+        android = {
+          enable = true;
+          droidcam = true;
+        };
+        bluetooth.enable = true;
+        fingerprint.enable = false;
+        keyboards = {
+          enable = true;
+          qmk = true;
+        };
+        printing.enable = true;
+        sidepulse.enable = false;
+        yubikey.enable = true;
+      };
       networking = {
         enableLocalWeb = true;
       };
-      stylix.enable = true;
 
       # Dev environment
       development = {

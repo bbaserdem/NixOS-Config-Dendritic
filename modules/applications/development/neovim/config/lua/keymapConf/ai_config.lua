@@ -2,8 +2,8 @@
 
 -- CodeCompanion
 vim.keymap.set("n", "<Leader>ac", "<cmd>CodeCompanionChat<CR>", { desc = "Open CodeCompanion Chat" })
-vim.keymap.set("n", "<Leader>at", "<cmd>CodeCompanion<CR>", { desc = "Open CodeCompanion CLI" })
-vim.keymap.set("n", "<Leader>ai", "<cmd>CodeCompanionInline<CR>", { desc = "Open CodeCompanion inline mode" })
+vim.keymap.set("n", "<Leader>at", "<cmd>CodeCompanionCLI<CR>", { desc = "Open CodeCompanion CLI" })
+vim.keymap.set("n", "<Leader>ai", "<cmd>CodeCompanion<CR>", { desc = "Open CodeCompanion inline mode" })
 vim.keymap.set("n", "<Leader>a<C-c>", "<cmd>CodeCompanionCmd<CR>", { desc = "Open CodeCompanion vim cmdline mode" })
 
 -- ClaudeCode nvim
@@ -21,11 +21,11 @@ vim.keymap.set("n", "<Leader>as", "<cmd>ClaudeCodeTreeAdd<CR>", {
   -- ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
 })
 
-local ccf_status, ccf = pcall(require, "claude-fzf.nvim")
+local ccf_status, ccf = pcall(require, "claude-fzf")
 if ccf_status then
   vim.keymap.set("n", "<Leader>aF", "<cmd>ClaudeFzfFiles<CR>", { desc = "Claude: add [F]iles" })
   vim.keymap.set("n", "<Leader>a<C-f>", "<cmd>ClaudeFzfGitFiles<CR>", { desc = "Claude: Add Git files" })
-  vim.keymap.set("n", "<Leader>ag", "<cmd>ClaudeFzfFiles<CR>", { desc = "Claude: Search (Get) and add files" })
+  vim.keymap.set("n", "<Leader>ag", "<cmd>ClaudeFzfGrep<CR>", { desc = "Claude: Search and add files" })
   vim.keymap.set("n", "<Leader>aB", "<cmd>ClaudeFzfBuffers<CR>", { desc = "Claude: Add buffers" })
   vim.keymap.set("n", "<Leader>a<C-d>", "<cmd>ClaudeFzfDirectory<CR>", { desc = "Claude: Add directory" })
 end

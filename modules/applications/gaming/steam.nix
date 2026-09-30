@@ -122,7 +122,7 @@
             lib.optionals
             host.gaming.steam.share
             [
-              (den.lib.policy.include den.aspects.applications._.steam._.share-user-setup)
+              (den.lib.policy.include den.aspects.gaming._.steam._.share-user-setup)
             ]
           )
         );
@@ -299,7 +299,8 @@
             # Enable gamescope: steam session
             gamescope = {
               enable = true;
-              capSysNice = true;
+              # TODO: gamescope leaks CAP_SYS_NICE and might not work with bubblewrap
+              # capSysNice = true;
             };
           };
         };

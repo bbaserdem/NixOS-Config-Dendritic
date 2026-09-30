@@ -6,6 +6,7 @@ local M = {
   on_require = "codecompanion",
   cmd = {
     "CodeCompanion",
+    "CodeCompanionCli",
     "CodeCompanionCmd",
     "CodeCompanionChat",
   },
@@ -23,23 +24,11 @@ local M = {
         },
         cli = {
           agent = "opencode",
-          ogents = {
+          agents = {
             opencode = {
               cmd = "opencode",
               args = {},
               description = "OpenCode CLI",
-              provider = "terminal",
-            },
-            forge = {
-              cmd = "forge",
-              args = {},
-              description = "ForgeCode CLI",
-              provider = "terminal",
-            },
-            droid = {
-              cmd = "droid",
-              args = {},
-              description = "Factory.ai Droid CLI",
               provider = "terminal",
             },
             claude_code = {
@@ -54,6 +43,10 @@ local M = {
               description = "Codex CLI",
               provider = "terminal",
             },
+          },
+          opts = {
+            auto_insert = true,
+            reload = true,
           },
         },
       },
