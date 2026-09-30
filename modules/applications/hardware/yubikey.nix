@@ -7,23 +7,25 @@
 }: {
   den = {
     # Host config option
-    schema.host = {
-      includes = [
-        den.aspects.hardware._.yubikey.policies.yubikey-dispatch
-      ];
-      options = {
-        hardware = lib.mkOption {
-          type = lib.types.submodule {
-            options = {
-              yubikey = lib.mkOption {
-                description = "YubiKey interaction";
-                default = {};
-                type = lib.types.submodule {
-                  options = {
-                    enable = lib.mkOption {
-                      description = "Enable yubikey on this host";
-                      default = true;
-                      type = lib.types.bool;
+    schema = {
+      host = {
+        includes = [
+          den.aspects.hardware._.yubikey.policies.yubikey-host-dispatch
+        ];
+        options = {
+          hardware = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                yubikey = lib.mkOption {
+                  description = "YubiKey interaction";
+                  default = {};
+                  type = lib.types.submodule {
+                    options = {
+                      enable = lib.mkOption {
+                        description = "Enable yubikey on this host";
+                        default = true;
+                        type = lib.types.bool;
+                      };
                     };
                   };
                 };
@@ -32,16 +34,27 @@
           };
         };
       };
+      user = {
+        includes = [
+          den.aspects.hardware._.yubikey.policies.yubikey-user-dispatch
+        ];
+      };
     };
 
     aspects.hardware = {
       provides.yubikey = {
         name = "hardware/yubikey";
         # Dispatch policy
-        policies.yubikey-dispatch = {host, ...}:
-          lib.optionals
-          host.hardware.yubikey.enable
-          (den.lib.policy.include den.aspects.hardware._.yubikey);
+        policies = {
+          yubikey-host-dispatch = {host, ...}:
+            lib.optionals
+            host.hardware.yubikey.enable
+            (den.lib.policy.include den.aspects.hardware._.yubikey);
+          yubikey-user-dispatch = {host, ...}:
+            lib.optionals
+            host.hardware.yubikey.enable
+            (den.lib.policy.include den.aspects.hardware._.yubikey._.to-users);
+        };
 
         # Modules
         os = {...}: {
@@ -54,7 +67,7 @@
             inputs.self.modules.nixos.yubikey-settings
           ];
         };
-        # QMK userspace tooling install to all users
+        # Override to defaults for user settings
         provides.to-users = {
           user,
           host,

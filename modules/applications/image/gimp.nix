@@ -1,5 +1,25 @@
 # Configuring gimp
-{...}: {
+{inputs, ...}: {
+  # Aspect
+  den = {
+    provides.image = {
+      provides.gimp = {
+        name = "image/gimp";
+        provides.to-users = {
+          user,
+          host,
+        }: {
+          name = "image/gimp(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.gimp-settings
+            ];
+          };
+        };
+      };
+    };
+  };
+  # Module
   flake.modules.homeManager.gimp-settings = {
     pkgs,
     lib,

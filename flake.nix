@@ -1,25 +1,35 @@
-# DO-NOT-EDIT. This file was auto-generated using github:vic/flake-file.
+# DO-NOT-EDIT. This file was auto-generated using github:denful/flake-file.
 # Use `nix run .#write-flake` to regenerate it.
 {
-  outputs = inputs: inputs.flake-parts.lib.mkFlake {inherit inputs;} (inputs.import-tree ./modules);
+  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
 
   inputs = {
-    base16.url = "github:SenchoPens/base16.nix";
+    base16 = {
+      url = "github:SenchoPens/base16.nix";
+    };
     chaotic = {
       url = "github:chaotic-cx/nyx";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.home-manager.follows = "home-manager";
     };
-    den.url = "github:denful/den/v0.18.0";
+    den = {
+      url = "github:denful/den";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flake-file.url = "github:denful/flake-file";
+    flake-file = {
+      url = "github:denful/flake-file";
+    };
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-    hardware.url = "github:nixos/nixos-hardware";
+    hardware = {
+      url = "github:nixos/nixos-hardware";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,7 +42,9 @@
       url = "github:fiffeek/hyprdynamicmonitors";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    import-tree.url = "github:denful/import-tree";
+    import-tree = {
+      url = "github:denful/import-tree";
+    };
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
       inputs = {
@@ -50,6 +62,7 @@
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.flake-parts.follows = "flake-parts";
     };
     neovim-plugin-e-ink-nvim = {
       url = "github:alexxGmZ/e-ink.nvim";
@@ -70,11 +83,28 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-    nixcord.url = "github:FlameFlag/nixcord";
-    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
-    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-26.05-darwin";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixcord = {
+      url = "github:4evy/nixcord";
+      inputs = {
+        home-manager.follows = "home-manager";
+        nix-darwin.follows = "nix-darwin";
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-nixcord.follows = "nixpkgs";
+      };
+    };
+    nixos-raspberrypi = {
+      url = "github:nvmd/nixos-raspberrypi/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixpkgs = {
+      url = "github:nixos/nixpkgs/nixos-26.05";
+    };
+    nixpkgs-darwin = {
+      url = "github:nixos/nixpkgs/nixpkgs-26.05-darwin";
+    };
+    nixpkgs-unstable = {
+      url = "github:nixos/nixpkgs/nixos-unstable";
+    };
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -82,12 +112,15 @@
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.flake-parts.follows = "flake-parts";
     };
     packages = {
       url = "path:./packages";
       flake = false;
     };
-    pkgs-by-name-for-flake-parts.url = "github:drupol/pkgs-by-name-for-flake-parts";
+    pkgs-by-name-for-flake-parts = {
+      url = "github:drupol/pkgs-by-name-for-flake-parts";
+    };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
       inputs = {
@@ -99,7 +132,13 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix.url = "github:nix-community/stylix/release-26.05";
+    stylix = {
+      url = "github:nix-community/stylix/release-26.05";
+      inputs.base16.follows = "base16";
+      inputs.flake-parts.follows = "flake-parts";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nur.follows = "nur";
+    };
     tinted-terminal = {
       url = "github:tinted-theming/tinted-terminal";
       flake = false;

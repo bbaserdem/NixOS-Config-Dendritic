@@ -9,7 +9,7 @@
   config = {
     # Den sourcing
     flake-file.inputs = {
-      den.url = "github:denful/den/v0.18.0";
+      den.url = "github:denful/den";
     };
   };
 }

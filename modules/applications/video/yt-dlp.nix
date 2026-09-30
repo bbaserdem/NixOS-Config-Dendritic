@@ -1,5 +1,26 @@
-# Configuring yt-dlp
-{...}: {
+# YT-DLP downloader
+{inputs, ...}: {
+  # Aspect
+  den = {
+    aspects.video = {
+      provides.yt-dlp = {
+        name = "video/yt-dlp";
+        provides.to-users = {
+          user,
+          host,
+        }: {
+          name = "video/yt-dlp(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.ytdlp-settings
+            ];
+          };
+        };
+      };
+    };
+  };
+
+  # Module
   flake.modules.homeManager.ytdlp-settings = {
     pkgs,
     config,

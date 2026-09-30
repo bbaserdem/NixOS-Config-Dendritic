@@ -2,13 +2,14 @@
 {inputs, ...}: {
   # Den aspect
   den = {
-    aspects.applications = {
+    aspects.image = {
       provides.blender = {
+        name = "image/blender";
         provides.to-users = {
           user,
           host,
         }: {
-          name = "applications/blender(${user.userName}@${host.name})";
+          name = "image/blender(${user.userName}@${host.name})";
           # Modules
           darwin = {...}: {
             imports = [
@@ -35,7 +36,7 @@
   flake.modules = {
     darwin.blender-settings = {...}: {
       key = "blender-settings#darwin";
-      # Broken on darwin nixpkgs, use homebrew
+      # Broken on darwin nixpkgs, use homebrew instead
       config = {
         homebrew.casks = [
           "blender"
@@ -48,15 +49,14 @@
       ...
     }: {
       key = "blender-settings#homeManager";
-      config = lib.mkMerge [
-        (
-          lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-            home.packages = with pkgs; [
-              blender
-            ];
-          }
-        )
-      ];
+      config = {
+        home.packages = with pkgs; (
+          []
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            blender
+          ])
+        );
+      };
     };
   };
 }

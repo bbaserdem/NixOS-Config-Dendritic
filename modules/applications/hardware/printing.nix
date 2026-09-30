@@ -9,7 +9,7 @@
     # Host config option
     schema.host = {
       includes = [
-        den.aspects.hardware._.printing.policies.cups-dispatch
+        den.aspects.hardware._.printing.policies.cups-host-dispatch
       ];
       options = {
         hardware = lib.mkOption {
@@ -39,7 +39,7 @@
       provides.printing = {
         name = "hardware/printing";
         # Dispatch policy
-        policies.cups-dispatch = {host, ...}:
+        policies.cups-host-dispatch = {host, ...}:
           lib.optional
           host.hardware.printing.enable
           (den.lib.policy.include den.aspects.hardware._.printing);

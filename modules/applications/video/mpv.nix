@@ -2,17 +2,17 @@
 {inputs, ...}: {
   # Setup for mpv aspect
   den = {
-    aspects.applications = {
+    aspects.video = {
       provides.mpv = {
+        name = "video/mpv";
         provides.to-users = {
-          host,
           user,
+          host,
         }: {
-          name = "applications/mpv(${user.userName}@${host.name})";
+          name = "video/mpv(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
               inputs.self.modules.homeManager.mpv-settings
-              inputs.self.modules.homeManager.mpv-gui
             ];
           };
           stylix = {
@@ -26,48 +26,34 @@
   };
 
   # Modules
-  flake.modules.homeManager = {
-    mpv-settings = {pkgs, ...}: {
-      key = "mpv-settings#homeManager";
-      config = {
-        programs.mpv = {
-          enable = true;
-          package = pkgs.mpv;
-          config = {
-            keepaspect = true;
-            autofit-larger = "90%x90%";
-            scale = "ewa_lanczossharp";
-            cscale = "ewa_lanczossharp";
-            keep-open = true;
-            video-sync = "display-resample";
-            interpolation = true;
-            tscale = "oversample";
-          };
+  flake.modules.homeManager.mpv-settings = {pkgs, ...}: {
+    key = "mpv-settings#homeManager";
+    config = {
+      # MPV module
+      programs.mpv = {
+        enable = true;
+        package = pkgs.mpv;
+        config = {
+          keepaspect = true;
+          autofit-larger = "90%x90%";
+          scale = "ewa_lanczossharp";
+          cscale = "ewa_lanczossharp";
+          keep-open = true;
+          video-sync = "display-resample";
+          interpolation = true;
+          tscale = "oversample";
         };
       };
-    };
-
-    mpv-gui = {
-      pkgs,
-      lib,
-      ...
-    }: {
-      key = "mpv-gui#homeManager";
-      config = {
-        home.packages = with pkgs; (
-          []
-          ++ (
-            lib.optionals pkgs.stdenv.hostPlatform.isLinux [
-              haruna # KDE frontend for mpv
-            ]
-          )
-          ++ (
-            lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-              iina # MacOS frontend for mpv
-            ]
-          )
-        );
-      };
+      # Frontend
+      home.packages = with pkgs; (
+        []
+        ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+          haruna # KDE frontend for mpv
+        ])
+        ++ (lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+          iina # MacOS frontend for mpv
+        ])
+      );
     };
   };
 }

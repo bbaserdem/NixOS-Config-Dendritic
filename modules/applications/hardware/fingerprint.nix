@@ -11,7 +11,7 @@
     schema.host = {
       # Auto-include the fprintd dispatch
       includes = [
-        den.aspects.hardware._.fingerprint.policies.fprintd-dispatch
+        den.aspects.hardware._.fingerprint.policies.fprintd-host-dispatch
       ];
       options = {
         hardware = lib.mkOption {
@@ -46,7 +46,7 @@
       provides.fingerprint = {
         name = "hardware/fingerprint";
         # Policy for auto-dispatch
-        policies.fprintd-dispatch = {host, ...}:
+        policies.fprintd-host-dispatch = {host, ...}:
           lib.optionals
           host.hardware.fingerprint.enable
           (

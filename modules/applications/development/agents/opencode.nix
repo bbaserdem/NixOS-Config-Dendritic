@@ -84,12 +84,16 @@
                 "~/Library/Keychains/**" = "deny";
                 "/private/var/run/secrets/**" = "deny";
                 "/var/lib/sops-nix/**" = "deny";
+                # Agent locations
+                "~/.agent/**" = "allow";
               };
               edit = {
                 "/nix/**" = "deny";
                 "/run/current-system/**" = "deny";
                 "/etc/**" = "deny";
                 "~/.config/**" = "deny";
+                # Allow external writes here
+                "~/.agent/**" = "allow";
               };
             };
           };

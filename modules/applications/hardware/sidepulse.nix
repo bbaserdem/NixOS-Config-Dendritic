@@ -7,23 +7,25 @@
 }: {
   den = {
     # Host config option
-    schema.host = {
-      includes = [
-        den.aspects.hardware._.sidepulse.policies.sidepulse-dispatch
-      ];
-      options = {
-        hardware = lib.mkOption {
-          type = lib.types.submodule {
-            options = {
-              sidepulse = lib.mkOption {
-                description = "SidePulse: light module for notifications.";
-                default = {};
-                type = lib.types.submodule {
-                  options = {
-                    enable = lib.mkOption {
-                      description = "Enable sidepulse in userspace";
-                      default = false;
-                      type = lib.types.bool;
+    schema = {
+      host = {
+        includes = [
+          den.aspects.hardware._.sidepulse.policies.sidepulse-host-dispatch
+        ];
+        options = {
+          hardware = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                sidepulse = lib.mkOption {
+                  description = "SidePulse: light module for notifications.";
+                  default = {};
+                  type = lib.types.submodule {
+                    options = {
+                      enable = lib.mkOption {
+                        description = "Enable sidepulse in userspace";
+                        default = false;
+                        type = lib.types.bool;
+                      };
                     };
                   };
                 };
@@ -32,16 +34,27 @@
           };
         };
       };
+      user = {
+        includes = [
+          den.aspects.hardware._.sidepulse.policies.sidepulse-user-dispatch
+        ];
+      };
     };
     # Aspect for dispatch
     aspects.hardware = {
       provides.sidepulse = {
         name = "hardware/sidepulse";
         # Dispatch policy
-        policies.sidepulse-dispatch = {host, ...}:
-          lib.optional
-          host.hardware.sidepulse.enable
-          (den.lib.policy.include den.aspects.hardware._.sidepulse);
+        policies = {
+          sidepulse-host-dispatch = {host, ...}:
+            lib.optional
+            host.hardware.sidepulse.enable
+            (den.lib.policy.include den.aspects.hardware._.sidepulse);
+          sidepulse-user-dispatch = {host, ...}:
+            lib.optional
+            host.hardware.sidepulse.enable
+            (den.lib.policy.include den.aspects.hardware._.sidepulse._.to-users);
+        };
         # Send to users sidepulse settings in all
         provides.to-users = {
           user,

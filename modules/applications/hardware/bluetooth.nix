@@ -9,7 +9,7 @@
     # Host config option
     schema.host = {
       includes = [
-        den.aspects.hardware._.bluetooth.policies.bluetooth-dispatch
+        den.aspects.hardware._.bluetooth.policies.bluetooth-host-dispatch
       ];
       options = {
         hardware = lib.mkOption {
@@ -43,7 +43,7 @@
       provides.bluetooth = {
         name = "hardware/bluetooth";
         # Dispatch policy
-        policies.bluetooth-dispatch = {host, ...}: (
+        policies.bluetooth-host-dispatch = {host, ...}: (
           lib.optionals
           host.hardware.bluetooth.enable
           (

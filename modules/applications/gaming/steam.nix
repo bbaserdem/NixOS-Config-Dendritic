@@ -213,7 +213,7 @@
           nixos = {lib, ...}: let
             steamCommon = ".local/share/Steam/steamapps/common";
           in {
-            config = lib.mkIf true {
+            config = {
               # Create the file hierarchy
               systemd.tmpfiles.settings."25-steam-user-${user.userName}" =
                 "${user.homeDirectory}/${steamCommon}"

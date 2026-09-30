@@ -6,15 +6,16 @@
 }: {
   # Hook up firefox to den
   den = {
-    aspects.applications = {
+    aspects.networking = {
       provides.firefox = {
+        name = "networking/firefox";
         # Just dispatch aspect to the user scope
         provides.to-users = {
           host,
           user,
         }: {
           # Collission protection
-          name = "applications/firefox(${user.userName}@${host.name})";
+          name = "networking/firefox(${user.userName}@${host.name})";
           # Dispatch the home manager modules
           homeManager = {...}: {
             imports = [

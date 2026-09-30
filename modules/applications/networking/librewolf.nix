@@ -6,15 +6,16 @@
 }: {
   # Hook up librewolf to den
   den = {
-    aspects.applications = {
+    aspects.networking = {
       provides.librewolf = {
+        name = "networking/librewolf";
         # Just dispatch aspect to the user scope
         provides.to-users = {
           host,
           user,
         }: {
           # Collission protection
-          name = "applications/librewolf(${user.userName}@${host.name})";
+          name = "networking/librewolf(${user.userName}@${host.name})";
           # Dispatch the home manager modules
           homeManager = {...}: {
             imports = [

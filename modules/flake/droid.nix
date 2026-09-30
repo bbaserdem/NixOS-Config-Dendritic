@@ -15,10 +15,6 @@
     flake-file.inputs = {
       nix-on-droid = {
         url = "github:nix-community/nix-on-droid/master";
-        inputs = {
-          nixpkgs.follows = "nixpkgs";
-          home-manager.follows = "home-manager";
-        };
       };
     };
   };

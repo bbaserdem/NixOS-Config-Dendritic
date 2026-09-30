@@ -17,6 +17,7 @@
   imports = [
     (inputs.flake-parts.flakeModules.modules or {})
     (inputs.flake-file.flakeModules.dendritic or {})
+    (inputs.flake-file.flakeModules.auto-follow or {})
   ];
 
   config = {

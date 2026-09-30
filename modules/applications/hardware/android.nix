@@ -8,28 +8,30 @@
   # Configuration aspect for this hardware
   den = {
     # Host config option
-    schema.host = {
-      includes = [
-        den.aspects.hardware._.android.policies.android-dispatch
-      ];
-      options = {
-        hardware = lib.mkOption {
-          type = lib.types.submodule {
-            options = {
-              android = lib.mkOption {
-                description = "Android access tools";
-                default = {};
-                type = lib.types.submodule {
-                  options = {
-                    enable = lib.mkOption {
-                      description = "Whether to enable ADB tooling";
-                      default = false;
-                      type = lib.types.bool;
-                    };
-                    droidcam = lib.mkOption {
-                      description = "Whether to enable droidcam (phone as webcam)";
-                      default = false;
-                      type = lib.types.bool;
+    schema = {
+      host = {
+        includes = [
+          den.aspects.hardware._.android.policies.android-host-dispatch
+        ];
+        options = {
+          hardware = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                android = lib.mkOption {
+                  description = "Android access tools";
+                  default = {};
+                  type = lib.types.submodule {
+                    options = {
+                      enable = lib.mkOption {
+                        description = "Whether to enable ADB tooling";
+                        default = false;
+                        type = lib.types.bool;
+                      };
+                      droidcam = lib.mkOption {
+                        description = "Whether to enable droidcam (phone as webcam)";
+                        default = false;
+                        type = lib.types.bool;
+                      };
                     };
                   };
                 };
@@ -38,23 +40,35 @@
           };
         };
       };
+      user = {
+        includes = [
+          den.aspects.hardware._.android.policies.android-user-dispatch
+        ];
+      };
     };
 
     aspects.hardware = {
       provides.android = {
         name = "hardware/android";
         # Dispatch policy
-        policies.android-dispatch = {host, ...}:
-          (
+        policies = {
+          android-host-dispatch = {host, ...}:
+            (
+              lib.optional
+              host.hardware.android.enable
+              (den.lib.policy.include den.aspects.hardware._.android)
+            )
+            ++ (
+              lib.optional
+              host.hardware.android.droidcam
+              (den.lib.policy.include den.aspects.hardware._.android._.droidcam)
+            );
+          android-user-dispatch = {host, ...}: (
             lib.optional
             host.hardware.android.enable
-            (den.lib.policy.include den.aspects.hardware._.android)
-          )
-          ++ (
-            lib.optional
-            host.hardware.android.droidcam
-            (den.lib.policy.include den.aspects.hardware._.android._.droidcam)
+            (den.lib.policy.include den.aspects.hardware._.android._.to-users)
           );
+        };
 
         nixos = {...}: {
           imports = [
@@ -81,7 +95,7 @@
               inputs.self.modules.nixos.android-droidcam
             ];
           };
-          # Emit port quirk for opening access for adb networking
+          # Emit port quirk for opening access for droidcam
           local-ports = [
             {
               port = 4747;

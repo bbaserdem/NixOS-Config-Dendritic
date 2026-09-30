@@ -23,7 +23,7 @@
       user = {
         options = {
           usbAccess = lib.mkOption {
-            description = "Whether to give this user access to usb devices w/ root.";
+            description = "Give this user access to usb devices w/out root.";
             default = true;
             type = lib.types.bool;
           };

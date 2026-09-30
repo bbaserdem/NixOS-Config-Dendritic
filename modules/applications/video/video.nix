@@ -1,43 +1,47 @@
 # Video applications
-{
-  inputs,
-  den,
-  ...
-}: {
+{inputs, ...}: {
   # Dispatch modules in aspect
   den = {
-    aspects.collections = {
-      provides.video = {
-        # Include mpv aspect here
-        includes = [
-          den.aspects.applications._.mpv
-        ];
+    aspects.video = {
+      # Base aspect
+      name = "video";
+      provides.to-users = {
+        user,
+        host,
+      }: {
+        name = "video(${user.userName}@${host.name})";
+        # By default, just provide VLC to ensure we can always play videos
+        homeManager = {...}: {
+          imports = [
+            inputs.self.modules.homeManager.vlc
+          ];
+        };
+      };
+      # Standalone apps
+      provides.editing = {
+        name = "video/editing";
         provides.to-users = {
           user,
           host,
         }: {
-          name = "collections/video(${user.userName}@${host.name})";
-          # Provide darwin-only modules
-          darwin = {...}: {
-            imports = with inputs.self.modules.darwin; [
-              # OBS
-              obs-settings
-            ];
-          };
-          # Provide nixos modules
-          nixos = {...}: {
-            imports = with inputs.self.modules.nixos; [
-              # OBS
-              obs-settings
-            ];
-          };
-          # Home manager collection
+          name = "video/editing(${user.userName}@${host.name})";
           homeManager = {...}: {
-            imports = with inputs.self.modules.homeManager; [
-              # General apps
-              video-applications
-              # YT-DLP
-              ytdlp-settings
+            imports = [
+              inputs.self.modules.homeManager.video-editing
+            ];
+          };
+        };
+      };
+      provides.transcoding = {
+        name = "video/transcoding";
+        provides.to-users = {
+          user,
+          host,
+        }: {
+          name = "video/transcoding(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.video-transcoding
             ];
           };
         };
@@ -46,32 +50,64 @@
   };
 
   # General applications to deal with video
-  flake.modules.homeManager.video-applications = {
-    pkgs,
-    lib,
-    ...
-  }: {
-    key = "video-applications#homeManager";
-    config = {
-      # Both platforms
-      home.packages = with pkgs; (
-        [
-          # No shared packages as of yet.
-        ]
-        ++ ( # Linux only packages
-          lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+  flake.modules.homeManager = {
+    # Standalone apps
+    vlc = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      key = "vlc#homeManager";
+      config = {
+        # Both platforms
+        home.packages = with pkgs; (
+          []
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
             vlc # Easy playback alternative to keep on hand besides mpv
-            kdePackages.kdenlive # Video editing software
-            handbrake # Video conversion/re-encoding (broken on darwin)
-          ]
-        )
-        ++ ( # Darwin only packages
-          lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+          ])
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
             vlc-bin # VLC linux only; need the binary
+          ])
+        );
+      };
+    };
+    video-transcoding = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      key = "video-transcoding#homeManager";
+      config = {
+        # Both platforms
+        home.packages = with pkgs; (
+          []
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            handbrake # Video conversion/re-encoding (broken on darwin)
+          ])
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
             shotcut # Handbrake alternative in macos
-          ]
-        )
-      );
+          ])
+        );
+      };
+    };
+    video-editing = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      key = "video-editing#homeManager";
+      config = {
+        # Both platforms
+        home.packages = with pkgs; (
+          []
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            kdePackages.kdenlive # Video editing software
+          ])
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+            # TODO; No kdenlive alternative picked yet in darwin
+          ])
+        );
+      };
     };
   };
 }

@@ -8,28 +8,30 @@
   # Aspect and dispatch
   den = {
     # Host config option
-    schema.host = {
-      includes = [
-        den.aspects.hardware._.keyboards.policies.keyboards-dispatch
-      ];
-      options = {
-        hardware = lib.mkOption {
-          type = lib.types.submodule {
-            options = {
-              keyboards = lib.mkOption {
-                description = "Keyboard management metadata";
-                default = {};
-                type = lib.types.submodule {
-                  options = {
-                    enable = lib.mkOption {
-                      description = "Enable keyboard related management";
-                      default = true;
-                      type = lib.types.bool;
-                    };
-                    qmk = lib.mkOption {
-                      description = "Whether to enable QMK.";
-                      default = true;
-                      type = lib.types.bool;
+    schema = {
+      host = {
+        includes = [
+          den.aspects.hardware._.keyboards.policies.keyboards-host-dispatch
+        ];
+        options = {
+          hardware = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                keyboards = lib.mkOption {
+                  description = "Keyboard management metadata";
+                  default = {};
+                  type = lib.types.submodule {
+                    options = {
+                      enable = lib.mkOption {
+                        description = "Enable keyboard related management";
+                        default = true;
+                        type = lib.types.bool;
+                      };
+                      qmk = lib.mkOption {
+                        description = "Whether to enable QMK.";
+                        default = true;
+                        type = lib.types.bool;
+                      };
                     };
                   };
                 };
@@ -38,24 +40,42 @@
           };
         };
       };
+      user = {
+        includes = [
+          den.aspects.hardware._.keyboards.policies.keyboards-user-dispatch
+        ];
+      };
     };
 
     aspects.hardware = {
       provides.keyboards = {
         name = "hardware/keyboards";
         # Dispatch policy
-        policies.keyboards-dispatch = {host, ...}:
-          lib.optionals
-          host.hardware.keyboards.enable
-          (
-            [
-              (den.lib.policy.include den.aspects.hardware._.keyboards)
-            ]
-            ++ (
-              lib.optional host.hardware.keyboards.qmk
-              (den.lib.policy.include den.aspects.hardware._.keyboards._.qmk)
-            )
-          );
+        policies = {
+          keyboards-host-dispatch = {host, ...}:
+            lib.optionals
+            host.hardware.keyboards.enable
+            (
+              [
+                (den.lib.policy.include den.aspects.hardware._.keyboards)
+              ]
+              ++ (
+                lib.optional host.hardware.keyboards.qmk
+                (den.lib.policy.include den.aspects.hardware._.keyboards._.qmk)
+              )
+            );
+          keyboards-user-dispatch = {host, ...}:
+            lib.optionals
+            host.hardware.keyboards.enable
+            (
+              [
+              ]
+              ++ (
+                lib.optional host.hardware.keyboards.qmk
+                (den.lib.policy.include den.aspects.hardware._.keyboards._.qmk._.to-users)
+              )
+            );
+        };
 
         # QMK
         provides.qmk = {

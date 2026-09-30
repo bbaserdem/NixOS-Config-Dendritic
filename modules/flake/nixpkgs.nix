@@ -47,7 +47,7 @@ in {
       };
       # Chaotic Nyx : bleeding bleeding edge
       chaotic = {
-        url = "github:chaotic-cx/nyx";
+        url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
         inputs.nixpkgs.follows = "nixpkgs-unstable";
       };
 
@@ -67,6 +67,7 @@ in {
         inputs.self.overlays.modifications
         inputs.self.overlays.unstablePackages
         inputs.self.overlays.localPythonPackages
+        # NUR overlay
         inputs.nur.overlays.default
       ];
     };
