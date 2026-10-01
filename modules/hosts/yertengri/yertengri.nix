@@ -6,14 +6,34 @@
       system = "x86_64-linux";
       description = "Yertengri: Homestation PC";
 
-      # Features
+      # Boot settings
+      boot = {
+        configurationLimit = 10;
+        loader = "grub";
+      };
+
+      # Shell settings
+      shell = {
+        default = "zsh";
+      };
+
+      # Desktop features
       desktop = {
         enable = true;
         geolocation = {
           enable = true;
           backend = "manual";
         };
+        uinput.enable = true;
+        fileBrowser = "dolphin";
+        terminal = "kitty";
+        stt = {
+          enable = true;
+          backend = "voxtype";
+        };
       };
+
+      # Hardware features
       hardware = {
         android = {
           enable = true;
@@ -29,8 +49,15 @@
         sidepulse.enable = false;
         yubikey.enable = true;
       };
+
+      # Network settings
       networking = {
         enableLocalWeb = true;
+      };
+
+      # Tooling
+      tools = {
+        enable = true; # Gets everything
       };
 
       # Dev environment
@@ -68,13 +95,7 @@
         };
       };
 
-      # Boot settings
-      boot = {
-        configurationLimit = 10;
-        loader = "grub";
-      };
-
-      # Gaming setup
+      # Gaming features
       gaming = {
         enable = true;
         steam = {
@@ -92,9 +113,7 @@
       includes = with den.aspects; [
         secrets
         stylix
-        # Get the extras from these modules
         nix-extra
-        shell-extra
       ];
     };
   };

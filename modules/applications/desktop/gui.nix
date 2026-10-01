@@ -11,6 +11,10 @@
         den.aspects.desktop._.gtk
         den.aspects.desktop._.qt
       ];
+      provides.to-users.includes = [
+        den.aspects.desktop._.gtk._.to-users
+        den.aspects.desktop._.qt._.to-users
+      ];
 
       # GTK dispatch
       provides.gtk = {

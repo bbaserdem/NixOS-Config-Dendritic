@@ -1,14 +1,63 @@
 # Yazi, terminal file manager
-{inputs, ...}: {
+{
+  inputs,
+  den,
+  lib,
+  ...
+}: {
   # Den dispatch
   den = {
-    aspects.applications = {
+    # Schema; register policies
+    schema = {
+      host = {
+        includes = [
+          den.aspects.shell.policies.yazi-host-dispatch
+        ];
+        options = {
+          shell = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                yazi = lib.mkOption {
+                  description = "Install yazi; cli file manager";
+                  default = false;
+                  type = lib.types.bool;
+                };
+              };
+            };
+          };
+        };
+      };
+      user = {
+        includes = [
+          den.aspects.shell.policies.yazi-user-dispatch
+        ];
+      };
+    };
+
+    aspects.shell = {
+      # Policy
+      policies = {
+        yazi-host-dispatch = {host, ...}:
+          lib.optionals
+          (host.shell.extras || host.shell.yazi)
+          [
+            (den.lib.policy.include den.aspects.shell._.yazi)
+          ];
+        yazi-user-dispatch = {host, ...}:
+          lib.optionals
+          (host.shell.extras || host.shell.yazi)
+          [
+            (den.lib.policy.include den.aspects.shell._.yazi._.to-users)
+          ];
+      };
+      # Aspect
       provides.yazi = {
+        name = "shell/yazi";
         provides.to-users = {
           host,
           user,
         }: {
-          name = "applications/yazi(${user.userName}@${host.name})";
+          name = "shell/yazi(${user.userName}@${host.name})";
           # Modules dispatch
           darwin = {...}: {
             imports = [
@@ -77,7 +126,13 @@
         inputs.self.modules.homeManager.yazi-wrapper
       ];
       config = {
-        programs.yazi.enable = true;
+        programs.yazi = {
+          enable = true;
+          enableBashIntegration = true;
+          enableFishIntegration = true;
+          enableZshIntegration = true;
+          enableNushellIntegration = true;
+        };
       };
     };
   };

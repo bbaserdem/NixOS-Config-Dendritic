@@ -1,19 +1,37 @@
-# Keepassxc configuration
-{...}: {
-  # Module for installing in home-manager
+# Keepassxc
+{inputs, ...}: {
+  # Aspect
+  den = {
+    aspects.desktop = {
+      provides.keepassxc = {
+        name = "keepassxc/keepassxc";
+        provides.to-users = {
+          user,
+          host,
+        }: {
+          name = "desktop/keepassxc(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.keepassxc-settings
+            ];
+          };
+        };
+      };
+    };
+  };
+
+  # Module
   flake.modules.homeManager.keepassxc-settings = {pkgs, ...}: {
     key = "keepassxc-settings#homeManager";
     config = {
       programs.keepassxc = {
-        # Common settings
         enable = true;
-
+        # Common settings
         settings = {
           General = {
             ConfigVersion = 2;
             MinimizeAfterUnlock = false;
           };
-
           Browser = {
             Enabled = true;
             CustomProxyLocation = false;
@@ -21,7 +39,6 @@
             AlwaysAllowAccess = true;
             AlwaysAllowUpdate = true;
           };
-
           GUI = {
             AdvancedSettings = true;
             ColorPasswords = true;
@@ -33,17 +50,14 @@
             ShowTrayIcon = true;
             TrayIconAppearance = "colorful";
           };
-
           PasswordGenerator = {
             AdditionalChars = "";
             ExcludedChars = "";
           };
-
           SSHAgent.Enabled = true;
         };
       };
-
-      # CLI tools as well
+      # CLI tooling as well
       home.packages = with pkgs; [
         kpcli
       ];

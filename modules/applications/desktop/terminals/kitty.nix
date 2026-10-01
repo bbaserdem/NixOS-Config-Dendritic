@@ -1,14 +1,15 @@
 # Configuring kitty terminal
 {inputs, ...}: {
   den = {
-    aspects.applications = {
+    aspects.desktop = {
       provides.kitty = {
+        name = "desktop/kitty";
         provides.to-users = {
           host,
           user,
         }: {
           # Dedupe guard
-          name = "applications/kitty(${user.userName}@${host.name})";
+          name = "desktop/kitty(${user.userName}@${host.name})";
           # Home manager settings
           homeManager = {...}: {
             imports = [
@@ -35,6 +36,13 @@
     config = {
       programs.kitty = {
         enable = true;
+
+        # Integrations
+        shellIntegration = {
+          enableZshIntegration = true;
+          enableBashIntegration = true;
+          enableFishIntegration = true;
+        };
 
         # General settings
         settings = {

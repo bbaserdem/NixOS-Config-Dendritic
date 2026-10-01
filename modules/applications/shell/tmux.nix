@@ -1,5 +1,51 @@
-# TMux Config
-{...}: {
+# Tmux
+{
+  inputs,
+  den,
+  lib,
+  ...
+}: {
+  den = {
+    # Schema registry
+    schema = {
+      host.includes = [den.aspects.shell.policies.tmux-host-dispatch];
+      user.includes = [den.aspects.shell.policies.tmux-user-dispatch];
+    };
+
+    aspects.shell = {
+      policies = {
+        tmux-host-dispatch = {host, ...}:
+          lib.optional
+          host.shell.extras
+          (den.lib.policy.include den.aspects.shell._.tmux);
+        tmux-user-dispatch = {host, ...}:
+          lib.optional
+          host.shell.extras
+          (den.lib.policy.include den.aspects.shell._.tmux._.to-users);
+      };
+
+      provides.tmux = {
+        name = "shell/tmux";
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          name = "shell/tmux(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.shell-tmux
+            ];
+          };
+          stylix = {
+            targets.tmux = {
+              enable = true;
+            };
+          };
+        };
+      };
+    };
+  };
+
   # Tmux settings
   flake.modules.homeManager.shell-tmux = {...}: {
     key = "shell-tmux#homeManager";
@@ -41,11 +87,5 @@
         };
       };
     };
-  };
-
-  # TODO: REmove after den migration
-  # Stylix theming
-  flake.modules.homeManager.stylix = {...}: {
-    stylix.targets.tmux.enable = true;
   };
 }

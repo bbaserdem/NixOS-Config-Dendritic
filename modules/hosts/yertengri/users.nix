@@ -18,6 +18,11 @@
             id = "OGURLTB-BBT3MMT-CCK23PS-FT76672-YMWVY4T-6AR7LIO-22O6VN2-GJB3DAF";
           };
           usbAccess = true;
+          uinput = true;
+          stt = {
+            enable = true;
+            osd.enable = false;
+          };
         };
         # Ben-Abuyah user host-specific settings
         ben-abuyah = {
@@ -31,6 +36,7 @@
             id = "2FBNH7N-X62S3J2-65TEACZ-IZFATY5-BXJXR7O-ZT6ED6P-ZF4O6BV-A4RG3QE";
           };
           usbAccess = false;
+          uinput = false;
         };
       };
     };

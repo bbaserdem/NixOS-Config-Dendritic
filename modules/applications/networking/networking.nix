@@ -1,4 +1,4 @@
-# Communication apps
+# Communication apps using networks
 {inputs, ...}: {
   # Dispatch modules in aspect
   den = {
@@ -22,7 +22,7 @@
           name = "networking/signal(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
-              inputs.self.modules.homeManager.signal
+              inputs.self.modules.homeManager.signal-settings
             ];
           };
         };
@@ -37,7 +37,7 @@
           name = "networking/slack(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
-              inputs.self.modules.homeManager.slack
+              inputs.self.modules.homeManager.slack-settings
             ];
           };
         };
@@ -52,7 +52,7 @@
           name = "networking/zoom(${user.userName}@${host.name})";
           homeManager = {...}: {
             imports = [
-              inputs.self.modules.homeManager.zoom
+              inputs.self.modules.homeManager.zoom-settings
             ];
           };
         };
@@ -75,9 +75,9 @@
     };
   };
 
-  # Audio editing tooling
+  # Modules
   flake.modules.homeManager = {
-    signal = {pkgs, ...}: {
+    signal-settings = {pkgs, ...}: {
       key = "signal#homeManager";
       config = {
         home.packages = with pkgs; [
@@ -85,7 +85,7 @@
         ];
       };
     };
-    slack = {pkgs, ...}: {
+    slack-settings = {pkgs, ...}: {
       key = "slack#homeManager";
       config = {
         home.packages = with pkgs; [
@@ -93,7 +93,7 @@
         ];
       };
     };
-    zoom = {pkgs, ...}: {
+    zoom-settings = {pkgs, ...}: {
       key = "zoom#homeManager";
       config = {
         home.packages = with pkgs; [
@@ -110,7 +110,7 @@
       config = {
         home.packages = with pkgs; (
           []
-          ++ (lib.optionas pkgs.stdenv.hostPlatform.isLinux [
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
             ferdium
           ])
         );

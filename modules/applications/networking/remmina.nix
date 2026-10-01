@@ -2,7 +2,7 @@
 {inputs, ...}: {
   # Aspect
   den = {
-    provides.networking = {
+    aspects.networking = {
       provides.remmina = {
         name = "networking/remmina";
         provides.to-users = {

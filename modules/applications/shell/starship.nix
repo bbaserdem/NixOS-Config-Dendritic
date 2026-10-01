@@ -1,8 +1,56 @@
-# Shell prompt
-{...}: {
+# Universal shell prompt
+{
+  inputs,
+  den,
+  lib,
+  ...
+}: {
+  den = {
+    # Schema registry
+    schema = {
+      host.includes = [den.aspects.shell.policies.starship-host-dispatch];
+      user.includes = [den.aspects.shell.policies.starship-user-dispatch];
+    };
+
+    aspects.shell = {
+      policies = {
+        starship-host-dispatch = {host, ...}:
+          lib.optional
+          host.shell.extras
+          (den.lib.policy.include den.aspects.shell._.starship);
+        starship-user-dispatch = {host, ...}:
+          lib.optional
+          host.shell.extras
+          (den.lib.policy.include den.aspects.shell._.starship._.to-users);
+      };
+
+      provides.starship = {
+        name = "shell/starship";
+        nixos = {...}: {
+          imports = [
+            inputs.self.modules.generic.shell-starship
+            inputs.self.modules.nixos.shell-starship
+          ];
+        };
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          name = "shell/starship(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.generic.shell-starship
+              inputs.self.modules.homeManager.shell-starship
+            ];
+          };
+        };
+      };
+    };
+  };
+
   # Modules
   flake.modules = {
-    # Generic for both nixos and home-manager
+    # Generic for both nixos and *home-manager*
     generic.shell-starship = {pkgs, ...}: {
       key = "shell-starship#generic";
       config = {
@@ -90,6 +138,12 @@
         programs.starship = {
           enableInteractive = true;
           enableTransience = false;
+          # Shell integrations in home-manager module only
+          enableBashIntegration = true;
+          enableZshIntegration = true;
+          enableFishIntegration = true;
+          enableNushellIntegration = true;
+          enableIonIntegration = true;
         };
       };
     };

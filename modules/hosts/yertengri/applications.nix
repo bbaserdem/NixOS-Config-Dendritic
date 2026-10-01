@@ -10,9 +10,9 @@
         audio._.beets
         audio._.fluidsynth
         audio._.mpd
-        # Desktop features
+        # Desktop apps
+        desktop._.keepassxc
         desktop._.kdeconnect
-        desktop._.stt
         # Documents
         documents
         documents._.calibre
@@ -48,6 +48,7 @@
         video._.transcoding
         video._.yt-dlp
         video._.mpv
+        video._.obs
       ];
     };
   };

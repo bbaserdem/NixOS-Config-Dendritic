@@ -8,9 +8,11 @@
       url = "github:SenchoPens/base16.nix";
     };
     chaotic = {
-      url = "github:chaotic-cx/nyx";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-      inputs.home-manager.follows = "home-manager";
+      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
     den = {
       url = "github:denful/den";
@@ -61,8 +63,10 @@
     };
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
     neovim-plugin-e-ink-nvim = {
       url = "github:alexxGmZ/e-ink.nvim";
@@ -111,8 +115,10 @@
     };
     nur = {
       url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
     packages = {
       url = "path:./packages";
@@ -134,10 +140,12 @@
     };
     stylix = {
       url = "github:nix-community/stylix/release-26.05";
-      inputs.base16.follows = "base16";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nur.follows = "nur";
+      inputs = {
+        base16.follows = "base16";
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
+        nur.follows = "nur";
+      };
     };
     tinted-terminal = {
       url = "github:tinted-theming/tinted-terminal";

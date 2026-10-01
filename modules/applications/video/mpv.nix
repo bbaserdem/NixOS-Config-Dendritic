@@ -26,7 +26,11 @@
   };
 
   # Modules
-  flake.modules.homeManager.mpv-settings = {pkgs, ...}: {
+  flake.modules.homeManager.mpv-settings = {
+    pkgs,
+    lib,
+    ...
+  }: {
     key = "mpv-settings#homeManager";
     config = {
       # MPV module

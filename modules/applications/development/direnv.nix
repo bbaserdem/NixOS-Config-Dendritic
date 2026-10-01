@@ -82,6 +82,10 @@
               warn_timeout = "0";
             };
           };
+          enableBashIntegration = true;
+          enableZshIntegration = true;
+          enableFishIntegration = true;
+          enableNushellIntegration = true;
         };
 
         # Reformat direnv output to be muted

@@ -30,6 +30,10 @@
       # Enable homebrew
       homebrew = {
         enable = true;
+        # Add to path
+        enableBashIntegration = true;
+        enableFishIntegration = true;
+        enableZshIntegration = true;
         # Also allow managing app store installations
         brews = [
           "mas"

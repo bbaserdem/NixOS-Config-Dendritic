@@ -11,6 +11,11 @@
       includes = [
         den.aspects.desktop._.fonts
       ];
+      provides.to-users.includes = [
+        den.aspects.desktop._.fonts._.to-users
+      ];
+
+      # Aspect
       provides.fonts = let
         # Stylix block for nixos and home-manager
         stylixConf = {

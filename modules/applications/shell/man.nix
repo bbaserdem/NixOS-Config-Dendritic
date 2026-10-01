@@ -1,5 +1,39 @@
 # Man pager
-{...}: {
+{
+  inputs,
+  den,
+  ...
+}: {
+  den = {
+    # Schema registry; dispatch this always
+    schema = {
+      host.includes = [den.aspects.shell._.man];
+    };
+
+    # Aspect
+    aspects.shell = {
+      provides.man = {
+        name = "shell/man";
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          name = "shell/man(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.shell-man
+            ];
+          };
+          stylix = {
+            targets.bat = {
+              enable = true;
+            };
+          };
+        };
+      };
+    };
+  };
+
   # Man page setup
   flake.modules.homeManager.shell-man = {
     pkgs,
@@ -37,7 +71,7 @@
         };
       }
       (
-        lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+        lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
           programs.man = {
             package = pkgs.man;
             generateCaches = true;
@@ -46,16 +80,10 @@
       )
       (
         # GNU man dependency binaries don't work in darwin
-        lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
+        lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
           programs.man.package = null;
         }
       )
     ];
-  };
-
-  # TODO: Delete after den migration
-  # Enable bat stylix theme
-  flake.modules.homeManager.stylix = {...}: {
-    stylix.targets.bat.enable = true;
   };
 }

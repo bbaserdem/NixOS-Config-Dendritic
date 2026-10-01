@@ -1,36 +1,81 @@
 # ZSH config
 {
-  lib,
   inputs,
+  den,
+  lib,
   ...
 }: {
   den = {
-    # Aspect, auto-loaded with the den.aspects.shell.policies.default-shell
+    schema = {
+      host = {
+        includes = [
+          den.aspects.shell.policies.zsh-host-dispatch
+        ];
+        options = {
+          shell = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                zsh = lib.mkOption {
+                  description = "Enable zsh on this host";
+                  default = true;
+                  type = lib.types.bool;
+                };
+              };
+            };
+          };
+        };
+      };
+      user.includes = [
+        den.aspects.shell.policies.zsh-user-dispatch
+      ];
+    };
+
+    # Aspect
     aspects.shell = {
-      provides.default-shell-zsh = {host}: {
+      # Dispatch policies for explicit enable
+      policies = {
+        zsh-host-dispatch = {host, ...}:
+          lib.optional
+          host.shell.zsh
+          (den.lib.policy.include den.aspects.shell._.zsh);
+        # Get the default user shell
+        zsh-user-dispatch = {host, ...}:
+          lib.optional
+          host.shell.zsh
+          (den.lib.policy.include den.aspects.shell._.zsh._.to-users);
+      };
+
+      # Aspect
+      provides.zsh = {
+        name = "shell/zsh";
         nixos = {...}: {
-          imports =
-            if (host.defaultShell == "zsh")
-            then [inputs.self.modules.nixos.shell-zsh-default]
-            else [];
+          imports = [
+            inputs.self.modules.generic.shell-zsh
+            inputs.self.modules.nixos.shell-zsh
+          ];
+        };
+        darwin = {...}: {
+          imports = [
+            inputs.self.modules.generic.shell-zsh
+            inputs.self.modules.darwin.shell-zsh
+          ];
+        };
+        provides.to-users = {
+          host,
+          user,
+        }: {
+          name = "shell/zsh(${user.userName}@${host.name})";
+          homeManager = {...}: {
+            imports = [
+              inputs.self.modules.homeManager.shell-zsh
+            ];
+          };
         };
       };
     };
   };
 
   flake.modules = {
-    # Default set module
-    nixos.shell-zsh-default = {pkgs, ...}: {
-      key = "shell-zsh-default#nixos";
-      # Set zsh as default shell
-      config = {
-        users = {
-          defaultUserShell = pkgs.zsh;
-          # Set zsh as root shell too
-          users.root.shell = pkgs.zsh;
-        };
-      };
-    };
     # Generic settings for both settings
     generic.shell-zsh = {...}: {
       key = "shell-zsh#generic";
@@ -96,76 +141,9 @@
       pkgs,
       lib,
       ...
-    }: let
-      zshConfigEarlyInit = lib.mkBefore ''
-        #--START--ZSH Config before everything
-        #---END---ZSH Config before everything
-
-      '';
-      zshConfigBeforeCompinit = lib.mkOrder 550 ''
-        #--START--ZSH Config before compinit
-        #---END---ZSH Config before compinit
-
-      '';
-      zshConfig = lib.mkOrder 1000 ''
-        #--START--ZSH Config
-
-        # Function to get nix program location
-        nix-getPackage () {
-          this_link="$(which "''${1}")"
-          readlink "''${this_link}"
-        }
-
-        # Set editor default keymap to vi (`-v`) or emacs (`-e`)
-        bindkey -v
-
-        # Make completion case-insensitive
-        zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-        # Get colored ls completions, needs also ls alias
-        zstyle ':completion:*' list-colors  "''${(s.:.)LS_COLORS}"
-        # Disable native menu in favor of fzf menu, and get directory previews
-        zstyle ':completion:*' menu no
-        zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-        zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-
-        # Run arbitrary binaries, needed for mason in neovim (not needed with nixCats)
-        # export NIX_LD=$(nix eval --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
-
-        #---END---ZSH Config
-
-      '';
-      zshConfigAfter = lib.mkOrder 1500 ''
-        #--START--ZSH Config after everything else
-
-        # Setup homebrew if it exists
-        if [ -x "/opt/homebrew/bin/brew" ]; then
-          eval "$(/opt/homebrew/bin/brew shellenv)"
-        fi
-
-        #---END---ZSH Config after everything else
-      '';
-    in {
+    }: {
       key = "shell-zsh#homeManager";
       config = {
-        # Integrations
-        home.shell.enableZshIntegration = true;
-        services = {
-          gpg-agent.enableZshIntegration = true;
-        };
-        programs = {
-          fzf.enableZshIntegration = true;
-          direnv.enableZshIntegration = true;
-          ghostty.enableZshIntegration = true;
-          kitty.shellIntegration.enableZshIntegration = true;
-          lazygit.enableZshIntegration = true;
-          nix-index.enableZshIntegration = true;
-          starship.enableZshIntegration = true;
-          yazi.enableZshIntegration = true;
-          zoxide.enableZshIntegration = true;
-          vivid.enableZshIntegration = true;
-        };
-
-        # Setup zsh
         programs.zsh = {
           enable = true;
           enableCompletion = true;
@@ -206,12 +184,30 @@
               file = "share/fzf-tab/fzf-tab.plugin.zsh";
             }
           ];
-          initContent = lib.mkMerge [
-            zshConfigEarlyInit
-            zshConfigBeforeCompinit
-            zshConfig
-            zshConfigAfter
-          ];
+          initContent = lib.mkOrder 1000 ''
+            #--START--ZSH Config
+
+            # Function to get nix program location
+            nix-getPackage () {
+              this_link="$(which "''${1}")"
+              readlink "''${this_link}"
+            }
+
+            # Set editor default keymap to vi (`-v`) or emacs (`-e`)
+            bindkey -v
+
+            # Make completion case-insensitive
+            zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+            # Get colored ls completionss
+            zstyle ':completion:*' list-colors  "''${(s.:.)LS_COLORS}"
+            # Disable native menu in favor of fzf menu, and get directory previews
+            zstyle ':completion:*' menu no
+            zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+            zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+
+            #---END---ZSH Config
+
+          '';
         };
       };
     };

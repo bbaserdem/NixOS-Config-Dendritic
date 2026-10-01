@@ -84,15 +84,10 @@
       key = "image-utilities#homeManager";
       # Install these apps to userspace
       config = {
-        home.packages = with pkgs; (
-          [
-            imagemagick # Image editing library
-            exiftool # Image info extractor
-          ]
-          ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
-            exiftool
-          ])
-        );
+        home.packages = with pkgs; [
+          imagemagick # Image editing library
+          exiftool # Image info extractor
+        ];
       };
     };
     # Standalone apps
@@ -137,7 +132,7 @@
         home.packages = with pkgs; (
           []
           ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
-            gwenview
+            kdePackages.gwenview
           ])
         );
       };

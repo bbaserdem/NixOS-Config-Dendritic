@@ -1,14 +1,15 @@
 # Configuring kitty terminal
 {inputs, ...}: {
   den = {
-    aspects.applications = {
+    aspects.desktop = {
       provides.ghostty = {
+        name = "desktop/ghostty";
         provides.to-users = {
           host,
           user,
         }: {
           # Dedupe guard
-          name = "applications/ghostty(${user.userName}@${host.name})";
+          name = "desktop/ghostty(${user.userName}@${host.name})";
           # Darwin; pull from homebrew
           darwin = {...}: {
             imports = [
@@ -55,6 +56,10 @@
         # Common settings
         programs.ghostty = {
           enable = true;
+          # Integration
+          enableBashIntegration = true;
+          enableZshIntegration = true;
+          enableFishIntegration = true;
           # Settings
           settings = {
             font-codepoint-map = [

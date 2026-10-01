@@ -1,4 +1,5 @@
-# modules/wrappers/yazi/wrapper.nix
+# Yazi wrapper
+# TODO: Create a minimal version of yazi to dispatch to main system as well
 {...}: {
   flake.wrappers.yazi = {
     pkgs,

@@ -80,6 +80,10 @@
               edit = "${config.home.sessionVariables.EDITOR or "nvim"} {{filename}}";
             };
           };
+          enableBashIntegration = true;
+          enableFishIntegration = true;
+          enableZshIntegration = true;
+          enableNushellIntegration = true;
         };
 
         # Worktree switcher.
