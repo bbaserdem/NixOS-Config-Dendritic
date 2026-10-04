@@ -1,5 +1,9 @@
 # Flake-Parts module for neovim config wrapper
-{config, ...}: {
+{
+  config,
+  inputs,
+  ...
+}: {
   flake = {
     # Flake-Parts configuration for neovim wrapper
     # The general wrappers config is set in the flake config
@@ -24,6 +28,14 @@
       # Import the module from the wrapper
       imports = [
         config.flake.wrappers.neovim.install
+      ];
+    };
+
+    # TODO: Delete after den migration
+    modules.nixos.utility-networkmanager = {...}: {
+      imports = [
+        inputs.self.modules.nixos.networkManager-setup
+        inputs.self.modules.nixos.networkManager-endpoints
       ];
     };
   };

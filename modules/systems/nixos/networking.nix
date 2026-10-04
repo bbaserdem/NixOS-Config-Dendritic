@@ -11,7 +11,23 @@
       provides.nixos = {
         includes = [
           den.aspects.system._.nixos._.networking
+          den.aspects.system._.nixos.policies.local-pages-dispatch
         ];
+        policies = {
+          local-pages-dispatch = {host, ...}:
+            lib.optionals
+            host.networking.local.enable
+            [
+              ( # Needs local web server
+                den.lib.policy.include
+                den.aspects.networking._.nginx
+              )
+              (
+                den.lib.policy.include
+                den.aspects.system._.nixos._.networking._.local-pages
+              )
+            ];
+        };
 
         provides.networking = {
           name = "system/nixos/networking";
@@ -56,14 +72,6 @@
           };
 
           # Serve local web pages (enables nginx)
-          includes = [
-            den.aspects.system._.nixos._.networking.policies.nixos-local-pages-dispatch
-          ];
-          policies.nixos-local-pages-dispatch = {host, ...}: (
-            lib.optionals
-            host.networking.enableLocalWeb
-            (den.lib.policy.include den.aspects.system._.nixos._.networking._.local-pages)
-          );
           provides.local-pages = {host}: {
             name = "system/nixos/networking/local-pages(@${host.name})";
             # Using nginx for local address resolution
@@ -84,7 +92,6 @@
                   |> builtins.map (s: "${s}.localhost");
                 # Set up nginx
                 services.nginx = {
-                  enable = lib.mkDefault true;
                   virtualHosts =
                     localPages
                     |> lib.mapAttrs' (

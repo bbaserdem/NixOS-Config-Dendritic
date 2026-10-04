@@ -2,10 +2,19 @@
 {
   inputs,
   lib,
+  flake-parts-lib,
   ...
 }: {
   # New output options to our flake-parts repo
   options = {
+    # No native darwinModules output in flake-parts; so we define here
+    flake = flake-parts-lib.mkSubmoduleOptions {
+      darwinModules = lib.mkOption {
+        type = lib.types.lazyAttrsOf lib.types.raw;
+        default = {};
+      };
+    };
+
     # Factory aspect functions, that help with declaring options
     factory = lib.mkOption {
       type = lib.types.attrsOf lib.types.unspecified;

@@ -1,10 +1,61 @@
 # Audio tools; base aspect
-{inputs, ...}: {
+{
+  inputs,
+  den,
+  lib,
+  ...
+}: {
   # Dispatch modules in aspect
   den = {
+    # Feature schema
+    schema.host = {
+      includes = [
+        den.aspects.audio.policies.airplay-host-dispatch
+      ];
+      options = {
+        audio = lib.mkOption {
+          type = lib.types.submodule {
+            options = {
+              airplay = lib.mkOption {
+                description = "Whether to enable airplay on this host.";
+                default = true;
+                type = lib.types.bool;
+              };
+            };
+          };
+        };
+      };
+    };
+
     aspects.audio = {
       # Base aspect
       name = "audio";
+
+      # Policy for airplay
+      policies.airplay-host-dispatch = {host, ...}:
+        lib.optional
+        (
+          (host.class == "nixos")
+          && host.audio.enable
+          && host.audio.airplay
+          && host.networking.zeroconf.enable
+        )
+        (den.lib.policy.include den.aspects.audio._.airplay);
+      provides.airplay = {
+        name = "audio/airplay";
+        nixos = {...}: {
+          imports = [
+            inputs.self.modules.nixos.audio-airplay
+          ];
+        };
+        # Open local discovery ports
+        local-ports = {
+          from = 6001;
+          to = 6002;
+          proto = "udp";
+        };
+      };
+
       # Global dispatch
       provides.to-users = {
         host,
@@ -18,6 +69,7 @@
           ];
         };
       };
+
       # Applications
       provides.tenacity = {
         name = "audio/tenacity";
@@ -128,6 +180,28 @@
           # Better music player for macos
           "foobar2000"
         ];
+      };
+    };
+
+    # Nixos config module to enable airplay
+    nixos.audio-airplay = {...}: {
+      key = "audio-airplay#nixos";
+      config = {
+        # Set up pipewire for airplay streaming
+        services.pipewire.extraConfig.pipewire = {
+          "10-airplay" = {
+            "context.modules" = [
+              {
+                name = "libpipewire-module-raop-discover";
+
+                # increase the buffer size if you get dropouts/glitches
+                # args = {
+                #   "raop.latency.ms" = 500;
+                # };
+              }
+            ];
+          };
+        };
       };
     };
   };

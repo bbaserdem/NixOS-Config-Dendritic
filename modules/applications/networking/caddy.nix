@@ -1,5 +1,20 @@
-# Caddy, http proxy in darwin
-{...}: {
+# Caddy, web server and reverse proxy that can be used in darwin
+{inputs, ...}: {
+  # Aspect
+  den = {
+    aspects.networking = {
+      provides.caddy = {
+        name = "networking/caddy";
+        darwin = {...}: {
+          imports = [
+            inputs.self.modules.darwin.caddy
+          ];
+        };
+      };
+    };
+  };
+
+  # Module for integrating into nix-darwin
   flake.modules.darwin.caddy = {
     config,
     lib,
@@ -25,6 +40,7 @@
       )}
     '';
   in {
+    key = "caddy#darwin";
     # Options to define
     options = {
       services.caddy = {
@@ -56,7 +72,7 @@
       };
     };
 
-    # Configuration
+    # Configuration from settings
     config = lib.mkIf (cfg.enable == true) {
       # Install caddy
       environment.systemPackages = [cfg.package];

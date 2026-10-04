@@ -16,7 +16,7 @@
           else [];
         # Redundant check
         config = {
-          home.stateVersion = lib.mkDefault config.localConfig.nixVersion;
+          home.stateVersion = lib.mkDefault config.nixpkgs.version;
         };
       };
     };

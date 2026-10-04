@@ -1,7 +1,7 @@
 # Configuring firefox search engines
 {config, ...}: {
   localConfig.users.batuhan.firefox.global.search = let
-    version = config.localConfig.nixVersion;
+    version = config.nixpkgs.version;
   in {
     # Default to duck duck go, google is very AI now
     default = "ddg";

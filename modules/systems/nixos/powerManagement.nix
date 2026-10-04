@@ -38,10 +38,10 @@
     aspects.system = {
       provides.nixos = {
         includes = [
-          den.aspects.system._.nixos.policies.nixos-power-management-dispatch
+          den.aspects.system._.nixos.policies.power-management-dispatch
         ];
         # Policy for auto-dispatch
-        policies.nixos-power-management-dispatch = {host, ...}: (
+        policies.power-management-dispatch = {host, ...}: (
           lib.optionals
           host.powerManagement.enable
           [

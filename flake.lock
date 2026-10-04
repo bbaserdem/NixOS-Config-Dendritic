@@ -916,7 +916,7 @@
       },
       "parent": []
     },
-    "pkgs-by-name-for-flake-parts": {
+    "pkgs-by-name": {
       "locked": {
         "lastModified": 1789628227,
         "narHash": "sha256-PC+g00FlwHgA/MyejBAEtQLRnrZLiA/Eo7i0rEkZ7bE=",
@@ -982,7 +982,7 @@
         "noctalia": "noctalia",
         "nur": "nur",
         "packages": "packages",
-        "pkgs-by-name-for-flake-parts": "pkgs-by-name-for-flake-parts",
+        "pkgs-by-name": "pkgs-by-name",
         "plasma-manager": "plasma-manager",
         "sops-nix": "sops-nix",
         "stylix": "stylix",

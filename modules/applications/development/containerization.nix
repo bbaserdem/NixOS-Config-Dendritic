@@ -69,18 +69,20 @@
       policies.containerization-host-dispatch = {host, ...}: (
         lib.optionals
         host.development.containerization.enable
-        [
-          (
-            den.lib.policy.include
-            den.aspects.development._.containerization
-          )
-        ]
-        ++ (
-          lib.optional
-          (host.development.containerization.backend != null)
-          (
-            den.lib.policy.include
-            den.aspects.development._.containerization._.${host.development.containerization.backend}
+        (
+          [
+            (
+              den.lib.policy.include
+              den.aspects.development._.containerization
+            )
+          ]
+          ++ (
+            lib.optional
+            (host.development.containerization.backend != null)
+            (
+              den.lib.policy.include
+              den.aspects.development._.containerization._.${host.development.containerization.backend}
+            )
           )
         )
       );

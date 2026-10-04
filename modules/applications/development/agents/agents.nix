@@ -16,7 +16,7 @@
     };
   };
   # Apply our nixpkgs overlay repo-wide to pull in from pkgs
-  localConfig.nixpkgs.overlays = [
+  nixpkgs.overlays = [
     inputs.llm-agents.overlays.shared-nixpkgs
   ];
 

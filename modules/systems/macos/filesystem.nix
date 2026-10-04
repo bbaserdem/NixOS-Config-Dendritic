@@ -27,7 +27,7 @@
   flake.modules.darwin.macos-filesystem = {pkgs, ...}: {
     key = "macos-filesystem#darwin";
     config = {
-      # Additionale support
+      # Additional support
       homebrew = {
         casks = [
           "macfuse"

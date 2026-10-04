@@ -28,7 +28,7 @@
     key = "gimp-settings#homeManager";
     config = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
       home.packages = with pkgs; [
-        gimp3-with-plugins
+        gimp-with-plugins # Bundles with all plugins not marked broken
       ];
     };
   };

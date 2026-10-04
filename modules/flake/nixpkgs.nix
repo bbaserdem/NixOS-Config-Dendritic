@@ -1,37 +1,12 @@
 # Nixpkgs configuration
 {
   inputs,
-  lib,
   config,
   ...
 }: let
-  version = config.localConfig.nixVersion;
+  version = config.nixpkgs.version;
 in {
-  # Define new options to use for all nixpkgs invocations
-  options = {
-    localConfig = {
-      nixVersion = lib.mkOption {
-        type = lib.types.str;
-        description = "Nix tooling version";
-      };
-      nixpkgs = {
-        overlays = lib.mkOption {
-          type = lib.types.listOf lib.types.raw;
-          default = [];
-          description = "List of overlays to apply to nixpkgs invocations";
-        };
-        config = lib.mkOption {
-          type = lib.types.lazyAttrsOf lib.types.raw;
-          description = "Configuration to be applied to nixpkgs invocations";
-        };
-      };
-    };
-  };
-
   config = {
-    # Set flake version
-    localConfig.nixVersion = "26.05";
-
     # Central config location for nixpkgs sources config
     flake-file.inputs = {
       # Flake inputs
@@ -58,41 +33,15 @@ in {
       };
     };
 
-    localConfig.nixpkgs = {
+    # Config options to globally set for nixpkgs
+    nixpkgs = {
       config = {
         allowUnfree = true;
       };
+      # Add the NUR overlay to system overlays
       overlays = [
-        inputs.self.overlays.additions
-        inputs.self.overlays.modifications
-        inputs.self.overlays.unstablePackages
-        inputs.self.overlays.localPythonPackages
-        # NUR overlay
-        inputs.nur.overlays.default
+        inputs.nur.overlays.default # NUR overlay
       ];
-    };
-
-    flake = {
-      # Application of overlays in system setting
-      # This module is auto-imported by factory functions
-      modules.generic.nixpkgs = {...}: {
-        config = {
-          inherit (config.localConfig) nixpkgs;
-        };
-      };
-
-      # Unstable overlay to add unstable pkgs to pkgs.unstable
-      overlays = {
-        unstablePackages = final: prev: {
-          unstable = import inputs.nixpkgs-unstable {
-            system = final.stdenv.hostPlatform.system;
-            config = final.config;
-            overlays = [
-              inputs.self.overlays.localPythonPackages
-            ];
-          };
-        };
-      };
     };
 
     # Global setting for pkgs used by this flake
@@ -105,7 +54,7 @@ in {
     in {
       _module.args.pkgs = import thisNixpkgs {
         inherit system;
-        inherit (config.localConfig.nixpkgs) config overlays;
+        inherit (config.nixpkgs) config overlays;
       };
     };
   };

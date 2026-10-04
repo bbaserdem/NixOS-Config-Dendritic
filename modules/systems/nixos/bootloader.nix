@@ -7,77 +7,81 @@
 }: {
   den = {
     # Host schema additions for selecting bootloader behavior in nixos
-    schema.host = {config, ...}: {
-      options = {
-        boot = lib.mkOption {
-          description = "Bootloader info (NixOS only)";
-          default =
-            if config.class == "nixos"
-            then {}
-            else null;
-          apply = value:
-            if config.class == "nixos"
-            then value
-            else if (value != null)
-            then
-              throw ''
-                Host ${config.name}'s boot must be null unless class is "nixos"
-                ${config.name}.class is currently `${config.class}`
-              ''
-            else null;
-          type = lib.types.nullOr (
-            lib.types.submodule ({...}: {
-              options = {
-                configurationLimit = lib.mkOption {
-                  description = "Number of entries to keep in the boot menu";
-                  default = 10;
-                  type = lib.types.int;
-                };
-                loader = lib.mkOption {
-                  description = "Bootloader backend to enable.";
-                  default = "grub";
-                  type = lib.types.nullOr (lib.types.enum [
-                    "systemd-boot"
-                    "grub"
-                  ]);
-                };
-                grub = lib.mkOption {
-                  description = "GRUB options";
-                  default = {};
-                  type = lib.types.submodule ({...}: {
-                    options = {
-                      stylix = lib.mkOption {
-                        description = "Whether to use stylix to theme grub";
-                        default = true;
-                        type = lib.types.bool;
-                      };
-                      flavor = lib.mkOption {
-                        description = "Grub theme variant to use outside stylix";
-                        default = "dark";
-                        type = lib.types.enum [
-                          "orange"
-                          "white"
-                          "dark"
-                          "bigSur"
-                        ];
-                      };
+    schema.host = {
+      imports = [
+        ({config, ...}: {
+          options = {
+            boot = lib.mkOption {
+              description = "Bootloader info (NixOS only)";
+              default =
+                if config.class == "nixos"
+                then {}
+                else null;
+              apply = value:
+                if config.class == "nixos"
+                then value
+                else if (value != null)
+                then
+                  throw ''
+                    Host ${config.name}'s boot must be null unless class is "nixos"
+                    ${config.name}.class is currently `${config.class}`
+                  ''
+                else null;
+              type = lib.types.nullOr (
+                lib.types.submodule ({...}: {
+                  options = {
+                    configurationLimit = lib.mkOption {
+                      description = "Number of entries to keep in the boot menu";
+                      default = 10;
+                      type = lib.types.int;
                     };
-                  });
-                };
-              };
-            })
-          );
-        };
-      };
+                    loader = lib.mkOption {
+                      description = "Bootloader backend to enable.";
+                      default = "grub";
+                      type = lib.types.nullOr (lib.types.enum [
+                        "systemd-boot"
+                        "grub"
+                      ]);
+                    };
+                    grub = lib.mkOption {
+                      description = "GRUB options";
+                      default = {};
+                      type = lib.types.submodule ({...}: {
+                        options = {
+                          stylix = lib.mkOption {
+                            description = "Whether to use stylix to theme grub";
+                            default = true;
+                            type = lib.types.bool;
+                          };
+                          flavor = lib.mkOption {
+                            description = "Grub theme variant to use outside stylix";
+                            default = "dark";
+                            type = lib.types.enum [
+                              "orange"
+                              "white"
+                              "dark"
+                              "bigSur"
+                            ];
+                          };
+                        };
+                      });
+                    };
+                  };
+                })
+              );
+            };
+          };
+        })
+      ];
     };
 
     aspects.system = {
       provides.nixos = {
         # Policy that enables the dispatch of boot loader type
         includes = [
-          den.aspects.system._.nixos.policies.nixos-bootloader-dispatch
+          den.aspects.system._.nixos.policies.bootloader-dispatch
         ];
-        policies.nixos-bootloader-dispatch = {host, ...}:
+        policies.bootloader-dispatch = {host, ...}:
           lib.optionals
           (
             (host.class == "nixos")

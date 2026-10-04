@@ -14,31 +14,58 @@
     };
 
     schema = {
-      user = {
-        # Collect the network info emitted by user scopes for a host
-        includes = [
-          den.aspects.system._.networking.policies.expose-local-network-records
-        ];
-      };
       host = {
         # Create one collected local-pages registry
         includes = [
           den.aspects.system._.networking.policies.normalize-local-pages
         ];
         # Host option to serve the local web pages
-        options.networking = lib.mkOption {
-          description = "Network related metadata";
-          type = lib.types.submodule {
+        imports = [
+          ({config, ...}: {
             options = {
-              enableLocalWeb = lib.mkOption {
-                description = "Whether to enable local page serving.";
-                type = lib.types.bool;
-                default = false;
+              networking = lib.mkOption {
+                description = "Network related metadata";
+                default = {};
+                type = lib.types.submodule {
+                  options = {
+                    # Provider for networking backend
+                    provider = lib.mkOption {
+                      description = "Which provider to use, if any";
+                      type = lib.types.nullOr (lib.types.enum [
+                        "networkManager"
+                        "dhcpd" # TODO: Dhcpd networking setup
+                      ]);
+                      default =
+                        if config.class == "nixos"
+                        then "networkManager"
+                        else null;
+                    };
+                    # Local networking
+                    local = lib.mkOption {
+                      description = "Local networking options";
+                      default = {};
+                      type = lib.types.submodule {
+                        options = {
+                          enable = lib.mkOption {
+                            description = "Whether to enable local page serving.";
+                            type = lib.types.bool;
+                            default = false;
+                          };
+                        };
+                      };
+                    };
+                  };
+                };
               };
             };
-          };
-          default = {};
-        };
+          })
+        ];
+      };
+      user = {
+        # Collect the network info emitted by user scopes for a host
+        includes = [
+          den.aspects.system._.networking.policies.expose-local-network-records
+        ];
       };
     };
 
@@ -49,62 +76,61 @@
       ];
 
       provides.networking = {
+        name = "system/networking";
         policies = {
           # Push host-user info to the parent host scope
-          expose-local-network-records = {user, ...}:
-            lib.optionals (user != null) [
-              (
-                den.lib.policy.pipe.from den.quirks.local-web [
-                  den.lib.policy.pipe.expose
-                ]
-              )
-              (
-                den.lib.policy.pipe.from den.quirks.local-ports [
-                  den.lib.policy.pipe.expose
-                ]
-              )
-            ];
-
+          expose-local-network-records = {...}: [
+            (
+              den.lib.policy.pipe.from
+              den.quirks.local-web
+              [den.lib.policy.pipe.expose]
+            )
+            (
+              den.lib.policy.pipe.from
+              den.quirks.local-ports
+              [den.lib.policy.pipe.expose]
+            )
+          ];
           # From the records; create a new quirk that will house one standart attrset
-          normalize-local-pages = {host, ...}:
-            lib.optionals (host != null) [
-              (
-                den.lib.policy.pipe.from den.quirks.local-web [
-                  (
-                    den.lib.policy.pipe.for (
-                      records: [
-                        (
-                          records
-                          |> builtins.groupBy (record: record.service)
-                          |> lib.mapAttrs (
-                            _: serviceRecords: (
-                              serviceRecords
-                              |> builtins.map (
-                                r:
-                                  lib.nameValuePair
+          normalize-local-pages = {...}: [
+            (
+              den.lib.policy.pipe.from
+              den.quirks.local-web
+              [
+                (
+                  den.lib.policy.pipe.for
+                  (records: [
+                    (
+                      records
+                      |> builtins.groupBy (record: record.service)
+                      |> lib.mapAttrs (
+                        _: serviceRecords: (
+                          serviceRecords
+                          |> builtins.map (
+                            r:
+                              lib.nameValuePair
+                              (
+                                if
                                   (
-                                    if
-                                      (
-                                        (r ? subpath)
-                                        && (builtins.isString (r.subpath or ""))
-                                        && ((r.subpath or "") != "")
-                                      )
-                                    then "/${r.subpath}/"
-                                    else "/"
+                                    (r ? subpath)
+                                    && (builtins.isString (r.subpath or ""))
+                                    && ((r.subpath or "") != "")
                                   )
-                                  r
+                                then "/${r.subpath}/"
+                                else "/"
                               )
-                              |> builtins.listToAttrs
-                            )
+                              r
                           )
+                          |> builtins.listToAttrs
                         )
-                      ]
+                      )
                     )
-                  )
-                  (den.lib.policy.pipe.as "local-pages")
-                ]
-              )
-            ];
+                  ])
+                )
+                (den.lib.policy.pipe.as "local-pages")
+              ]
+            )
+          ];
         };
       };
     };

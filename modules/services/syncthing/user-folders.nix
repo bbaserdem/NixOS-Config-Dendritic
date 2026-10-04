@@ -6,13 +6,13 @@
   ...
 }: {
   den = {
-    # Quirk for collecting folder information across the fleet
-    quirks.syncthing-folders = {
-      description = "Registered syncthing folders";
-    };
-
-    # Hook into user mediaDirs to enable syncthing metadata emission
+    # User schema additions
     schema.user = {
+      includes = [
+        den.aspects.syncthing.policies.user-node-folder-collection
+        den.aspects.syncthing.policies.user-node-global-folder-dispatch
+      ];
+      # Hook into user mediaDirs to enable syncthing metadata emission
       imports = [
         ({config, ...}: {
           options.mediaDirs = lib.mkOption {
@@ -114,17 +114,36 @@
     };
 
     aspects.syncthing = {
+      policies = {
+        # Global share folder
+        user-node-global-folder-dispatch = {user, ...}:
+          lib.optional
+          (user.syncthing.enable && user.syncthing.globalShare)
+          (den.lib.policy.include den.aspects.syncthing._.user-node._.global-share);
+        # Pipe collection
+        user-node-folder-collection = {user, ...}:
+          lib.optional
+          user.syncthing.enable
+          ( # Collect all relevant folders across the fleet to this scope
+            den.lib.policy.pipe.from
+            den.quirks.syncthing-folders
+            [
+              (
+                den.lib.policy.pipe.collectAll
+                ({user, ...}: user.syncthing.enable)
+              )
+              den.lib.policy.pipe.withProvenance
+            ]
+          );
+      };
+
       provides.user-node = {
+        # Always do the media folders dispatch
         includes = [
           den.aspects.syncthing._.user-node._.media-folders
-          den.aspects.syncthing._.user-node.policies.global-share-dispatch
         ];
 
-        policies.global-share-dispatch = {user, ...}:
-          lib.optionals (user.syncthing.globalShare) [
-            (den.lib.policy.include den.aspects.syncthing._.user-node._.global-share)
-          ];
-
+        # Global share folder aspect
         provides.global-share = {
           host,
           user,
@@ -220,7 +239,7 @@
           # Collision protection
           name = "syncthing/user-node/media-folders(${user.userName}@${host.name})";
 
-          # Emit our folders to the folders quirk
+          # Emit our nodes' folders to the folders quirk
           syncthing-folders = {lib, ...}:
             if user.mediaDirs == null
             then []

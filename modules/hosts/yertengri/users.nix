@@ -2,11 +2,13 @@
 {...}: {
   den = {
     hosts.yertengri = {
+      primaryUser = "wolframite";
       # Users
       users = {
         # Wolframite user host-specific settings
         wolframite = {
           classes = [
+            "admin"
             "homeManager"
             "user"
             "games"

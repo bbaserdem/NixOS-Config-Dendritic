@@ -1,8 +1,9 @@
 # Gaming setup
 {
   inputs,
-  lib,
   den,
+  lib,
+  flib,
   ...
 }: {
   den = {
@@ -85,19 +86,7 @@
           ];
         };
         # Add the den users to the gaming group
-        user = {
-          lib,
-          osConfig,
-          ...
-        }:
-          lib.optionalAttrs (host.class == "nixos") {
-            extraGroups =
-              [
-                "games"
-                "gamemode"
-              ]
-              |> builtins.filter (n: lib.hasAttrByPath ["users" "groups" n] osConfig);
-          };
+        user = flib.den.addUserToGroups ["games" "gamemode"];
       };
     };
   };

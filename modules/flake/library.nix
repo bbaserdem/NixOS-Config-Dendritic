@@ -62,6 +62,33 @@
   # Split dir shorthand
   splitDir = path: walkToDirRel "~/" "~/${path}";
 
+  # Turn true/false into yes/no
+  yesNo = b:
+    if b
+    then "yes"
+    else "no";
+
+  # Den functions
+  den = {
+    # Class module to set user to for adding a user to groups in nixos
+    addUserToGroups = groups: (
+      {
+        lib,
+        osConfig,
+        host,
+        ...
+      }: (
+        lib.optionalAttrs
+        (host.class == "nixos")
+        {
+          extraGroups =
+            groups
+            |> builtins.filter (n: lib.hasAttrByPath ["users" "groups" n] osConfig);
+        }
+      )
+    );
+  };
+
   #---MAIN LIBRARY---#
   flib = {
     # Inherit the functions we wanted to export
@@ -71,6 +98,8 @@
       walkToDir
       walkToDirRel
       splitDir
+      yesNo
+      den
       ;
 
     # Useful stuff

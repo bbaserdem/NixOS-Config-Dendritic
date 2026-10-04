@@ -1,7 +1,5 @@
 # Configuring firefox search engines
-{config, ...}: let
-  inherit (config.localConfig) nixVersion;
-in {
+{config, ...}: {
   flake.modules.homeManager.firefox-wolframite = {
     lib,
     options,
@@ -63,7 +61,7 @@ in {
           };
 
           # Other search engines
-          "Nix Packages ${nixVersion}" = {
+          "Nix Packages ${config.nixpkgs.version}" = {
             urls = [
               {
                 template = "https://search.nixos.org/packages";
@@ -74,7 +72,7 @@ in {
                   }
                   {
                     name = "channel";
-                    value = nixVersion;
+                    value = config.nixpkgs.version;
                   }
                   {
                     name = "sort";
@@ -91,14 +89,14 @@ in {
             definedAliases = ["@np"];
           };
 
-          "NixOS Options ${nixVersion}" = {
+          "NixOS Options ${config.nixpkgs.version}" = {
             urls = [
               {
                 template = "https://search.nixos.org/options";
                 params = [
                   {
                     name = "channel";
-                    value = nixVersion;
+                    value = config.nixpkgs.version;
                   }
                   {
                     name = "sort";
@@ -115,7 +113,7 @@ in {
             definedAliases = ["@no"];
           };
 
-          "Home Manager Options ${nixVersion}" = {
+          "Home Manager Options ${config.nixpkgs.version}" = {
             urls = [
               {
                 template = "https://search.nixos.org/options";
@@ -126,7 +124,7 @@ in {
                   }
                   {
                     name = "channel";
-                    value = nixVersion;
+                    value = config.nixpkgs.version;
                   }
                   {
                     name = "sort";

@@ -47,7 +47,7 @@
       # Dispatch policy
       policies.secretspec-config-dispatch = {host, ...}:
         lib.optionals
-        host.development.secretspec.enable
+        (host.development.enable && host.development.secretspec.enable)
         [
           (den.lib.policy.include den.aspects.development._.secretspec)
         ];

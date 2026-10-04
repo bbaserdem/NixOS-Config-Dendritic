@@ -6,7 +6,7 @@
 }: let
   # Bunch of pre-processing here
   # Load from flake the configs in new namespace (config overridden in module)
-  nmCfg = config.localConfig.network-manager;
+  nmCfg = config.networkManager;
 
   # Boilerplate
   # Get normalized profile name from template type
@@ -120,12 +120,12 @@ in {
     lib,
     ...
   }: {
+    key = "networkManager-endpoints#nixos";
     config =
-      lib.optionalAttrs (
-        # Can only dispatch with sops; and skip on empty
-        (lib.hasAttrByPath ["sops"] options)
-        && (profiles != [])
-      ) {
+      lib.optionalAttrs
+      # Can only dispatch with sops; and skip on empty
+      ((options ? sops) && (profiles != []))
+      {
         # Check JSON validity
         assertions = [
           {

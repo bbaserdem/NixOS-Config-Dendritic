@@ -89,7 +89,11 @@
           ];
         };
       };
-      okular = {pkgs, ...}: {
+      okular = {
+        pkgs,
+        lib,
+        ...
+      }: {
         key = "okular#homeManager";
         # Install these apps to userspace
         config = {

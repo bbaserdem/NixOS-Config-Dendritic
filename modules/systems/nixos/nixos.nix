@@ -2,6 +2,7 @@
 {
   inputs,
   den,
+  config,
   ...
 }: {
   den.aspects = {
@@ -9,42 +10,46 @@
     system = {
       provides.nixos = {
         name = "system/nixos";
-        includes = [
-          den.aspects.system._.nixos._.system-info
-        ];
         nixos = {...}: {
           imports = [
             inputs.self.modules.nixos.nixos-defaults
           ];
         };
-        # Info aspect
+        # Info aspect; parametric
+        includes = [
+          den.aspects.system._.nixos._.system-info
+        ];
         provides.system-info = {host}: {
           name = "system/nixos/system-info(@${host.name})";
           nixos = {lib, ...}: {
-            config = lib.mkMerge [
-              ( # Full computer name
-                lib.mkIf (host.description != null) {
-                  hardware.bluetooth.settings.General.Name = host.description;
-                }
-              )
-              ( # State version
-                lib.mkIf (host.stateVersion != null) {
-                  system.stateVersion = host.stateVersion;
-                }
-              )
-            ];
+            # Full computer name
+            config = lib.mkIf (host.description != null) {
+              hardware.bluetooth.settings.General.Name = host.description;
+            };
           };
         };
       };
     };
   };
 
-  flake.modules.nixos.nixos-defaults = {lib, ...}: {
+  flake.modules.nixos.nixos-defaults = {
+    lib,
+    options,
+    ...
+  }: {
     key = "nixos-defaults#nixos";
-    config = {
-      # Our default state version for our nixos systems
-      # TODO: default this to flake version
-      system.stateVersion = lib.mkDefault "26.05";
-    };
+    config = lib.mkMerge [
+      {
+        # Our default state version for our nixos systems
+        system.stateVersion = lib.mkOverride 110 config.nixpkgs.version;
+      }
+      ( # Establish the defaults for managed home-manager invocations
+        lib.mkIf (options ? home-manager) {
+          home-manager.sharedModules = [
+            inputs.self.modules.homeManager.hm-defaults
+          ];
+        }
+      )
+    ];
   };
 }

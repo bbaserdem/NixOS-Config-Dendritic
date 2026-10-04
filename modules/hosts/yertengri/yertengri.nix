@@ -6,6 +6,10 @@
       system = "x86_64-linux";
       description = "Yertengri: Homestation PC";
 
+      # Functionality
+      sops.enable = true;
+      audio.enable = true;
+
       # Boot settings
       boot = {
         configurationLimit = 10;
@@ -48,11 +52,20 @@
         printing.enable = true;
         sidepulse.enable = false;
         yubikey.enable = true;
+        graphics = {
+          enable = true;
+          vulkan = {
+            enable = true;
+          };
+        };
       };
 
       # Network settings
       networking = {
-        enableLocalWeb = true;
+        local.enable = true;
+        zeroconf.enable = true;
+        syncthing.relay = false;
+        samba.enable = true;
       };
 
       # Tooling
@@ -105,16 +118,6 @@
           gamescope = true;
         };
       };
-    };
-
-    # Base configuration
-    aspects.yertengri = {
-      # Base frameworks to subscribe to
-      includes = with den.aspects; [
-        secrets
-        stylix
-        nix-extra
-      ];
     };
   };
 }

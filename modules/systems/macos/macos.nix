@@ -2,15 +2,13 @@
 {
   inputs,
   den,
+  lib,
   ...
 }: {
   den = {
     aspects.system = {
       provides.macos = {
         name = "system/macos";
-        includes = [
-          den.aspects.system._.macos._.system-info
-        ];
         darwin = {...}: {
           imports = [
             inputs.self.modules.darwin.macos-defaults
@@ -19,19 +17,21 @@
           ];
         };
         # Defaults aspect
+        includes = [
+          den.aspects.system._.macos._.system-info
+        ];
         provides.system-info = {host}: {
           name = "system/macos/system-info(@${host.name})";
           darwin = {lib, ...}: {
             config = lib.mkMerge [
-              ( # Full computer name
-                lib.mkIf (host.description != null) {
-                  # Default state version for this nix-darwin version
-                  networking.computerName = host.description;
+              ( # Primary user setting in macos (will be deprecated)
+                lib.mkIf (host.primaryUser != null) {
+                  system = {inherit (host) primaryUser;};
                 }
               )
-              ( # Default state version for this nix-darwin version
-                lib.mkIf (host.stateVersion != null) {
-                  system.stateVersion = host.stateVersion;
+              ( # Pretty name for this computer
+                lib.mkIf (host.description != null) {
+                  networking.computerName = host.description;
                 }
               )
             ];
@@ -43,12 +43,25 @@
 
   # Modules
   flake.modules.darwin = {
-    macos-defaults = {lib, ...}: {
+    macos-defaults = {
+      lib,
+      options,
+      ...
+    }: {
       key = "macos-defaults#darwin";
-      config = {
-        # Default state version for this nix-darwin version
-        system.stateVersion = lib.mkDefault 7;
-      };
+      config = lib.mkMerge [
+        {
+          # Default state version for this nix-darwin version
+          system.stateVersion = lib.mkOverride 110 7;
+        }
+        ( # Establish the defaults for managed home-manager invocations
+          lib.mkIf (options ? home-manager) {
+            home-manager.sharedModules = [
+              inputs.self.modules.homeManager.hm-defaults
+            ];
+          }
+        )
+      ];
     };
     # TODO: These settings should be migrated to a wolframite specific module
     macos-behavior = {...}: {

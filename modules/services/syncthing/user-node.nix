@@ -1,4 +1,4 @@
-# Syncthing; device information management
+# Syncthing; node activation for user-node's
 {
   inputs,
   lib,
@@ -6,24 +6,45 @@
   ...
 }: {
   den = {
-    # Quirk for collecting device information across the fleet
-    quirks.syncthing-devices = {
-      description = "Registered syncthing devices";
-      # Should emit once per node; with provenance
+    schema.user = {
+      includes = [
+        den.aspects.syncthing.policies.user-node-enable
+        den.aspects.syncthing.policies.user-node-device-collection
+      ];
     };
 
-    # Aspect for syncthing device setup
+    # User-node aspect; for setting up a users' individual node
     aspects.syncthing = {
-      # General setup
+      policies = {
+        # Enable policy
+        user-node-enable = {user, ...}:
+          lib.optional
+          user.syncthing.enable
+          (den.lib.policy.include den.aspects.syncthing._.user-node);
+        # Quirk collection policy
+        user-node-device-collection = {user, ...}:
+          lib.optional
+          user.syncthing.enable
+          ( # Collect all relevant devices across the fleet to this scope
+            den.lib.policy.pipe.from
+            den.quirks.syncthing-devices
+            [
+              (
+                den.lib.policy.pipe.collectAll
+                ({user, ...}: user.syncthing.enable)
+              )
+              den.lib.policy.pipe.withProvenance
+            ]
+          );
+      };
 
-      # User-node devices setup
       provides.user-node = {
-        # Add user node init to full module
+        name = "syncthing/user-node";
+        # Always dispatch base behavior with parametric aspect
         includes = [
           den.aspects.syncthing._.user-node._.setup
         ];
 
-        # Emit to quirk node information about the current user scope
         provides.setup = {
           host,
           user,
@@ -47,7 +68,7 @@
           # Collision protection
           name = "syncthing/user-node/setup(${user.userName}@${host.name})";
 
-          # Emit our info to quirk; all base keys except enable
+          # Emit our device information; include all base keys except enable flag
           syncthing-devices = {
             # Device label used, along with name and id; and global share
             inherit (user.syncthing) label name id globalShare;
@@ -62,22 +83,20 @@
             port = guiPort;
           };
 
-          # Declare our ports to local firewall quirk for opening ports
+          # Declare our ports to local firewall
           local-ports =
             [
-              # Register both tcp and udp for transfers
               {
-                port = transferPort;
                 proto = "all";
+                port = transferPort;
               }
             ]
-            ++ (
-              # Register discovery port if enabled
+            ++ ( # Register discovery port if enabled
               lib.optional
               (discoveryPort != null)
               {
-                port = discoveryPort;
                 proto = "udp";
+                port = discoveryPort;
               }
             );
 
@@ -114,19 +133,22 @@
                     cert = config.sops.secrets."syncthing/${host.name}/cert".path;
                     # API Key setting should be done here when support for this drops
                     # apiKey = config.sops.secrets."syncthing/${host.name}/restapi".path;
-                    tray = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {};
+                    # Put in syncthing tray secrets API key when this is in
+                    tray =
+                      lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+                      };
                   };
                 }
               )
               {
                 services.syncthing = {
                   # Use the new ports for this instance
-                  # We will reserve defaults for system based ones
+                  # We will reserve defaults for system based daemons
                   guiAddress = "127.0.0.1:${toString guiPort}";
                   settings = {
                     options = {
                       listenAddresses = [
-                        # Do the equivalent of `default`, but with custom port
+                        # Do the equivalent of `default`, but with the custom port
                         "tcp://0.0.0.0:${toString transferPort}"
                         "quic://0.0.0.0:${toString transferPort}"
                         "dynamic+https://relays.syncthing.net/endpoint"
@@ -154,16 +176,6 @@
                   };
                 };
               }
-            ];
-          };
-        };
-
-        # Configuring the local host machine
-        provides.carrier-host-settings = {host}: {
-          name = "syncthing/carrier-host-settings@${host.name}";
-          nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.syncthing-services
             ];
           };
         };

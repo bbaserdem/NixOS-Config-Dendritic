@@ -1,144 +1,87 @@
-# Syncthing; file synching across computers
+# Syncthing; configuration entry file
 {lib, ...}: {
-  config = {
-    # Global stignore string
-    localConfig.syncthing.ignore.global = ''
-      // Global stignore
+  den = {
+    # Quirk for collecting device information across the entire fleet
+    quirks = {
+      syncthing-devices.description = ''
+        Registered syncthing devices. (Collected with provenance)
 
-      // Do not ignore any Stignore folders
-      !/Stignore
-      !/Stignore/*
+        This quirk should contain all nodes with provenance info
+        Each entry should have the following info;
+        - label: internal device name used
+        - name: the device name used by syncthing
+        - id: public id string for the device
+        - globalShare: flag to check if this node is participating in fleet share
+        - {gui,transfer,discovery}Port: ports used by the node
+      '';
+      syncthing-folders.description = ''
+        Registered syncthing folders (collected with provenance)
 
-      // Do not track thumbnaails
-      .thumbnails
-      .thumbnails/**
+        Each node will emit to this quirk every folder it wants to sync, except the global sync entry.
+        Each entry should have the following info;
+        - type: A metadata to distinguish which type of folder is this.
+        - (mediaDir): For media type folders; the media directory attrset key.
+      '';
+    };
 
-      // Do not track any VCS
-      (?d).git
-      (?d).gitmodules
-      (?d).jj
+    # Host schema for enabling syncthing relay
+    schema.host = {
+      options = {
+        networking = lib.mkOption {
+          type = lib.types.submodule {
+            options = {
+              syncthing = lib.mkOption {
+                description = "Syncthing options for this host";
+                default = {};
+                type = lib.types.submodule {};
+              };
+            };
+          };
+        };
+      };
+    };
 
-      // OS Junk, trash directories
-      .Trash-*
-      (?d).DS_Store
-      .localized
-    '';
+    # Base aspect naming
+    aspects.syncthing = {
+      name = "syncthing";
+    };
+  };
 
-    flake.modules = {
-      # Syncthing global options
-
-      # Global configuration entry
-      generic.syncthing = {...}: {
+  # Modules
+  flake.modules = {
+    # Generic module for enabling syncthing on nixos or on home-manager
+    generic.syncthing-settings = {lib, ...}: {
+      key = "syncthing-settings#generic";
+      config = {
         services.syncthing = {
-          # Runtime behavior
+          enable = true;
           settings.options = {
             urAccepted = 3;
             relaysEnabled = true;
-            localAnnounceEnabled = true;
+            # Default to enabling this; settings overridden on user level
+            localAnnounceEnabled = lib.mkDefault true;
           };
         };
       };
-
-      # NixOS specific options
-      nixos.syncthing = {
-        lib,
-        config,
-        ...
-      }: let
-        cfg = config.services.syncthing;
-      in {
-        # NixOS only settings for the daemon
-        services.syncthing = {
-          # Enable
-          enable = true;
-          # Enable relays and ports
-          openDefaultPorts = true;
-          relay.enable = true;
-        };
-
-        # Add syncthing to users group to be able to operate with users
-        users.users.${cfg.user}.extraGroups = ["users"];
-
-        # Daemon settings
-        systemd.services.syncthing.serviceConfig = {
-          # https://github.com/NixOS/nixpkgs/issues/338485
-          # By default, nixos module doesn't have permissions for ownership change
-          # This should allow the service to do ownership change though
-          # WARNING
-          # This won't be taken advantage of, due to syncthing inherit ownership
-          # being bugged, and not working.
-          # https://github.com/syncthing/syncthing/issues/8399
-          # We are switching functionality instead; but leaving the capability
-          # levers in place; to go back to previousy implementation if bug is fixed
-
-          # New files 0660 / dirs 0770; combined with setgid dirs and ignorePerms
-          UMask = "0007";
-
-          # Add these capabilities
-          AmbientCapabilities = [
-            "CAP_CHOWN"
-            "CAP_FOWNER"
-          ];
-
-          # Disable user sandboxing, or file ownership won't work
-          PrivateUsers = lib.mkForce false;
-          NoNewPrivileges = lib.mkForce false;
-
-          # Allow chown/lchown/fchownat.
-          # This avoids the systemd sandbox blocking
-          # copyOwnershipFromParent even when CAP_CHOWN is present
-          SystemCallFilter = lib.mkForce [
-            "@system-service"
-            "@chown"
-          ];
-        };
-      };
-
-      # Darwin specific options; enable syncthing for the main user
-      darwin.syncthing = {
-        config,
-        options,
-        lib,
-        ...
-      }: {
-        config =
-          lib.optionalAttrs (
-            (lib.hasAttrByPath ["home-manager"] options)
-            && (lib.hasAttrByPath ["local" "mainUser"] options)
-          ) {
-            home-manager.users = lib.mkIf (config.local.mainUser != null) {
-              "${config.local.mainUser}".imports = [
-                ({...}: {services.syncthing.enable = true;})
-              ];
+    };
+    # Home-manager level syncthing settings
+    homeManager.syncthing-settings = {
+      lib,
+      pkgs,
+      ...
+    }: {
+      key = "syncthing-settings#homeManager";
+      config = lib.mkMerge [
+        (
+          # Syncthing tray for linux only
+          lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+            services.syncthing.tray = {
+              enable = true;
+              package = pkgs.syncthingtray;
             };
-          };
-      };
-
-      # Home-Manager specific settings
-      homeManager.syncthing = {
-        pkgs,
-        lib,
-        ...
-      } @ args: {
-        config = lib.mkMerge [
-          (
-            # Enable syncthing HM module iff we are standalone
-            lib.optionalAttrs (!(lib.hasAttrByPath ["osConfig"] args)) {
-              services.syncthing.enable = true;
-            }
-          )
-          (
-            # In we are in linux, we want syncthingtray
-            # TODO; Create a syncthingtray config module, and pass restapi key
-            lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-              services.syncthing.tray = {
-                enable = true;
-                package = pkgs.syncthingtray;
-              };
-            }
-          )
-        ];
-      };
+          }
+        )
+      ];
     };
   };
 }

@@ -9,8 +9,23 @@
     aspects.system = {
       provides.macos = {
         includes = [
+          den.aspects.system._.macos.policies.local-pages-dispatch
           den.aspects.system._.macos._.networking
         ];
+        policies.local-pages-dispatch = {host, ...}: (
+          lib.optionals
+          host.networking.local.enable
+          [
+            ( # Local network: needs http server + reverse proxy
+              den.lib.policy.include
+              den.aspects.networking._.caddy
+            )
+            (
+              den.lib.policy.include
+              den.aspects.system._.macos._.networking._.local-pages
+            )
+          ]
+        );
 
         provides.networking = {
           name = "system/macos/networking";
@@ -21,7 +36,8 @@
             ];
             # TODO: If we can do firewall stuff; get it here
           };
-          # We send lan keys to everyone's home as well
+
+          # We send LAN keys to everyone's home as well;
           provides.to-users = {
             host,
             user,
@@ -36,14 +52,6 @@
           };
 
           # Serve local web pages (uses caddy module)
-          includes = [
-            den.aspects.system._.macos._.networking.policies.macos-local-pages-dispatch
-          ];
-          policies.macos-local-pages-dispatch = {host, ...}: (
-            lib.optionals
-            host.networking.enableLocalWeb
-            (den.lib.policy.include den.aspects.system._.macos._.networking._.local-pages)
-          );
           provides.local-pages = {host}: {
             name = "system/macos/networking/local-pages(@${host.name})";
             darwin = {
@@ -109,9 +117,6 @@
                 }
               '';
             in {
-              imports = [
-                inputs.self.modules.darwin.caddy
-              ];
               config = lib.optionalAttrs (options.services ? caddy) {
                 # Enable caddy from our module
                 services.caddy = {

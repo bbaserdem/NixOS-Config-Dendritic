@@ -41,31 +41,34 @@ in {
 
         # Policy; include the aspect when the host is of nixos type
         includes = [
-          den.policies.disko
+          den.aspects.disko.policies.disko-host-dispatch
         ];
       };
 
       # Define the disko aspect for den host-kind entities
-      aspects.disko = {host}: {
-        nixos = {...}: {
-          imports = [
-            inputs.disko.nixosModules.disko
-          ];
-          # We condition on disko definition existing before dispatch;
-          config = lib.optionalAttrs (host."${devicesNameSpace}" != null) {
-            disko.devices = host."${devicesNameSpace}";
+      aspects.disko = {
+        name = "disko";
+        # Dispatch policy
+        includes = [
+          den.aspects.disko._.host-setup
+        ];
+        policies.disko-host-dispatch = {host, ...}:
+          lib.optional
+          ((host.class == "nixos") && (host."${devicesNameSpace}" != null))
+          (den.lib.policy.include den.aspects.disko);
+        # Main aspect
+        provides.host-setup = {host}: {
+          name = "disko(@${host.name})";
+          nixos = {...}: {
+            imports = [
+              inputs.disko.nixosModules.disko
+            ];
+            config = {
+              disko.devices = host."${devicesNameSpace}";
+            };
           };
         };
       };
-
-      # Policy; disko aspect should be included if a host is of nixos type
-      policies.disko = {host, ...}:
-        lib.optionals (
-          (host.class == "nixos")
-          && (host."${devicesNameSpace}" != null)
-        ) [
-          (den.lib.policy.include den.aspects.disko)
-        ];
     };
 
     # Disko configurations output, pulled from den host-kind entities' record
@@ -74,8 +77,12 @@ in {
       |> lib.concatMapAttrs (
         _system: hosts:
           hosts
-          |> lib.filterAttrs (_: host: host.class == "nixos")
-          |> lib.filterAttrs (_: host: host.disks != null)
+          |> lib.filterAttrs (
+            _: host: (
+              (host.class == "nixos")
+              && (host.${devicesNameSpace} != null)
+            )
+          )
           |> lib.mapAttrs (_name: host: {disko.devices = host."${devicesNameSpace}";})
       );
   };

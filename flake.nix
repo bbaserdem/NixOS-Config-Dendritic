@@ -124,7 +124,7 @@
       url = "path:./packages";
       flake = false;
     };
-    pkgs-by-name-for-flake-parts = {
+    pkgs-by-name = {
       url = "github:drupol/pkgs-by-name-for-flake-parts";
     };
     plasma-manager = {

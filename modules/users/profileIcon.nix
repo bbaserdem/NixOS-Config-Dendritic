@@ -8,6 +8,9 @@
 in {
   den = {
     schema.user = {
+      includes = [
+        den.aspects.user.policies.user-icon-dispatch
+      ];
       imports = [
         ({config, ...}: let
           userName = config.userName;
@@ -51,9 +54,6 @@ in {
           };
         })
       ];
-      includes = [
-        den.aspects.user.policies.user-icon-dispatch
-      ];
     };
 
     aspects.user = {
@@ -61,14 +61,14 @@ in {
       policies.user-icon-dispatch = {user, ...}:
         lib.optional
         (user.profile.icon != null)
-        (den.lib.policy.include den.aspects.user._.profileIcon);
+        (den.lib.policy.include den.aspects.user._.profile-icon);
 
-      provides.profileIcon = {
+      provides.profile-icon = {
         host,
         user,
       }: {
         # Prevent collisions
-        name = "user/profileIcon(${user.userName}@${host.name})";
+        name = "user/profile-icon(${user.userName}@${host.name})";
 
         # Nixos module that decrypts and sets the icon
         nixos = {

@@ -18,6 +18,7 @@
       };
       # Desktop manager of choice
       desktop.defaultSession = "plasma";
+
       # Use stylix across the system
       stylix.enable = true;
     };

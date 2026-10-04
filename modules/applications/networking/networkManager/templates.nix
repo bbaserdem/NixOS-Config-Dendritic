@@ -1,6 +1,6 @@
 # Network manager auto-profile loader templates
 {...}: {
-  localConfig.network-manager.templates = {
+  networkManager.templates = {
     # Templates
 
     # WPA-EAP PEAP/MSCHAPv2 template

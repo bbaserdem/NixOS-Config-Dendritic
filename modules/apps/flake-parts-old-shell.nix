@@ -14,7 +14,7 @@
           shell-path
           shell-starship
           shell-zsh
-          shell-zsh-default
+          #shell-zsh-default
         ]
         ++ [
           inputs.self.modules.generic.shell-starship

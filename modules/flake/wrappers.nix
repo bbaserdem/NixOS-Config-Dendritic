@@ -1,15 +1,12 @@
+# Wrappers to encapsulate apps with their config
 {inputs, ...}: {
-  # Wrappers to encapsulate apps with their config
   # https://github.com/BirdeeHub/nix-wrapper-modules
 
   flake-file.inputs = {
-    wrappers = {
-      url = "github:BirdeeHub/nix-wrapper-modules";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    wrappers.url = "github:BirdeeHub/nix-wrapper-modules";
   };
 
-  imports = [inputs.wrappers.flakeModules.wrappers];
+  imports = [(inputs.wrappers.flakeModules.wrappers or {})];
 
   perSystem = {...}: {
     wrappers = {

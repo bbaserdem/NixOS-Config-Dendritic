@@ -44,9 +44,6 @@
         provides.input = {host}: {
           name = "system/nixos/input(#${host.name})";
           nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.nixos-input
-            ];
             config = {
               services.xserver = {
                 inherit (host) xkb;
@@ -55,14 +52,6 @@
           };
         };
       };
-    };
-  };
-
-  flake.modules.nixos.nixos-input = {...}: {
-    key = "nixos-input#nixos";
-    config = {
-      # Enable uinput; kernel interface for synthesizing inputs directly
-      hardware.uinput.enable = true;
     };
   };
 }

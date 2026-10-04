@@ -1,6 +1,5 @@
 # Syncthing, root for user scoped syncthing daemon settings
 {
-  den,
   lib,
   flib,
   ...
@@ -8,10 +7,6 @@
   den = {
     # Add to user schema
     schema.user = {
-      includes = [
-        den.aspects.syncthing._.user-node.policies.enable
-      ];
-
       # Options for configuring users' syncthing instance
       imports = [
         ({config, ...}: {
@@ -62,31 +57,6 @@
           };
         })
       ];
-    };
-
-    # Policy for enabling user node on user scopes
-    aspects.syncthing = {
-      provides.user-node = {
-        policies.enable = {user, ...}: let
-          userName = user.userName;
-        in
-          lib.optionals (user.syncthing.enable) [
-            # Enable the user node aspect on this user
-            (den.lib.policy.include den.aspects.syncthing._.user-node)
-            # Collect devices from other user nodes
-            (den.lib.policy.pipe.from den.quirks.syncthing-devices [
-              # Collect all other user nodes' information
-              (den.lib.policy.pipe.collectAll ({user, ...}: user.syncthing.enable))
-              den.lib.policy.pipe.withProvenance
-            ])
-            # Collect folders from other user nodes
-            (den.lib.policy.pipe.from den.quirks.syncthing-folders [
-              # Collect all of this user's folders from all matching scopes
-              (den.lib.policy.pipe.collectAll ({user, ...}: user.userName == userName))
-              den.lib.policy.pipe.withProvenance
-            ])
-          ];
-      };
     };
   };
 }

@@ -8,6 +8,9 @@
 in {
   den = {
     schema.user = {
+      includes = [
+        den.aspects.user.policies.user-sops-env-dispatch
+      ];
       imports = [
         ({config, ...}: {
           options = {
@@ -32,24 +35,21 @@ in {
           };
         })
       ];
-      includes = [
-        den.aspects.user.policies.user-sops-env-enable
-      ];
     };
 
     aspects.user = {
       # Policy for dispatching
-      policies.user-sops-env-enable = {user, ...}:
+      policies.user-sops-env-dispatch = {user, ...}:
         lib.optional
         user.sopsEnv.enable
-        (den.lib.policy.include den.aspects.user._.sopsEnv);
+        (den.lib.policy.include den.aspects.user._.sops-env);
 
-      provides.sopsEnv = {
+      provides.sops-env = {
         host,
         user,
       }: {
         # Prevent collisions
-        name = "users/sopsEnv(${user.userName}@${host.name})";
+        name = "users/sops-env(${user.userName}@${host.name})";
 
         # Load the secrets in home-manager
         homeManager = {

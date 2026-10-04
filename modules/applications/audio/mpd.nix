@@ -156,7 +156,11 @@
   flake.modules.darwin.mpd-gui = {...}: {
     key = "mpd-gui#darwin";
     config = {
+      # TODO: Switch this to use programs.mas in nix-darwin 26.11
       homebrew.masApps."swmpc" = 6743818735;
+      # programs.mas.packages = {
+      #   swmpc = 6743818735;
+      # };
     };
   };
 }

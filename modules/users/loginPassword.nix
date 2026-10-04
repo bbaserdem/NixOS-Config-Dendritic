@@ -21,14 +21,14 @@
     aspects.user = {
       policies.set-user-password-hash = {user, ...}:
         lib.optionals user.setPassword [
-          (den.lib.policy.include den.aspects.user._.loginPassword)
+          (den.lib.policy.include den.aspects.user._.login-password)
         ];
 
-      provides.loginPassword = {
+      provides.login-password = {
         host,
         user,
       }: {
-        name = "user/loginPassword(${user.userName}@${host.name})";
+        name = "user/login-password(${user.userName}@${host.name})";
         # Add password to nixos
         nixos = {
           lib,
