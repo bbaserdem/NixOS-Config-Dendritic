@@ -20,9 +20,9 @@
 
     aspects.user = {
       policies.set-user-password-hash = {user, ...}:
-        lib.optionals user.setPassword [
-          (den.lib.policy.include den.aspects.user._.login-password)
-        ];
+        lib.optional
+        user.setPassword
+        (den.lib.policy.include den.aspects.user._.login-password);
 
       provides.login-password = {
         host,
@@ -37,7 +37,7 @@
           ...
         }: {
           # Guard for existence of sops
-          config = lib.optionalAttrs (lib.hasAttrByPath ["sops"] options) {
+          config = lib.optionalAttrs (options ? sops) {
             sops.secrets."password/${user.userName}" = {
               sopsFile = inputs.self + /secrets/host/secrets.yaml;
               neededForUsers = true;

@@ -1,5 +1,5 @@
 # Yertengri host entry point
-{den, ...}: {
+{...}: {
   den = {
     hosts.yertengri = {
       # System definition

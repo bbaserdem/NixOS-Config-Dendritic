@@ -38,6 +38,12 @@
                 description = "Flag to include user in nix group";
                 default = config.userName == config.host.primaryUser;
               };
+              # Full name
+              fullName = lib.mkOption {
+                type = lib.types.str;
+                description = "User full name string";
+                default = "";
+              };
             };
           })
         ];
@@ -95,10 +101,18 @@
             user = {...}: {
               name = user.userName;
               home = user.homeDirectory;
+              description =
+                if ((host.class == "darwin") && (user.fullName == ""))
+                then null
+                else user.fullName;
             };
             # Platform specific settings
             nixos = {lib, ...}: {
-              users.users.${user.userName}.isNormalUser = lib.mkDefault true;
+              config = {
+                users.users.${user.userName} = {
+                  isNormalUser = lib.mkDefault true;
+                };
+              };
             };
             homeManager = {...}: {
               home.username = user.userName;

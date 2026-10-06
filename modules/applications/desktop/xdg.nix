@@ -54,6 +54,7 @@
     homeManager.xdg-settings = {
       lib,
       pkgs,
+      config,
       ...
     }: {
       key = "xdg-settings#homeManager";
@@ -62,6 +63,11 @@
           # Enable XDG specification
           xdg = {
             enable = true;
+            # Common dirs
+            cacheHome = "${config.home.homeDirectory}/.cache";
+            configHome = "${config.home.homeDirectory}/.config";
+            dataHome = "${config.home.homeDirectory}/.local/share";
+            stateHome = "${config.home.homeDirectory}/.local/state";
           };
           home.preferXdgDirectories = true;
         }

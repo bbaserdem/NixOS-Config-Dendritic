@@ -9,7 +9,7 @@
         nyx-registry
       ])
       ++ (with inputs.self.modules.nixos; [
-        nixos-vulkan
+        graphics-vulkan
       ]);
 
     config = {

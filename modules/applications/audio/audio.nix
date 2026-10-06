@@ -136,6 +136,7 @@
               streamrip # Music downloader
               whipper # CD ripping utility
               chromaprint # Calculate acoustic id
+              local.audman # Personal transcoding script
             ];
           }
           (

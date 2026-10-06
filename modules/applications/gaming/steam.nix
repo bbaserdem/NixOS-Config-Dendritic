@@ -264,7 +264,11 @@
     };
     # In nixos; we use the global steam module
     nixos = {
-      steam-settings = {lib, ...}: {
+      steam-settings = {
+        lib,
+        pkgs,
+        ...
+      }: {
         key = "steam-settings#nixos";
         config = {
           # Include hardware support for steam devices
@@ -272,8 +276,12 @@
           # Enable steam
           programs.steam = {
             enable = true;
-            extest.enable = true;
+            extest.enable = true; # For steam on wayland
             dedicatedServer.openFirewall = true;
+            protontricks = {
+              enable = true;
+              package = pkgs.protontricks;
+            };
             # Enable network transfer of steamgames
             localNetworkGameTransfers = {
               openFirewall = true;
@@ -282,6 +290,10 @@
             remotePlay = {
               openFirewall = lib.mkDefault false;
             };
+            # Provide proton
+            extraCompatPackages = with pkgs; [
+              proton-ge-bin # Community proton
+            ];
           };
         };
       };
@@ -294,6 +306,12 @@
               # Enable a desktop session for steam
               gamescopeSession = {
                 enable = true;
+                steamArgs = [
+                  "-tenfoot"
+                  "-pipewire-dmabuf"
+                ];
+                args = [];
+                env = {};
               };
             };
             # Enable gamescope: steam session

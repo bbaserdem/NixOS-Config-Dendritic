@@ -59,10 +59,11 @@ in
         enable = true;
         propagatedBuildInputs = [beetsAlternatives];
       };
-      filetote = {
-        enable = true;
-        propagatedBuildInputs = [py.beets-filetote];
-      };
+      # TODO: beets-filetote is broken on all nixpkgs; wait till fixed
+      # filetote = {
+      #   enable = true;
+      #   propagatedBuildInputs = [py.beets-filetote];
+      # };
       wolframite = {
         enable = true;
         propagatedBuildInputs = [py.local.beets-wolframite];

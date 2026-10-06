@@ -1,0 +1,96 @@
+# Configuring firefox for wolframite
+{...}: {
+  # Configure global firefox settings
+  flake.modules.homeManager.wolframite-firefox = {
+    pkgs,
+    lib,
+    options,
+    ...
+  }: {
+    key = "wolframite-firefox#homeManager";
+    config = lib.mkMerge [
+      {
+        # Configuration for firefox here
+        programs.firefox = {
+          nativeMessagingHosts = with pkgs; [
+            tridactyl-native
+          ];
+        };
+      }
+      (
+        lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+          programs.firefox = {
+            # Darwin doesn't use wrapper, language packs only available in linux
+            languagePacks = [
+              "en-US"
+              "tr"
+            ];
+            nativeMessagingHosts = with pkgs; [
+              gnome-browser-connector
+              kdePackages.plasma-browser-integration
+              pywalfox-native # Patched to work with custom overlay
+            ];
+          };
+        }
+      )
+      (
+        # Configure with local config here
+        lib.optionalAttrs ((options.local or {}) ? firefox) {
+          local.firefox = {
+            # Different profiles
+            profiles = {
+              personal = {
+                id = 0;
+                isDefault = true;
+                containersForce = true;
+              };
+
+              work = {
+                id = 1;
+                containersForce = true;
+                stylix.themeOverride = "${pkgs.base16-schemes}/share/themes/digital-rain.yaml";
+              };
+
+              explicit = {
+                id = 2;
+                containersForce = true;
+                stylix.themeOverride = "${pkgs.base16-schemes}/share/themes/caroline.yaml";
+              };
+            };
+
+            # Global settings
+            global = {
+              # Global extensions
+              extensions = {
+                force = true;
+                packages = with pkgs.nur.repos.rycee.firefox-addons; (
+                  [
+                    # UI
+                    behind-the-overlay-revival
+                    don-t-fuck-with-paste
+                    # Containers
+                    multi-account-containers
+                    containerise
+                    # Privacy
+                    ublock-origin
+                    duckduckgo-privacy-essentials
+                    mullvad
+                    # Passwords
+                    keepassxc-browser
+                    # Downloader
+                    aria2-integration
+                  ]
+                  ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+                    gnome-shell-integration
+                    plasma-integration
+                    pywalfox
+                  ])
+                );
+              };
+            };
+          };
+        }
+      )
+    ];
+  };
+}

@@ -76,6 +76,11 @@ in {
                           type = flib.types.relativePath;
                           description = "Directory location relative to users' home";
                           default = xdgPlatformDefaults.${name} or "Media/${flib.capitalize name}";
+                          # Override and change this value to hardcoded in darwin
+                          apply = loc:
+                            if lib.hasSuffix "-darwin" config.host.system
+                            then xdgDefaults.darwin.${name} or loc
+                            else loc;
                         };
                         externalize = lib.mkOption {
                           type = lib.types.bool;
@@ -172,8 +177,18 @@ in {
             ...
           }: {
             config = lib.mkMerge [
-              (
-                # Walk through and set the xdg directory to target
+              {
+                # Set up shell aliases
+                home.shellAliases =
+                  user.mediaDirs
+                  |> lib.mapAttrs' (
+                    name: dir:
+                      lib.nameValuePair
+                      "cd-${name}"
+                      "cd ${config.home.homeDirectory}/${dir.location}"
+                  );
+              }
+              ( # Walk through and set the xdg directory to target
                 lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
                   xdg.userDirs =
                     user.mediaDirs
@@ -189,11 +204,16 @@ in {
                         "${config.home.homeDirectory}/${dir.location}"
                       )
                     );
+                  # Register gtk bookmarks of all the directories
+                  gtk.gtk3.bookmarks =
+                    user.mediaDirs
+                    |> builtins.attrValues
+                    |> lib.map (d: "file://${user.homeDirectory}/${d.location}");
                 }
               )
-              (
+              ( # Walk through and set the xdg directory to hardcoded location
+                # Should be filtered anyway; but an extra pass won't hurt
                 lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-                  # Walk through and set the xdg directory to hardcoded location
                   xdg.userDirs =
                     user.mediaDirs
                     |> lib.filterAttrs (

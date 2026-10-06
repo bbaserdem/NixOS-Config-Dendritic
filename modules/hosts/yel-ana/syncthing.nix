@@ -4,7 +4,7 @@
 
   flake.modules.nixos.yel-ana = {...}: {
     imports = with inputs.self.modules.nixos; [
-      syncthing
+      # syncthing
     ];
   };
 }
