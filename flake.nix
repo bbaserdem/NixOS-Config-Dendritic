@@ -101,13 +101,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpkgs = {
-      url = "github:nixos/nixpkgs/nixos-26.05";
+      url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.zst";
     };
     nixpkgs-darwin = {
-      url = "github:nixos/nixpkgs/nixpkgs-26.05-darwin";
+      url = "https://channels.nixos.org/nixpkgs-26.05-darwin/nixexprs.tar.zst";
     };
     nixpkgs-unstable = {
-      url = "github:nixos/nixpkgs/nixos-unstable";
+      url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     };
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
@@ -136,6 +136,11 @@
     };
     sops-nix = {
       url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    steam-config-nix = {
+      url = "github:different-name/steam-config-nix";
+      inputs.flake-parts.follows = "flake-parts";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {

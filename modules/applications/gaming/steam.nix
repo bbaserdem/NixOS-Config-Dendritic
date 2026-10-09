@@ -6,6 +6,11 @@
   flib,
   ...
 }: {
+  # Flake inputs for declarative steam config management
+  flake-file.inputs = {
+    steam-config-nix.url = "github:different-name/steam-config-nix";
+  };
+
   # Den wiring for steam
   den = {
     schema = {
@@ -332,6 +337,9 @@
       ...
     } @ args: {
       key = "steam-settings#homeManager";
+      imports = [
+        (inputs.steam-config-nix.homeModules.default or {})
+      ];
       config = lib.mkMerge [
         (
           lib.optionalAttrs (lib.hasAttrByPath ["osConfig"] args) (

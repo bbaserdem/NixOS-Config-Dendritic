@@ -39,17 +39,6 @@
               > "$out/lib/mozilla/native-messaging-hosts/pywalfox.json"
           '';
       });
-
-      # yt-dlp fails on darwin right now TODO: check if it works now
-      pythonPackagesExtensions =
-        (prev.pythonPackagesExtensions or [])
-        ++ (lib.optionals prev.stdenv.hostPlatform.isDarwin [
-          (pyFinal: pyPrev: {
-            yt-dlp-ejs = pyPrev.yt-dlp-ejs.override {
-              nodejs = final.nodejs_22;
-            };
-          })
-        ]);
     };
 
     # Local python package nameset

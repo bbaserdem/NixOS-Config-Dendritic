@@ -2,6 +2,8 @@
 {...}: {
   den = {
     hosts.yertengri = {
+      # Use stylix across the system
+      stylix.enable = true;
       # Display manager of choice
       displayManager = {
         name = "sddm";
@@ -18,9 +20,6 @@
       };
       # Desktop manager of choice
       desktop.defaultSession = "plasma";
-
-      # Use stylix across the system
-      stylix.enable = true;
     };
 
     aspects.yertengri = {

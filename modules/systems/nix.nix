@@ -21,6 +21,7 @@ in {
         includes = [
           den.aspects.system._.nix
           den.aspects.system._.nix.policies.nix-extras-host-dispatch
+          den.aspects.system._.nix.policies.nix-defer-host-dispatch
         ];
         options = {
           nix = lib.mkOption {
@@ -31,6 +32,11 @@ in {
                 extras = lib.mkOption {
                   description = "Enable extra nix tooling on this host.";
                   default = true;
+                  type = lib.types.bool;
+                };
+                defer = lib.mkOption {
+                  description = "Mark nix as low priority for builds.";
+                  default = false;
                   type = lib.types.bool;
                 };
               };
@@ -57,6 +63,10 @@ in {
             lib.optional
             host.nix.extras
             (den.lib.policy.include den.aspects.system._.nix._.extras._.to-users);
+          nix-defer-host-dispatch = {host, ...}:
+            lib.optional
+            host.nix.defer
+            (den.lib.policy.include den.aspects.system._.nix._.defer);
         };
 
         # Base modules
@@ -81,46 +91,63 @@ in {
             inputs.self.modules.generic.nix-base
           ];
         };
-        provides.to-users = {
-          user,
-          host,
-        }: {
-          name = "system/nix(${user.userName}@${host.name})";
-          homeManager = {...}: {
-            imports = [
-              # This specific generic module is common for os and hm
-              inputs.self.modules.generic.nix-common
-              inputs.self.modules.homeManager.nix-common
-            ];
-          };
-        };
-
-        # Extras modules
-        provides.extras = {
-          name = "system/nix/extras";
-          os = {...}: {
-            imports = [
-              inputs.self.modules.generic.nix-extras
-            ];
-          };
-          nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.nix-extras
-            ];
-          };
-          darwin = {...}: {
-            imports = [
-              inputs.self.modules.darwin.nix-extras
-            ];
-          };
-          provides.to-users = {
+        provides = {
+          to-users = {
             user,
             host,
           }: {
-            name = "system/nix/extras(${user.userName}@${host.name})";
+            name = "system/nix(${user.userName}@${host.name})";
             homeManager = {...}: {
               imports = [
-                inputs.self.modules.homeManager.nix-extras
+                # This specific generic module is common for os and hm
+                inputs.self.modules.generic.nix-common
+                inputs.self.modules.homeManager.nix-common
+              ];
+            };
+          };
+
+          # Extras modules
+          extras = {
+            name = "system/nix/extras";
+            os = {...}: {
+              imports = [
+                inputs.self.modules.generic.nix-extras
+              ];
+            };
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.nix-extras
+              ];
+            };
+            darwin = {...}: {
+              imports = [
+                inputs.self.modules.darwin.nix-extras
+              ];
+            };
+            provides.to-users = {
+              user,
+              host,
+            }: {
+              name = "system/nix/extras(${user.userName}@${host.name})";
+              homeManager = {...}: {
+                imports = [
+                  inputs.self.modules.homeManager.nix-extras
+                ];
+              };
+            };
+          };
+
+          # Deference settings
+          defer = {
+            name = "system/nix/defer";
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.nix-defer
+              ];
+            };
+            darwin = {...}: {
+              imports = [
+                inputs.self.modules.darwin.nix-defer
               ];
             };
           };
@@ -229,6 +256,7 @@ in {
             )
           ];
         };
+
         # Shared between nixos, darwin
         nix-extras = {pkgs, ...}: {
           key = "nix-extras#generic";
@@ -251,6 +279,10 @@ in {
             nix = {
               # Set the nixpkgs source for legacy nix tooling
               nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+              # Use cgroups in nixos
+              settings = {
+                use-cgroups = true;
+              };
               # Garbage collect settings
               optimise = {
                 automatic = true;
@@ -258,6 +290,8 @@ in {
               };
               gc.dates = "weekly";
             };
+            # Isolate nix daemon from system slice
+            systemd.services.nix-daemon.serviceConfig.slice = "-.slice";
           };
         };
         nix-extras = {...}: {
@@ -274,6 +308,16 @@ in {
                 enableZshIntegration = true;
                 enableFishIntegration = true;
               };
+            };
+          };
+        };
+        nix-defer = {lib, ...}: {
+          key = "nix-defer#nixos";
+          config = {
+            # Reduce to idle group; so it's not prioritized
+            nix = {
+              daemonIOSchedClass = lib.mkDefault "idle";
+              daemonCPUSchedPolicy = lib.mkDefault "idle";
             };
           };
         };
@@ -322,6 +366,16 @@ in {
           imports = [
             inputs.nix-index-database.darwinModules.nix-index
           ];
+        };
+        nix-defer = {lib, ...}: {
+          key = "nix-defer#darwin";
+          config = {
+            nix = {
+              daemonIOLowPriority = lib.mkDefault true;
+              # Might not be a good idea
+              # daemonProcessType = "Background";
+            };
+          };
         };
       };
 

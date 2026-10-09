@@ -62,6 +62,10 @@
         services.desktopManager.plasma6 = {
           enable = true;
         };
+        # Disable plasma bloat
+        programs.kde-pim = {
+          enable = false;
+        };
 
         # Manage default packages
         environment = {

@@ -1,6 +1,12 @@
 # Yertengri host entry point
 {...}: {
   den = {
+    # Aspect key name
+    aspects.yertengri = {
+      name = "yertengri";
+    };
+
+    # Entity record
     hosts.yertengri = {
       # System definition
       system = "x86_64-linux";
@@ -9,6 +15,12 @@
       # Functionality
       sops.enable = true;
       audio.enable = true;
+
+      # Nix daemon related settings
+      nix = {
+        extras = true;
+        defer = true;
+      };
 
       # Boot settings
       boot = {
@@ -33,7 +45,10 @@
         terminal = "kitty";
         stt = {
           enable = true;
-          backend = "voxtype";
+          voxtype = {
+            enable = true;
+            backend = "parakeet-cuda";
+          };
         };
       };
 
@@ -56,6 +71,10 @@
           enable = true;
           vulkan = {
             enable = true;
+          };
+          nvidia = {
+            enable = true;
+            open = true;
           };
         };
       };

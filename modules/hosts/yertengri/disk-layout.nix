@@ -12,7 +12,7 @@
 
           # <name>            <device>                            <password>  <options>
           Yertengri_Data      PARTLABEL=Crypt_Yertengri_Data      -           luks,timeout=180
-          Yertengri_Work      PARTLABEL=Crypt_Yertengri_Work      -           luks,timeout=180
+          Yertengri_Work      PARTLABEL=Crypt_Yertengri_Work      -           luks,nofail,timeout=180
         '';
       };
 
@@ -65,41 +65,41 @@
                     type = "btrfs";
                     extraArgs = ["--force" "--label" "Yertengri_Linux"];
                     subvolumes = {
-                      "/@nixos-root" = {
+                      "/@nixos_root" = {
                         mountpoint = "/";
                         mountOptions = ["compress=zstd" "noatime"];
                       };
-                      "/@nixos-store" = {
+                      "/@nixos_store" = {
                         mountpoint = "/nix";
                         mountOptions = ["compress=zstd" "noatime"];
                       };
-                      "/@nixos-persist" = {
+                      "/@nixos_persist" = {
                         mountpoint = "/persist";
                         mountOptions = ["compress=zstd" "strictatime" "lazytime"];
                       };
-                      "/@nixos-log" = {
+                      "/@nixos_log" = {
                         mountpoint = "/var/log";
                         mountOptions = ["compress=zstd" "strictatime" "lazytime"];
                       };
-                      "/@nixos-machines" = {
+                      "/@nixos_machines" = {
                         mountpoint = "/var/lib/machines";
                         mountOptions = ["compress=zstd" "noatime"];
                       };
-                      "/@nixos-portables" = {
+                      "/@nixos_portables" = {
                         mountpoint = "/var/lib/portables";
                         mountOptions = ["compress=zstd" "noatime"];
                       };
-                      "/@nixos-swap" = {
+                      "/@nixos_swap" = {
                         mountpoint = "/swap";
                         mountOptions = ["noatime"];
                         swap.swapfile.size = "32G";
                       };
-                      "/@user-wolframite" = {
+                      "/@user_wolframite" = {
                         mountpoint = "/home/wolframite";
                         mountOptions = ["compress=zstd" "strictatime" "lazytime"];
                       };
-                      "/@user-joeysaur" = {
-                        mountpoint = "/home/joeysaur";
+                      "/@user_ben-abuyah" = {
+                        mountpoint = "/home/ben-abuyah";
                         mountOptions = ["compress=zstd" "strictatime" "lazytime"];
                       };
                     };
@@ -150,8 +150,8 @@
           };
         };
 
-        # Another hard drive, holds work, and maybe a windows OS
-        Work = {
+        # Another hard drive, holds extra storage space, and maybe a windows OS
+        Extra = {
           type = "disk";
           device = "/dev/disk/by-id/nvme-SHGP31-2000GM_ASB4N718111004R5E";
           content = {
@@ -187,23 +187,23 @@
               };
               Crypt = {
                 size = "100%";
-                label = "Crypt_Yertengri_Work";
+                label = "Crypt_Yertengri_Extra";
                 priority = 1000;
                 content = {
                   type = "luks";
-                  name = "Yertengri_Work";
+                  name = "Yertengri_Extra";
                   initrdUnlock = false;
                   passwordFile = "/tmp/Yertengri.key";
-                  additionalKeyFiles = ["/tmp/Yertengri_Work.key"];
-                  extraFormatArgs = ["--label" "Crypt_Yertengri_Work"];
+                  additionalKeyFiles = ["/tmp/Yertengri_Extra.key"];
+                  extraFormatArgs = ["--label" "Crypt_Yertengri_Extra"];
                   settings = {
                     allowDiscards = true;
                   };
                   content = {
                     type = "filesystem";
                     format = "ext4";
-                    extraArgs = ["-L" "Yertengri_Work"];
-                    mountpoint = "/home/work";
+                    extraArgs = ["-L" "Yertengri_Extra"];
+                    mountpoint = "/mnt/extra";
                   };
                 };
               };

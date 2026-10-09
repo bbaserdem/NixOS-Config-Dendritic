@@ -12,9 +12,9 @@ in {
       # Flake inputs
 
       # Package sources
-      nixpkgs.url = "github:nixos/nixpkgs/nixos-${version}";
-      nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-${version}-darwin";
-      nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+      nixpkgs.url = "https://channels.nixos.org/nixos-${version}/nixexprs.tar.zst";
+      nixpkgs-darwin.url = "https://channels.nixos.org/nixpkgs-${version}-darwin/nixexprs.tar.zst";
+      nixpkgs-unstable.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
       # Nix User Repository
       nur = {
         url = "github:nix-community/NUR";

@@ -28,17 +28,6 @@
                             default = false;
                             type = lib.types.bool;
                           };
-                          backend = lib.mkOption {
-                            description = "Which STT tooling to use";
-                            default =
-                              if config.class == "darwin"
-                              then null
-                              else "voxtype";
-                            type = lib.types.nullOr (lib.types.enum [
-                              "voxtype"
-                            ]);
-                          };
-                          # TODO: add ways to configure stt backends with host hardware
                         };
                       };
                     };
@@ -96,38 +85,18 @@
       # Policies
       policies = {
         stt-host-dispatch = {host, ...}:
-          lib.optionals
+          lib.optional
           (host.desktop.enable && host.desktop.stt.enable)
-          (
-            [
-              (den.lib.policy.include den.aspects.desktop._.stt)
-            ]
-            ++ (
-              lib.optional (host.desktop.stt.backend != null)
-              (
-                den.lib.policy.include
-                den.aspects.desktop._.stt._.${host.desktop.stt.backend}
-              )
-            )
-          );
+          (den.lib.policy.include den.aspects.desktop._.stt);
+
         stt-user-dispatch = {
           host,
           user,
           ...
         }:
-          lib.optionals
+          lib.optional
           (host.desktop.enable && host.desktop.stt.enable && user.stt.enable)
-          (
-            [
-              (den.lib.policy.include den.aspects.desktop._.stt._.user-setup)
-            ]
-            ++ (
-              lib.optional (host.desktop.stt.backend != null) (
-                den.lib.policy.include
-                den.aspects.desktop._.stt._.${host.desktop.stt.backend}._.user-setup
-              )
-            )
-          );
+          (den.lib.policy.include den.aspects.desktop._.stt._.user-setup);
       };
 
       # Aspect; stub for now

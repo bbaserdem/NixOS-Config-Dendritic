@@ -66,44 +66,67 @@ There are 3 relevant `kind`s built-in to den's entity schema;
 > standalone user entries.
 
 Each entity gets assigned a native _aspect_ `den.aspects.${<entity>.name}`.
-
-> [!NOTE]
-> This behavior allows a single user config generated as both a standalone
-> homeConfiguration, and as a <os>Configuration's managed homeManager instance.
-> Even if the entities are different, the configuration refers to the same aspect.
+This is where an entities' behavior can be configured.
 
 ### Scope
 
-This is not explained as a first class concept in den, but it's very fundamental.
-Practically, a `scope` is an environment that contains some entity records.
-Mostly referred to by their **context**; `{host}`, `{host, user}` and `{home}`.
+This is not explained as a first class concept in den docs, but it's very fundamental.
+A `scope` is an environment that contains some entity records.
+Mostly referred to by their **context**; `{host}`, `{host, user}`.
 
-Individual _scopes_ are generated through the resolution pipeline.
+All _scope_ instances are generated through the resolution pipeline.
 There is a bunch of built-in machinery that creates this graph structure.
 
 For example, the `yertengri` host entity, with two users; `wolframite` and `joeysaur`;
 walks to the following scopes;
 
-- `{host == "yertengri"; }` pure host scope.
-- `{host == "yertengri"; user == "wolframite";}` the host-user scope
-- `{host == "yertengri"; user == "joeysaur";}` another host-user scope.
+- `{host.name == "yertengri"; }`; usually referred to as the _host scope_.
+- `{host.name == "yertengri"; user.userName == "wolframite";}`; the _host-user scope_. (Or the _user scope_).
+- `{host.name == "yertengri"; user.userName == "joeysaur";}` another user scope.
 
 The attrset of the contents of the current scope is called the **context**; or **ctx**.
 
+Scopes get attached aspects and policies.
+The policies activate, and then modulate the scopes such as;
+
+- Fan out new child scopes
+- Realize parametric aspects
+- Pull in other aspects
+- Create new records inside the scope
+- Instantiate; meaning route the scope's buckets to appropriate places.
+
 > [!WARNING]
-> Policies fire once at a scope; and that scope is marked as resolved.
-> Which means that nested policy invokations cannot work; so don't nest policies.
+> The policies registered for a scope fire once; and that scope is marked as resolved.
+> This means that nested policies don't work; if one policy pulls in another policy,
+> the pulled in policy won't actually fire.
+> It's not clear if this is intentional or is a bug.
+> Either way, nested policy invokations don't work.
+> This is annoying; the biggest headache I have run into is the main routing policy
+> maps provides.to-users/hosts doesn't work if the parent aspect is provided to
+> the scope using a policy; since this fan out is a policy itself.
 
 ### Schema
 
 Schema is used to declare global behaviors to entities;
 
-- `den.schema.<kind> = {...}`: Define an option for all entities of a given kind.
-- `den.schema.conf = {...}`: Define an option for _ALL_ entities.
+- `den.schema.<kind> = {...}`: Configure all entities of a given kind.
+- `den.schema.conf = {...}`: Configure for _ALL_ entities.
+
+Schema definitions work like modules; with custom den spec fields overloaded.
+
+- `den.schema.<...>.include = [...];`:
+  Attach _policies_ or _aspects_ to all _scopes_ for this _kind_.
 - `den.schema.<kind> = {<kind>, lib, ...}: {options.<...> = ...}`:
   Define a new config option for this kind.
-  (Works with `conf` too for all kinds.)
-  (Arguments mimic modules, but `<kind>` instead of `config`.)
+  (Arguments mimic nixos modules, but `<kind>` instead of `config`.)
+
+> [!WARNING]
+> Den limitation; when defining both non-flat option definitions and den specs,
+> flat out assignment doesn't work because the module system doesn't recognize den specs.
+> The way to work around it is to either do it in different files;
+> or to have `den.schema.<...> = { includes = [...]; imports = [({...}: {options = {...};})];}`.
+> Anonimizing the module and keeping it on it's own works because den, like flake-parts,
+> merges all the definitions across files as modules.
 
 ### Aspects
 
@@ -111,80 +134,105 @@ An `aspect` is an attrset, that holds configuration behavior.
 They are attached to a scope, and produce behavior which can depend on the scope.
 
 > [!NOTE]
-> **batteries** (`den.batteries`) are built-in aspects.
+> **batteries** (`den.batteries`) are built-in aspects and policies.
 
 > [!NOTE]
 > `den.default` is a reserved aspect;
-> It's automatacially included in every scope.
+> It's automatically included in every scope.
 
-Aspects mostly look like this; (example from den)
+Aspects mostly look like this; (example from den, not my flake)
 
 ```
 den.aspects.gaming = {
+  includes = [ den.aspects.performance ];
   nixos = { pkgs, ... }: { programs.steam.enable = true; };
   homeManager = { pkgs, ... }: { programs.mangohud.enable = true; };
-  includes = [ den.aspects.performance ];
 };
 ```
 
-Aspects have an entry per `class`; a meaningful context.
-Built in _class_ types are;
+The spec is as follows;
+
+- `name` and `description` a den field to describe. (_name_ is used for dedupe in a scope.)
+- `includes` which pulls in other _aspects_ or _policies_ to the included scope.
+- `excludes` the opposite behavior.
+- `provides` which can contain sub-aspects. (Can be reached with the `<base>._.<sub>` shorthand.)
+- `policies` attrset to register associated policies.
+
+Then mainly, aspects have an entry per `class`.
+Each class type accepts a _module_ (or a flat _attrset_).
+Main built in _class_ types are;
 
 - _os_: Module for both `nixos` and `nix-darwin`.
 - _nixos_: Module for `nixos`.
 - _darwin_: Module for `darwin`.
-- _homeManager_: Module for `home-manager`.
-
-Aspects can be parametric; meaning they can be functions.
-If they are, the aspect only activates for a matching scope.
-`den.aspects.foo = {host}: {...};` activates in scopes with a host.
-`den.aspects.bar = {home}: {...};` only activates in a home scope,
-`den.aspects.baz = {host, user}: {...};` activates in a host + user scope.
-
-> [!WARNING]
-> Aspects can mix pipeline context arguments with module arguments
-> by using the ellipsis notation.
-> I find this a bit vague, and decided not to use it.
->
-> My aspects, if they don't need context arguments, are all flake-parts modules,
-> and are just imported with aspects.
-> Aspects that need context arguments are parametric aspects instead.
->
-> Parametric aspects are resolved later, so their downstream provides is not
-> available in general. So parametric aspects should be dead-ends when it
-> comes to the _provides_ nesting tree.
-
-Aspects can include other aspects in `includes = [...]` list,
-and exclude other aspects in `excludes = [...]` list.
-
-Aspects can provide `sub-aspects` through the `provides.<subaspect>` key.
+- _homeManager_: Modules for `home-manager`.
 
 > [!NOTE]
-> Non-parametric aspects are fixed-point.
-> So they can refer to themselves.
-> We use this to never use floating functions in `includes`
+> Actually only the built-in aspects accept general modules.
+> Custom classes only get a subset of context arguments; be mindful.
+
+> [!WARNING]
+> Aspects can inject pipeline context arguments to the module arguments
+> if the context contains matching record names (host, user, etc.)
+> from the ellipsis notation used for module arguments.
+> I find this a bit vague, and opt to not use it whenever possible.
+>
+> My aspects, if they don't need context arguments, are all flake-parts modules,
+> and are just imported by aspect class modules.
+> Aspects that need context arguments are made into inline class modules
+> of parametric aspects instead.
+
+Depending on the policy of the current scope, the content of these class modules
+are merged into specific places that instantiates the _aspect_.
+
+Aspects can be parametric; meaning they can be functions.
+If they are, the aspect can only activates for a matching scope;
+
+- `den.aspects.foo = {host}: {...};` activates in scopes with a host.
+- `den.aspects.bar = {home}: {...};` only activates in a home scope,
+- `den.aspects.baz = {host, user}: {...};` activates in a host + user scope.
+
+> [!WARNING]
+> Parametric aspects are lazy realized after context dispatch locks in,
+> Their downstream provides is not available in general.
+> Parametric aspects should be dead-ends when it comes to the _provides_ nesting tree.
 
 Aspects are deduped based on their `name` attribute.
-They automatically get the name from their root level name.
-(They do ignore the provides walk of their definition of their name,
-which can cause issues so I usually name them explicitly.)
+They automatically get assigned a name from their root level name.
+They do ignore the provides walk of their definition of their name.
+I name them explicitly to avoid issues with this.
+The naming scheme is `<parent-aspect>/.../<node>[(<username>@<hostname>)]`
+Which results in the following naming scheme;
 
-There are special provides names that have some automatic behavior;
+- Regular aspect at `den.aspects.foo._.bar._.baz` has `name = "foo/bar/baz";`.
+- Parametric aspect at `den.aspects.foo._.bar` might be;
+  `name = "foo/bar(@${host.name})";` if host scope
+  `name = "foo/bar(${user.userName}@${host.name})"` if user scope.
+- I omit the last aspect name for the special provides, which always have to be parametric.
+  `den.aspects.foo._.bar._.to-users` then has the name set as
+  `name = "foo/bar(${user.userName}@${host.name})"`
+
+There are special _provides_ names that have some automatic behavior;
 
 - `provides.to-users`
-  _to-users_ sub-aspect is fanned out to all downstream `{host, user}` scopes,
-  if the parent aspect is in the `{host}` scope.
+  _to-users_ sub-aspect is fanned out to all downstream `{host, user}` scopes.
+  (If the parent aspect is in the `{host}` scope.)
 
   > [!NOTE]
   > Needs the aspect to be parametric on `{home, user}`.
   > This is baked into the internal policy.
-  > To also save from deduplication; I often explicitly name the aspects;
-  > `name = "<root-aspect>/.../<immediate-parent-aspect>(${user.userName}@${host.name})"`
 
 - `provides.to-hosts`
-  _to-hosts_ sub-aspect is fired at the `{host, user}` scope, and the `os` content
-  rides up to the `{host}` scope.
+  _to-hosts_ sub-aspect is fired at user scopes,
+  and the `os` content rides up to the `{host}` scope.
   (This is just a naming convention, this behavior is identical with the parent aspect.)
+
+  > [!NOTE]
+  > Apparently, the `os`, `nixos` and `darwin` class modules riding up to host
+  > scope is unintended behavior in den; and this might be removed and made into
+  > a opt-in battery instead.
+  > I use this a lot; since a lot of my user scope modules are parametric,
+  > they can't use `to-host` dispatch route to configure upstream hosts.
 
 - `provides.<username>`
   _username_ sub-aspect is auto-enabled on `{host, user == <username>}` scope,
@@ -198,19 +246,23 @@ There are special provides names that have some automatic behavior;
   If the sub-aspect name is the same as the parent one; it is auto-included.
   (This is not documented behavior, don't use this behavior.)
 
+> [!NOTE]
+> As above, these automatic dispatches only work if the parent aspect
+> is not parametric, and is flat included. (not policy-fed to the scope)
+
 > [!WARNING]
 > Entity `<kind>` names are also reserved; don't use them.
-> I specifically use `system` and not `systems` for this.
+> I specifically use `system` and not `systems` due to this.
 
 The built-in behavior graph of aspects, and their _class_ modules is the following;
 (`host`s modules here means the list of modules used to create the flake output.)
 
-|   Class key   | `{host}` scope                                           | `{host, user}` scope                                                                             | `{home}` scope            |
-| :-----------: | :------------------------------------------------------- | :----------------------------------------------------------------------------------------------- | :------------------------ |
-|     `os`      | Merged to *host*s modules                                | Merged to the parent _host_ modules                                                              | No-op                     |
-|    `nixos`    | Merged to *host*s modules; if `<host>.class == "nixos"`  | same, rides up                                                                                   | No-op                     |
-|   `darwin`    | Merged to *host*s modules; if `<host>.class == "darwin"` | same, rides up                                                                                   | No-op                     |
-| `homeManager` | No-op`                                                   | Sent to `home-manager.users.<user>` for the host if `builtins.elem "homeManager" <user>.classes` | Merged to *home*s modules |
+|   Class key   | `{host}` scope                                           | `{host, user}` scope                                                                              | `{home}` scope            |
+| :-----------: | :------------------------------------------------------- | :------------------------------------------------------------------------------------------------ | :------------------------ |
+|     `os`      | Merged to *host*s modules                                | Merged to the parent _host_ modules                                                               | No-op                     |
+|    `nixos`    | Merged to *host*s modules; if `<host>.class == "nixos"`  | same, rides up                                                                                    | No-op                     |
+|   `darwin`    | Merged to *host*s modules; if `<host>.class == "darwin"` | same, rides up                                                                                    | No-op                     |
+| `homeManager` | No-op                                                    | Sent to `home-manager.users.<user>` for the host iff `builtins.elem "homeManager" <user>.classes` | Merged to *home*s modules |
 
 Which I don't like; I am aiming to create the following model;
 

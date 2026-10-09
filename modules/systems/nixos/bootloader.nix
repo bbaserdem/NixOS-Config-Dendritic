@@ -43,6 +43,14 @@
                         "grub"
                       ]);
                     };
+                    microcode = lib.mkOption {
+                      description = "Which microcode to update on boot";
+                      default = null;
+                      type = lib.types.nullOr (lib.types.enum [
+                        "amd"
+                        "intel"
+                      ]);
+                    };
                     grub = lib.mkOption {
                       description = "GRUB options";
                       default = {};
@@ -88,81 +96,105 @@
             && (host.boot != null)
             && (host.boot.loader != null)
           )
-          [
+          (
             (
-              den.lib.policy.include
-              den.aspects.system._.nixos._.bootloader
+              lib.optionals
+              (host.boot.loader != null)
+              [
+                (
+                  den.lib.policy.include
+                  den.aspects.system._.nixos._.bootloader
+                )
+                (
+                  den.lib.policy.include
+                  den.aspects.system._.nixos._.bootloader._.${host.boot.loader}
+                )
+              ]
             )
-            (
-              den.lib.policy.include
-              den.aspects.system._.nixos._.bootloader._.${host.boot.loader}
+            ++ (
+              lib.optional
+              (host.boot.microcode != null)
+              (den.lib.policy.include den.aspects.system._.nixos._.microcode)
             )
-          ];
+          );
 
         # Bootloader implementation base aspect
-        provides.bootloader = {
-          name = "system/nixos/bootloader";
-          nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.nixos-bootloader
-            ];
-          };
-
-          # Grub implementation
-          provides.grub = {host}: {
-            name = "system/nixos/bootloader/grub(@${host.name})";
-            # Nixos module enable for grub
-            nixos = {
-              options,
-              pkgs,
-              ...
-            }: {
-              imports = [
-                inputs.self.modules.nixos.nixos-grub
-              ];
-              config = lib.mkMerge [
-                {
-                  # Host specific grub settings
-                  boot.loader.grub.configurationLimit = host.boot.configurationLimit;
-                }
-                (
-                  # If stylix is overriden, or unavailable, use config theme
-                  lib.mkIf (!(
-                    (host.boot.grub.stylix)
-                    && (lib.hasAttrByPath ["stylix"] options)
-                  )) {
-                    boot.loader.grub.theme = pkgs.sleek-grub-theme.override {
-                      withStyle = host.boot.grub.flavor;
-                    };
-                  }
-                )
-              ];
-            };
-            # Enable grub theming if required conditions are met
-            stylix =
-              lib.mkIf (
-                (host.class == "nixos")
-                && (host.boot.grub.stylix or false)
-              ) {
-                targets.grub = {
-                  enable = true;
-                  useWallpaper = true;
-                };
+        provides = {
+          # Microcode updates enable for initrd
+          microcode = {host}: {
+            name = "system/nixos/microcode(@${host.name})";
+            nixos = {...}: {
+              config = {
+                hardware.cpu.${host.boot.microcode}.updateMicrocode = true;
               };
+            };
           };
 
-          # Systemd-boot implementation
-          provides.systemd-boot = {host}: {
-            name = "system/nixos/bootloader/systemd-boot(@${host.name})";
-            # Configure systemd-boot for nixos
+          # Bootloader config
+          bootloader = {
+            name = "system/nixos/bootloader";
             nixos = {...}: {
               imports = [
-                inputs.self.modules.nixos.nixos-systemd-boot
+                inputs.self.modules.nixos.nixos-bootloader
               ];
-              config = {
-                # Host specific systemd-boot settings
-                boot.loader.systemd-boot = {
-                  configurationLimit = host.boot.configurationLimit;
+            };
+
+            # Grub implementation
+            provides.grub = {host}: {
+              name = "system/nixos/bootloader/grub(@${host.name})";
+              # Nixos module enable for grub
+              nixos = {
+                options,
+                pkgs,
+                ...
+              }: {
+                imports = [
+                  inputs.self.modules.nixos.nixos-grub
+                ];
+                config = lib.mkMerge [
+                  {
+                    # Host specific grub settings
+                    boot.loader.grub.configurationLimit = host.boot.configurationLimit;
+                  }
+                  (
+                    # If stylix is overriden, or unavailable, use config theme
+                    lib.mkIf (!(
+                      (host.boot.grub.stylix)
+                      && (lib.hasAttrByPath ["stylix"] options)
+                    )) {
+                      boot.loader.grub.theme = pkgs.sleek-grub-theme.override {
+                        withStyle = host.boot.grub.flavor;
+                      };
+                    }
+                  )
+                ];
+              };
+              # Enable grub theming if required conditions are met
+              stylix =
+                lib.mkIf (
+                  (host.class == "nixos")
+                  && (host.boot.grub.stylix or false)
+                ) {
+                  targets.grub = {
+                    enable = true;
+                    useWallpaper = true;
+                  };
+                };
+            };
+
+            # Systemd-boot implementation
+            provides.systemd-boot = {host}: {
+              name = "system/nixos/bootloader/systemd-boot(@${host.name})";
+              # Configure systemd-boot for nixos
+              nixos = {...}: {
+                imports = [
+                  inputs.self.modules.nixos.nixos-systemd-boot
+                ];
+                config = {
+                  # Host specific systemd-boot settings
+                  boot.loader.systemd-boot = {
+                    configurationLimit = host.boot.configurationLimit;
+                  };
                 };
               };
             };

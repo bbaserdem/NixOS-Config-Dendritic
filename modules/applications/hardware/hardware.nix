@@ -14,7 +14,7 @@
         ];
         options = {
           hardware = lib.mkOption {
-            description = "Which hardware modules to enable and configure";
+            description = "Hardware related metadata";
             default = {};
             type = lib.types.submodule {};
           };

@@ -1,5 +1,10 @@
 # Voxtype; local stt for linux
-{inputs, ...}: {
+{
+  inputs,
+  den,
+  lib,
+  ...
+}: {
   # Extremely badly packaged; don't trust it (still need it for cuda + osd)
   flake-file.inputs = {
     voxtype = {
@@ -9,77 +14,167 @@
   };
 
   den = {
+    schema = {
+      host.options = {
+        desktop = lib.mkOption {
+          type = lib.types.submodule {
+            options = {
+              stt = lib.mkOption {
+                type = lib.types.submodule {
+                  options = {
+                    voxtype = lib.mkOption {
+                      description = "Voxtype metadata used by this host";
+                      default = {};
+                      type = lib.types.submodule {
+                        options = {
+                          enable = lib.mkOption {
+                            description = "Enable voxtype on this host";
+                            default = false;
+                            type = lib.types.bool;
+                          };
+                          backend = lib.mkOption {
+                            description = "Backend to use for transcription";
+                            default = null;
+                            type = lib.types.nullOr (lib.types.enum [
+                              "parakeet-cuda"
+                            ]);
+                          };
+                          # TODO: formalize the frontend
+                          frontend = lib.mkOption {
+                            description = "On-screen display to use";
+                            default = null;
+                            type = lib.types.nullOr (lib.types.enum [
+                              "native"
+                              "gtk4"
+                              "quickshell"
+                            ]);
+                          };
+                        };
+                      };
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+      user.includes = [
+        den.aspects.desktop._.stt._.voxtype.policies.voxtype-user-dispatch
+      ];
+    };
+
     aspects.desktop = {
       provides.stt = {
         # Main aspect
         provides.voxtype = {
           name = "desktop/stt/voxtype";
-          provides.user-setup = {
-            user,
+          # Dispatch policy
+          policies.voxtype-user-dispatch = {
             host,
-          }: {
-            name = "desktop/stt/voxtype(${user.userName}@${host.name})";
-            homeManager = {
-              lib,
-              pkgs,
-              ...
+            user,
+            ...
+          }:
+            lib.optionals
+            (host.desktop.stt.enable && user.stt.enable && host.desktop.stt.voxtype.enable)
+            (
+              [
+                (
+                  den.lib.policy.include
+                  den.aspects.desktop._.stt._.voxtype._.user-setup
+                )
+              ]
+              ++ (
+                lib.optional
+                (host.desktop.stt.voxtype.backend == "parakeet-cuda")
+                (
+                  den.lib.policy.include
+                  den.aspects.desktop._.stt._.voxtype._.parakeet-cuda
+                )
+              )
+            );
+
+          provides = {
+            # Variant; parakeet models, with cuda suport
+            parakeet-cuda = {
+              user,
+              host,
             }: {
-              # Main config module; depending on what user picks
-              imports = [
-                inputs.self.modules.homeManager.voxtype-settings
-              ];
-              # Custom OSD settings
-              config = lib.mkMerge [
-                {
-                  # TODO; establish package settings here from host metadata
-                }
-                (lib.mkIf user.stt.osd.enable (lib.mkMerge [
+              name = "desktop/stt/voxtype/parakeet-cuda(${user.userName}@${host.name})";
+              homeManager = {...}: {
+                imports = [
+                  inputs.self.modules.homeManager.voxtype-parakeet-cuda
+                ];
+              };
+            };
+            # Generic user setup
+            user-setup = {
+              user,
+              host,
+            }: {
+              name = "desktop/stt/voxtype(${user.userName}@${host.name})";
+              homeManager = {
+                lib,
+                pkgs,
+                ...
+              }: {
+                # Main config module; depending on what user picks
+                imports = [
+                  inputs.self.modules.homeManager.voxtype-settings
+                ];
+                # Custom OSD settings
+                config = lib.mkMerge [
                   {
-                    # Enable OSD indicator
-                    services.voxtype.settings.osd.enabled = true;
+                    # TODO; establish package settings here from host metadata
                   }
-                  ( # Native frontend
-                    lib.mkIf (user.stt.osd.frontend == "native") {
-                      services.voxtype.settings.osd = {
-                        # Native frontend
-                        frontend = "native";
-                        width_px = 500;
-                        height_px = 64;
-                        position = "bottom-center";
-                        waveform_gain = 10.0;
-                      };
-                      home.packages = [
-                        inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.osd-native
-                      ];
+                  (lib.mkIf user.stt.osd.enable (lib.mkMerge [
+                    {
+                      # Enable OSD indicator
+                      services.voxtype.settings.osd.enabled = true;
                     }
-                  )
-                  ( # GTK4 frontend
-                    lib.mkIf (user.stt.osd.frontend == "gtk4") {
-                      services.voxtype.settings.osd = {
-                        # GTK4 frontend, and default settings
-                        frontend = "gtk4";
-                        width_px = 500;
-                        height_px = 64;
-                        position = "bottom-center";
-                        waveform_gain = 10.0;
-                      };
-                      home.packages = [
-                        inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.osd-gtk4
-                      ];
-                    }
-                  )
-                  ( # Quickshell frontend (needs quickshell externally)
-                    lib.mkIf (user.stt.osd.frontend == "quickshell") {
-                      services.voxtype.settings.osd = {
-                        frontend = "quickshell";
-                        position = "bottom-center";
-                        style = "default";
-                        layout = "orb";
-                      };
-                    }
-                  )
-                ]))
-              ];
+                    ( # Native frontend
+                      lib.mkIf (user.stt.osd.frontend == "native") {
+                        services.voxtype.settings.osd = {
+                          # Native frontend
+                          frontend = "native";
+                          width_px = 500;
+                          height_px = 64;
+                          position = "bottom-center";
+                          waveform_gain = 10.0;
+                        };
+                        home.packages = [
+                          inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.osd-native
+                        ];
+                      }
+                    )
+                    ( # GTK4 frontend
+                      lib.mkIf (user.stt.osd.frontend == "gtk4") {
+                        services.voxtype.settings.osd = {
+                          # GTK4 frontend, and default settings
+                          frontend = "gtk4";
+                          width_px = 500;
+                          height_px = 64;
+                          position = "bottom-center";
+                          waveform_gain = 10.0;
+                        };
+                        home.packages = [
+                          inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.osd-gtk4
+                        ];
+                      }
+                    )
+                    ( # Quickshell frontend (needs quickshell externally)
+                      lib.mkIf (user.stt.osd.frontend == "quickshell") {
+                        services.voxtype.settings.osd = {
+                          frontend = "quickshell";
+                          position = "bottom-center";
+                          style = "default";
+                          layout = "orb";
+                        };
+                      }
+                    )
+                  ]))
+                ];
+              };
             };
           };
         };
@@ -87,72 +182,130 @@
     };
   };
 
-  flake.modules.homeManager.voxtype-settings = {
-    pkgs,
-    lib,
-    ...
-  }: {
-    key = "voxtype-settings#homeManager";
-    # TODO: hm module is on unstable; mainline after 26.11
-    imports = [
-      "${inputs.home-manager-unstable}/modules/services/voxtype.nix"
-    ];
-    # Module is linux only; forces systemd units
-    config = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-      # Configuring the service
-      services.voxtype = {
-        enable = true;
-        # Package needs to be done machine-based; and not in global config module
-
-        # Global settings;
-        settings = {
-          # It's better to track status with state file
-          state_file = "auto";
-
-          # Hotkey should be set at desktop level; don't do evdev!
-          hotkey = {
-            enabled = false;
-          };
-
-          # Audio; leave defaults
-          audio = {
-            device = "default";
-            max_duration_secs = 120;
-          };
-
-          # Output settings; needs playing around
-          output = {
-            mode = "type"; # Might have issues with non-qwerty layouts
-            fallback_to_clipboard = true;
-            paste_keys = "shift+insert";
-            restore_clipboard = true;
-            notification = {
-              on_recording_start = true;
-              on_recording_stop = true;
-              on_transcription = true;
+  flake.modules.homeManager = {
+    # Mode specific
+    voxtype-parakeet-cuda = {pkgs, ...}: {
+      key = "voxtype-parakeet-cuda#homeManager";
+      config = {
+        services.voxtype = {
+          # The model to load
+          loadModels = ["parakeet-unified-en-0.6b"];
+          # Settings for this mode
+          settings = {
+            engine = "parakeet";
+            parakeet = {
+              model = "parakeet-unified-en-0.6b";
+              streaming = true;
+              # Keep model loaded TODO: test if this causes issues
+              on_demand_loading = false;
             };
-            driver_order = [
-              "wtype"
-              "dotool"
-              "ydotool"
-              "clipboard"
-            ];
           };
+          # The voxtype package; build for cuda support
+          package =
+            (
+              pkgs.voxtype-onnx.override
+              {
+                onnxruntime = pkgs.onnxruntime.override {cudaSupport = true;};
+              }
+            ).overrideAttrs (old: {
+              # Need these build features added to bake in cuda support
+              buildFeatures = [
+                "parakeet-load-dynamic"
+                "parakeet-cuda"
+              ];
+              # Add cuda to build deps
+              nativeBuildInputs =
+                (old.nativeBuildInputs or [])
+                ++ (with pkgs.cudaPackages; [
+                  cuda_nvcc
+                ]);
+              buildInputs =
+                (old.buildInputs or [])
+                ++ (with pkgs.cudaPackages; [
+                  cudatoolkit
+                  cudnn
+                ]);
+            });
+          # TODO: Check; the package might need cuda libraries provided to it
+          # environment = {
+          #   LD_LIBRARY_PATH = lib.makeLibraryPath (with pkgs.cudaPackages; [
+          #     "/run/opengl-driver"
+          #     cudatoolkit
+          #     cudnn
+          #   ]);
+          # };
+        };
+      };
+    };
 
-          # Text settings
-          text = {
-            spoken_punctuation = true;
-          };
+    # Global
+    voxtype-settings = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      key = "voxtype-settings#homeManager";
+      # TODO: hm module is on unstable; mainline after 26.11
+      imports = [
+        "${inputs.home-manager-unstable}/modules/services/voxtype.nix"
+      ];
+      # Module is linux only; forces systemd units
+      config = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+        # Configuring the service
+        services.voxtype = {
+          enable = true;
+          # Package needs to be done machine-based; and not in global config module
 
-          # Visualization settings
-          osd = {
-            # Don't install the backend by default; it takes time to compile
-            enabled = lib.mkDefault false;
-          };
+          # Global settings;
+          settings = {
+            # It's better to track status with state file
+            state_file = "auto";
 
-          # Status bar indicator
-          status = {
-            icon_theme = "nerd-font";
+            # Hotkey should be set at desktop level; don't do evdev!
+            hotkey = {
+              enabled = false;
+            };
+
+            # Audio; leave defaults
+            audio = {
+              device = "default";
+              max_duration_secs = 120;
+            };
+
+            # Output settings; needs playing around
+            output = {
+              mode = "type"; # Might have issues with non-qwerty layouts
+              fallback_to_clipboard = true;
+              paste_keys = "shift+insert";
+              restore_clipboard = true;
+              notification = {
+                on_recording_start = true;
+                on_recording_stop = true;
+                on_transcription = true;
+              };
+              driver_order = [
+                "wtype"
+                "dotool"
+                "ydotool"
+                "clipboard"
+              ];
+            };
+
+            # Text settings
+            text = {
+              spoken_punctuation = true;
+            };
+
+            # Visualization settings
+            osd = {
+              # Don't install the backend by default; it takes time to compile
+              enabled = lib.mkDefault false;
+            };
+
+            # Status bar indicator
+            status = {
+              icon_theme = "nerd-font";
+            };
           };
         };
       };

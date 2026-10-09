@@ -76,10 +76,13 @@
 
   # Modules
   flake.modules.nixos = {
-    bluetooth-settings = {...}: {
+    bluetooth-settings = {pkgs, ...}: {
       key = "bluetooth-settings#nixos";
       config = {
-        hardware.bluetooth.enable = true;
+        hardware.bluetooth = {
+          enable = true;
+          package = pkgs.bluez-experimental;
+        };
       };
     };
     bluetooth-hspdisable = {...}: {
