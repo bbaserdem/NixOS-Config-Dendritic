@@ -44,7 +44,7 @@
         fileBrowser = "dolphin";
         terminal = "kitty";
         stt = {
-          enable = true;
+          enable = false;
           voxtype = {
             enable = true;
             backend = "parakeet-cuda";

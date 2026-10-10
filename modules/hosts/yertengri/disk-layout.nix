@@ -10,9 +10,9 @@
 
           # Put the keyfiles needed in /etc/cryptsetup-keys.d/<name>.key
 
-          # <name>            <device>                            <password>  <options>
-          Yertengri_Data      PARTLABEL=Crypt_Yertengri_Data      -           luks,timeout=180
-          Yertengri_Work      PARTLABEL=Crypt_Yertengri_Work      -           luks,nofail,timeout=180
+          # <name>        <device>                            <password>  <options>
+          Yertengri_Data  PARTLABEL=Crypt_Yertengri_Data      -           luks,timeout=180
+          Yertengri_Extra PARTLABEL=Crypt_Yertengri_Extra     -           luks,nofail,timeout=180
         '';
       };
 

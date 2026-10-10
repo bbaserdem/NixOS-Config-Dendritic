@@ -9,7 +9,12 @@ Documentation includes this flake, how I use software etc.
   - [ ] More compatible multi-usb setup
   - [ ] ARM solutions as well
   - [ ] Redo the environment with a bespoke `nixos` user.
+  - [ ] Disable power saving on the gnome account; shouldn't blank or sleep on it's own.
   - [ ] Some unnecessary stuff needs cleanup; for example direnv should be removed
+  - [ ] Keys and the boot isos being on one machine not working; can't deploy keys and liveboot.
+        Will fix this; also follow
+  - [ ] Split key usb into a different one with a good filesystem that supports ownership.
+        (Forget about MacOS; we can do it bespoke.)
 - [ ] Full den migration
   - [x] Finish exporting `apps/` modules.
   - [x] Regularize den layout and usage across modules

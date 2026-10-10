@@ -21,12 +21,12 @@ We are using `MultiOS-USB` to boot this system.
 
 The steps are;
 
-1) Boot into live environment
-2) Connect to internet and sync
-3) Mount encrypted key vault
-4) Setup for LUKS
-5) Confirm setup
-6) Install
+1. Boot into live environment
+2. Connect to internet and sync
+3. Mount encrypted key vault
+4. Setup for LUKS
+5. Confirm setup
+6. Install
 
 > [!WARNING]
 > Change Kayra from liveiso to an on ramdisk but local to usb installation.
@@ -38,7 +38,9 @@ The steps are;
 > Also need to set up copytoram to the live isos so they are hotplugabble.
 
 ### Boot into live environment
-[^note]: As of now, the live environment is supplied by
+
+[^note]:
+    As of now, the live environment is supplied by
     [MultiOS-USB](https://github.com/Mexit/MultiOS-USB) formatted drive,
     containing the [Kayra](../hardware/kayra.md) iso.
 
@@ -76,9 +78,10 @@ gocryptfs -ro -allow_other /run/media/sbp/<Device>/KeyVault _crypt
 ### Setup for LUKS
 
 Put the needed LUKS key files in `/tmp`.
-The key files should be in `_crypt/LUKS/<HostName>_<Disk>.key`
-Create a passphrase file `/tmp/<HostName>.key`, for the manual passwords.
-Disko expects the LUKS information from these locations.
+The key files should be in `_crypt/Systems/<hostname>/etc/cryptsetup-keys.d/<HostName>_<Disk>.key`,
+copy them to `/tmp/*.key`.
+Create a passphrase file `/tmp/<HostName>.key`, for the manual password.
+Disko expects the LUKS information at these locations.
 
 > [!TIP]
 > Check the flake for the `disko` config for which files are needed,
@@ -89,7 +92,7 @@ Disko expects the LUKS information from these locations.
 Check if the specified disk in the configuration exists.
 
 > [!CAUTION]
-> *Optional* & ***DESTRUCTIVE***; test out whether disko works by writing disko.
+> _Optional_ & _**DESTRUCTIVE**_; test out whether disko works by writing disko.
 > Command is `sudo disko --mode destroy,format,mount --flake .#<hostname>`
 > Can also add `--dry-mount` flag to test operations.
 
@@ -125,8 +128,8 @@ sudo disko-install \
 > (Keys need to be copied manually in this case)
 > `sudo disko --mode mount --flake .#<hostname>`, then
 > `sudo cp -a _crypt/Systems/<hostname>/. /mnt/`, then
-> `sudo nixos-install --root /mnt --flake .#yel-ana --no-channel-copy --no-root-password --no-write-lock-file`
-> (The `initrdUnlock = false` partitions need to be manually opened.)
+> `sudo nixos-install --root /mnt --flake .#yel-ana --no-channel-copy --no-root-password`
+> (The `initrdUnlock = false` partitions need to be manually opened if they participate in system eval.)
 
 ---
 
@@ -138,9 +141,9 @@ discussed in [the previous section](#disko-install).
 
 Then a layout of the steps are;
 
-1) Boot into live environment, and connect to internet.
-2) Prepare controller machine environment
-3) Install remotely
+1. Boot into live environment, and connect to internet.
+2. Prepare controller machine environment
+3. Install remotely
 
 ### Boot into live environment and connect to network
 
@@ -175,7 +178,7 @@ nixos-anywhere \
     --no-disko-deps \
     --extra-files "_crypt/Systems/<hostname>" \
     --disk-encryption-keys "/tmp/<HostName>_<Disk>.key" "_crypt/LUKS/<HostName>_<Disk>.key"
-    
+
 ```
 
 > [!IMPORTANT]
