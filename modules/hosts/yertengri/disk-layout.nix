@@ -180,7 +180,7 @@
                 type = "0700";
               };
               Recovery = {
-                size = "512M";
+                size = "1G";
                 label = "Windows RE";
                 priority = 503;
                 type = "2700";
