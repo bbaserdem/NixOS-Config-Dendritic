@@ -5,14 +5,20 @@ Documentation includes this flake, how I use software etc.
 
 ## Todo List
 
+- [ ] Redo kayra
+  - [ ] More compatible multi-usb setup
+  - [ ] ARM solutions as well
+  - [ ] Redo the environment with a bespoke `nixos` user.
+  - [ ] Some unnecessary stuff needs cleanup; for example direnv should be removed
 - [ ] Full den migration
-  - [ ] Finish exporting `apps/` modules.
-  - [ ] Regularize den layout and usage across modules
+  - [x] Finish exporting `apps/` modules.
+  - [x] Regularize den layout and usage across modules
   - [ ] Revisit environment variable dispatch; try to make it host-specific too
         (API keys in environment shouldn't really come from sops-nix; other methods!)
   - [ ] Switch `yel-ana` to den
   - [ ] Reinstall `su-ana` with den management
-  - [ ] Install `od-ata` and `yertengri`
+  - [ ] Install `od-ata`
+  - [ ] Install `yertengri`
   - [ ] Set up new walks for `homeManager` class hosts, and standalone outputs.
   - [ ] Reorganize syncthing aspect so that certain behavior is isolated.
         (Mainly thinking about using nix-droid + home-manager to dispatch stignore;

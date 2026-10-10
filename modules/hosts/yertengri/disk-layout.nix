@@ -42,6 +42,32 @@
                 };
               };
 
+              # 2 - Encrypted swap partition
+              Crypt_Swap = {
+                size = "32G";
+                label = "Crypt_Yertengri_Swap";
+                priority = 200;
+                content = {
+                  type = "luks";
+                  name = "Yertengri_Swap";
+                  initrdUnlock = true;
+                  passwordFile = "/tmp/Yertengri.key";
+                  additionalKeyFiles = ["/tmp/Yertengri_Swap.key"];
+                  extraFormatArgs = ["--label" "Crypt_Yertengri_Swap"];
+                  settings = {
+                    allowDiscards = true;
+                    crypttabExtraOpts = [
+                      "password-cache=yes"
+                    ];
+                  };
+                  content = {
+                    type = "swap";
+                    resumeDevice = true;
+                    discardPolicy = "both";
+                  };
+                };
+              };
+
               # 2 - OS Partition, fill with BTRFS subvolumes
               Crypt_Linux = {
                 size = "100%";
@@ -88,11 +114,6 @@
                       "/@nixos_portables" = {
                         mountpoint = "/var/lib/portables";
                         mountOptions = ["compress=zstd" "noatime"];
-                      };
-                      "/@nixos_swap" = {
-                        mountpoint = "/swap";
-                        mountOptions = ["noatime"];
-                        swap.swapfile.size = "32G";
                       };
                       "/@user_wolframite" = {
                         mountpoint = "/home/wolframite";
