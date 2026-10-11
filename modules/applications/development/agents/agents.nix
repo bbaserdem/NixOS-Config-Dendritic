@@ -92,17 +92,22 @@
                   apply = value:
                     if value == null
                     then null
+                    # We want it processed to list of lines; so this is good
                     else if builtins.isList value
                     then value
+                    # If given a file path; convert to list of lines
+                    else if builtins.isPath value
+                    then linesToSpinnerList (builtins.readFile value)
+                    # If this is a string;
                     else if builtins.isString value
                     then
-                      # Turn lines into a list
+                      # Multiline string gets turned to list of lines
                       if lib.hasInfix "\n" value
                       then linesToSpinnerList value
-                      else if builtins.pathExists value
-                      then linesToSpinnerList (builtins.readFile value)
+                      # If we are a single line; assume it's a path prefix
                       else if builtins.pathExists (typeToFile value)
                       then linesToSpinnerList (builtins.readFile (typeToFile value))
+                      # Anything else is invalid
                       else throw "Invalid spinner-verb ${value}"
                     else throw "Invalid spinner-file";
                 });
