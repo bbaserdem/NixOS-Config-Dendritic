@@ -281,6 +281,9 @@ in {
               nixPath = ["nixpkgs=${inputs.nixpkgs}"];
               # Use cgroups in nixos
               settings = {
+                experimental-features = [
+                  "cgroups"
+                ];
                 use-cgroups = true;
               };
               # Garbage collect settings
