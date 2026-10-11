@@ -189,12 +189,12 @@
       config = {
         services.voxtype = {
           # The model to load
-          loadModels = ["parakeet-unified-en-0.6b"];
+          loadModels = [];
           # Settings for this mode
           settings = {
             engine = "parakeet";
             parakeet = {
-              model = "parakeet-unified-en-0.6b";
+              model = "${pkgs.local.parakeet-unified-en-06b}/share/parakeet-unified-en-0.6b";
               streaming = true;
               # Keep model loaded TODO: test if this causes issues
               on_demand_loading = false;

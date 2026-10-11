@@ -42,6 +42,11 @@
                         default = true;
                         type = lib.types.bool;
                       };
+                      codegraph = lib.mkOption {
+                        description = "Whether to install codegraph on this host.";
+                        default = true;
+                        type = lib.types.bool;
+                      };
                       harnesses = lib.mkOption {
                         description = "Which harnesses to install on this host";
                         default = [
@@ -129,6 +134,11 @@
               (den.lib.policy.include den.aspects.development._.agents)
             ]
             ++ (
+              lib.optional
+              host.development.agents.codegraph
+              (den.lib.policy.include den.aspects.development._.agents._.codegraph)
+            )
+            ++ (
               # Also include all requested harnesses
               builtins.map
               (n: (den.lib.policy.include den.aspects.development._.agents._.${n}))
@@ -142,6 +152,11 @@
             [
               (den.lib.policy.include den.aspects.development._.agents._.to-users)
             ]
+            ++ (
+              lib.optional
+              host.development.agents.codegraph
+              (den.lib.policy.include den.aspects.development._.agents._.codegraph._.to-users)
+            )
             ++ (
               # Also include all requested harnesses
               builtins.map

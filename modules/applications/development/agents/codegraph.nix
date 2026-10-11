@@ -7,10 +7,6 @@
   den = {
     aspects.development = {
       provides.agents = {
-        # Auto-enable when agents are dispatched
-        includes = [
-          den.aspects.development._.agents._.codegraph
-        ];
         # Aspect config
         provides.codegraph = {
           name = "development/agents/codegraph";
