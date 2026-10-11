@@ -294,7 +294,7 @@ in {
               gc.dates = "weekly";
             };
             # Isolate nix daemon from system slice
-            systemd.services.nix-daemon.serviceConfig.slice = "-.slice";
+            systemd.services.nix-daemon.serviceConfig.Slice = "-.slice";
           };
         };
         nix-extras = {...}: {

@@ -33,10 +33,7 @@
         image._.gimp
         # Networking
         networking
-        networking._.chromium
         networking._.discord
-        networking._.firefox
-        networking._.librewolf
         networking._.remmina
         networking._.signal
         networking._.slack

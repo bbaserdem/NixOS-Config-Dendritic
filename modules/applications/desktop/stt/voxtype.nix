@@ -198,6 +198,10 @@
               streaming = true;
               # Keep model loaded TODO: test if this causes issues
               on_demand_loading = false;
+              # Invalid defaults; needs to be multiple of .08 seconds
+              streaming_chunk_secs = 0.56;
+              streaming_left_context_secs = 5.6;
+              streaming_right_context_secs = 0.56;
             };
           };
           # The voxtype package; build for cuda support

@@ -6,37 +6,39 @@
 }: {
   # Hook up librewolf to den
   den = {
-    aspects.networking = {
-      provides.librewolf = {
-        name = "networking/librewolf";
-        # Just dispatch aspect to the user scope
-        provides.to-users = {
-          host,
-          user,
-        }: {
-          # Collission protection
-          name = "networking/librewolf(${user.userName}@${host.name})";
-          # Dispatch the home manager modules
-          darwin = {...}: {
-            imports = [
-              inputs.self.modules.darwin.librewolf-settings
-            ];
-          };
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.librewolf-settings
-              inputs.self.modules.homeManager.librewolf-profiles
-            ];
-          };
-          # Establish theming
-          stylix = {lib, ...}: {
-            targets.librewolf = {
-              # Can only enable when profiles are non-empty
-              enable = lib.mkOptionDefault false;
-              # Need this to set the colors
-              colorTheme.enable = true;
-              # This breaks some stuff actually
-              firefoxGnomeTheme.enable = false;
+    aspects.desktop = {
+      provides.webbrowser = {
+        provides.librewolf = {
+          name = "desktop/webbrowser/librewolf";
+          # Just dispatch aspect to the user scope
+          provides.to-users = {
+            host,
+            user,
+          }: {
+            # Collission protection
+            name = "desktop/webbrowser/librewolf(${user.userName}@${host.name})";
+            # Dispatch the home manager modules
+            darwin = {...}: {
+              imports = [
+                inputs.self.modules.darwin.librewolf-settings
+              ];
+            };
+            homeManager = {...}: {
+              imports = [
+                inputs.self.modules.homeManager.librewolf-settings
+                inputs.self.modules.homeManager.librewolf-profiles
+              ];
+            };
+            # Establish theming
+            stylix = {lib, ...}: {
+              targets.librewolf = {
+                # Can only enable when profiles are non-empty
+                enable = lib.mkOptionDefault false;
+                # Need this to set the colors
+                colorTheme.enable = true;
+                # This breaks some stuff actually
+                firefoxGnomeTheme.enable = false;
+              };
             };
           };
         };

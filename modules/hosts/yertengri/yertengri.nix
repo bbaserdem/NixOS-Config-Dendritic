@@ -42,6 +42,10 @@
         };
         uinput.enable = true;
         fileBrowser = "dolphin";
+        webBrowsers = [
+          "librewolf"
+          "chromium"
+        ];
         terminal = "kitty";
         stt = {
           enable = true;

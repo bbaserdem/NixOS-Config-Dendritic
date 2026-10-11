@@ -41,6 +41,7 @@
                       type = lib.types.nullOr (lib.types.enum [
                         "systemd-boot"
                         "grub"
+                        "limine"
                       ]);
                     };
                     microcode = lib.mkOption {
@@ -70,6 +71,19 @@
                               "dark"
                               "bigSur"
                             ];
+                          };
+                        };
+                      });
+                    };
+                    limine = lib.mkOption {
+                      description = "Limine options";
+                      default = {};
+                      type = lib.types.submodule ({...}: {
+                        options = {
+                          stylix = lib.mkOption {
+                            description = "Whether to use stylix to theme limine";
+                            default = true;
+                            type = lib.types.bool;
                           };
                         };
                       });
@@ -140,60 +154,87 @@
             };
 
             # Grub implementation
-            provides.grub = {host}: {
-              name = "system/nixos/bootloader/grub(@${host.name})";
-              # Nixos module enable for grub
-              nixos = {
-                options,
-                pkgs,
-                ...
-              }: {
-                imports = [
-                  inputs.self.modules.nixos.nixos-grub
-                ];
-                config = lib.mkMerge [
-                  {
-                    # Host specific grub settings
-                    boot.loader.grub.configurationLimit = host.boot.configurationLimit;
-                  }
-                  (
-                    # If stylix is overriden, or unavailable, use config theme
-                    lib.mkIf (!(
-                      (host.boot.grub.stylix)
-                      && (lib.hasAttrByPath ["stylix"] options)
-                    )) {
-                      boot.loader.grub.theme = pkgs.sleek-grub-theme.override {
-                        withStyle = host.boot.grub.flavor;
-                      };
+            provides = {
+              grub = {host}: {
+                name = "system/nixos/bootloader/grub(@${host.name})";
+                # Nixos module enable for grub
+                nixos = {
+                  options,
+                  pkgs,
+                  ...
+                }: {
+                  imports = [
+                    inputs.self.modules.nixos.nixos-grub
+                  ];
+                  config = lib.mkMerge [
+                    {
+                      # Host specific grub settings
+                      boot.loader.grub.configurationLimit = host.boot.configurationLimit;
                     }
-                  )
-                ];
+                    (
+                      # If stylix is overriden, or unavailable, use config theme
+                      lib.mkIf (!(
+                        (host.boot.grub.stylix)
+                        && (lib.hasAttrByPath ["stylix"] options)
+                      )) {
+                        boot.loader.grub.theme = pkgs.sleek-grub-theme.override {
+                          withStyle = host.boot.grub.flavor;
+                        };
+                      }
+                    )
+                  ];
+                };
+                # Enable grub theming if required conditions are met
+                stylix =
+                  lib.mkIf (
+                    (host.class == "nixos")
+                    && (host.boot.grub.stylix or false)
+                  ) {
+                    targets.grub = {
+                      enable = true;
+                      useWallpaper = true;
+                    };
+                  };
               };
-              # Enable grub theming if required conditions are met
-              stylix =
-                lib.mkIf (
-                  (host.class == "nixos")
-                  && (host.boot.grub.stylix or false)
-                ) {
-                  targets.grub = {
-                    enable = true;
-                    useWallpaper = true;
+
+              # Limine implementation
+              limine = {host}: {
+                name = "system/nixos/bootloader/limine(@${host.name})";
+                # Configure systemd-boot for nixos
+                nixos = {...}: {
+                  imports = [
+                    inputs.self.modules.nixos.nixos-limine
+                  ];
+                  config = {
+                    # Host specific systemd-boot settings
+                    boot.loader.limine = {
+                      maxGenerations = host.boot.configurationLimit;
+                    };
                   };
                 };
-            };
+                stylix = {
+                  targets.limine = {
+                    enable = true;
+                    colors.enable = true;
+                    image.enable = true;
+                    imageScalingMode.enable = true;
+                  };
+                };
+              };
 
-            # Systemd-boot implementation
-            provides.systemd-boot = {host}: {
-              name = "system/nixos/bootloader/systemd-boot(@${host.name})";
-              # Configure systemd-boot for nixos
-              nixos = {...}: {
-                imports = [
-                  inputs.self.modules.nixos.nixos-systemd-boot
-                ];
-                config = {
-                  # Host specific systemd-boot settings
-                  boot.loader.systemd-boot = {
-                    configurationLimit = host.boot.configurationLimit;
+              # Systemd-boot implementation
+              systemd-boot = {host}: {
+                name = "system/nixos/bootloader/systemd-boot(@${host.name})";
+                # Configure systemd-boot for nixos
+                nixos = {...}: {
+                  imports = [
+                    inputs.self.modules.nixos.nixos-systemd-boot
+                  ];
+                  config = {
+                    # Host specific systemd-boot settings
+                    boot.loader.systemd-boot = {
+                      configurationLimit = host.boot.configurationLimit;
+                    };
                   };
                 };
               };
@@ -221,6 +262,7 @@
             # Override defaults; needs to be done later!
             grub.enable = lib.mkDefault false;
             systemd-boot.enable = lib.mkDefault false;
+            limine.enable = lib.mkDefault false;
           };
         };
       };
@@ -236,6 +278,17 @@
           useOSProber = true;
           memtest86.enable = true;
           devices = ["nodev"];
+        };
+      };
+    };
+    # Limine
+    nixos-limine = {...}: {
+      key = "nixos-limine#nixos";
+      config = {
+        # Grub settings
+        boot.loader.limine = {
+          enable = true;
+          efiSupport = true;
         };
       };
     };

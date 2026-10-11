@@ -6,38 +6,40 @@
 }: {
   # Hook up firefox to den
   den = {
-    aspects.networking = {
-      provides.firefox = {
-        name = "networking/firefox";
-        # Just dispatch aspect to the user scope
-        provides.to-users = {
-          host,
-          user,
-        }: {
-          # Collission protection
-          name = "networking/firefox(${user.userName}@${host.name})";
-          # Dispatch the darwin module
-          darwin = {...}: {
-            imports = [
-              inputs.self.modules.darwin.firefox-settings
-            ];
-          };
-          # Dispatch the home manager modules
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.firefox-settings
-              inputs.self.modules.homeManager.firefox-profiles
-            ];
-          };
-          # Establish theming
-          stylix = {lib, ...}: {
-            targets.firefox = {
-              # Can only enable when profiles are non-empty
-              enable = lib.mkOptionDefault false;
-              # Need this to set the colors
-              colorTheme.enable = true;
-              # This breaks some stuff actually
-              firefoxGnomeTheme.enable = false;
+    aspects.desktop = {
+      provides.webbrowser = {
+        provides.firefox = {
+          name = "desktop/webbrowser/firefox";
+          # Just dispatch aspect to the user scope
+          provides.to-users = {
+            host,
+            user,
+          }: {
+            # Collission protection
+            name = "desktop/webbrowser/firefox(${user.userName}@${host.name})";
+            # Dispatch the darwin module
+            darwin = {...}: {
+              imports = [
+                inputs.self.modules.darwin.firefox-settings
+              ];
+            };
+            # Dispatch the home manager modules
+            homeManager = {...}: {
+              imports = [
+                inputs.self.modules.homeManager.firefox-settings
+                inputs.self.modules.homeManager.firefox-profiles
+              ];
+            };
+            # Establish theming
+            stylix = {lib, ...}: {
+              targets.firefox = {
+                # Can only enable when profiles are non-empty
+                enable = lib.mkOptionDefault false;
+                # Need this to set the colors
+                colorTheme.enable = true;
+                # This breaks some stuff actually
+                firefoxGnomeTheme.enable = false;
+              };
             };
           };
         };
