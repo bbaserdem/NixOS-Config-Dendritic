@@ -7,28 +7,30 @@
 }: {
   # Den
   den = {
-    schema.host = {
-      includes = [
-        den.aspects.development.policies.neovim-dispatch
-      ];
-      options = {
-        development = lib.mkOption {
-          type = lib.types.submodule {
-            options = {
-              neovim = lib.mkOption {
-                description = "Neovim settings";
-                default = {};
-                type = lib.types.submodule {
-                  options = {
-                    enable = lib.mkOption {
-                      description = "Whether to install neovim to this host.";
-                      default = true;
-                      type = lib.types.bool;
-                    };
-                    guiEnable = lib.mkOption {
-                      description = "Whether to install neovide as nvim GUI";
-                      default = false;
-                      type = lib.types.bool;
+    schema = {
+      host = {
+        includes = [
+          den.aspects.development.policies.neovim-host-dispatch
+        ];
+        options = {
+          development = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                neovim = lib.mkOption {
+                  description = "Neovim settings";
+                  default = {};
+                  type = lib.types.submodule {
+                    options = {
+                      enable = lib.mkOption {
+                        description = "Whether to install neovim to this host.";
+                        default = true;
+                        type = lib.types.bool;
+                      };
+                      guiEnable = lib.mkOption {
+                        description = "Whether to install neovide as nvim GUI";
+                        default = false;
+                        type = lib.types.bool;
+                      };
                     };
                   };
                 };
@@ -37,22 +39,39 @@
           };
         };
       };
+      user.includes = [
+        den.aspects.development.policies.neovim-user-dispatch
+      ];
     };
 
     # Aspect
     aspects.development = {
-      policies.neovim-dispatch = {host, ...}:
-        lib.optionals
-        host.development.neovim.enable
-        (
-          [
-            (den.lib.policy.include den.aspects.development._.neovim)
-          ]
-          ++ (
-            lib.optional host.development.neovim.guiEnable
-            (den.lib.policy.include den.aspects.development._.neovim._.neovide)
-          )
-        );
+      policies = {
+        neovim-host-dispatch = {host, ...}:
+          lib.optionals
+          host.development.neovim.enable
+          (
+            [
+              (den.lib.policy.include den.aspects.development._.neovim)
+            ]
+            ++ (
+              lib.optional host.development.neovim.guiEnable
+              (den.lib.policy.include den.aspects.development._.neovim._.neovide)
+            )
+          );
+        neovim-user-dispatch = {host, ...}:
+          lib.optionals
+          host.development.neovim.enable
+          (
+            [
+              (den.lib.policy.include den.aspects.development._.neovim._.to-users)
+            ]
+            ++ (
+              lib.optional host.development.neovim.guiEnable
+              (den.lib.policy.include den.aspects.development._.neovim._.neovide._.to-users)
+            )
+          );
+      };
 
       provides.neovim = {
         name = "development/neovim";

@@ -72,60 +72,62 @@
 
     aspects.development = {
       # Policy for dispatching virtualization setup to host
-      policies.virtualization-host-dispatch = {host, ...}:
-        lib.optionals
-        host.development.virtualization.enable
-        (
-          [
-            (den.lib.policy.include den.aspects.development._.virtualization)
-          ]
-          ++ ( # Provide windows drivers if needed
-            lib.optional
-            host.development.virtualization.windows
-            (
-              den.lib.policy.include
-              den.aspects.development._.virtualization._.windows
-            )
-          )
-          ++ ( # Set up the hypervisor
-            lib.optional
-            (host.development.virtualization.hypervisor != null)
-            (
-              den.lib.policy.include
-              den.aspects.development._.virtualization._.${host.development.virtualization.hypervisor}
-            )
-          )
-        );
-      # Policy for configuring user for using virtualization
-      policies.virtualization-user-dispatch = {
-        host,
-        user,
-        ...
-      }:
-        lib.optionals
-        (
+      policies = {
+        virtualization-host-dispatch = {host, ...}:
+          lib.optionals
           host.development.virtualization.enable
-          && (builtins.elem "virtualization" user.classes)
-        )
-        (
-          []
-          ++ ( # If backend is libvirtd; set up enabled users
-            lib.optional
-            (host.development.virtualization.hypervisor == "libvirt")
-            (
-              den.lib.policy.include
-              den.aspects.development._.virtualization._.libvirt._.user-setup
+          (
+            [
+              (den.lib.policy.include den.aspects.development._.virtualization)
+            ]
+            ++ ( # Provide windows drivers if needed
+              lib.optional
+              host.development.virtualization.windows
+              (
+                den.lib.policy.include
+                den.aspects.development._.virtualization._.windows
+              )
             )
-          )
-          ++ ( # If backend is utm; set up enabled users
-            lib.optional
-            (host.development.virtualization.hypervisor == "utm")
-            (
-              den.lib.policy.include
-              den.aspects.development._.virtualization._.utm._.user-setup
+            ++ ( # Set up the hypervisor
+              lib.optional
+              (host.development.virtualization.hypervisor != null)
+              (
+                den.lib.policy.include
+                den.aspects.development._.virtualization._.${host.development.virtualization.hypervisor}
+              )
             )
+          );
+        # Policy for configuring user for using virtualization
+        virtualization-user-dispatch = {
+          host,
+          user,
+          ...
+        }:
+          lib.optionals
+          (
+            host.development.virtualization.enable
+            && (builtins.elem "virtualization" user.classes)
           )
-        );
+          (
+            []
+            ++ ( # If backend is libvirtd; set up enabled users
+              lib.optional
+              (host.development.virtualization.hypervisor == "libvirt")
+              (
+                den.lib.policy.include
+                den.aspects.development._.virtualization._.libvirt._.user-setup
+              )
+            )
+            ++ ( # If backend is utm; set up enabled users
+              lib.optional
+              (host.development.virtualization.hypervisor == "utm")
+              (
+                den.lib.policy.include
+                den.aspects.development._.virtualization._.utm._.user-setup
+              )
+            )
+          );
+      };
 
       # Aspect
       provides.virtualization = {

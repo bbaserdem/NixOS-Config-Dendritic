@@ -64,8 +64,8 @@
           ];
           settings = {
             follow_symlinks = true;
-            format = "$shell$all";
-            # Shell icons; though i prefer not having this
+            format = "$os$shell$all";
+            # Shell icons; though I think I prefer not having this
             shell = {
               disabled = true;
               bash_indicator = " ";

@@ -7,30 +7,32 @@
 }: {
   # Aspect dispatch
   den = {
-    schema.host = {
-      includes = [
-        den.aspects.development.policies.secretspec-config-dispatch
-      ];
-      imports = [
-        {
-          options = {
-            development = lib.mkOption {
-              type = lib.types.submodule {
-                options = {
-                  secretspec = lib.mkOption {
-                    description = "Secretspec setting enable";
-                    default = {};
-                    type = lib.types.submodule {
-                      options = {
-                        enable = lib.mkOption {
-                          description = "Whether to enable secretspec on this host.";
-                          default = false;
-                          type = lib.types.bool;
-                        };
-                        isGlobal = lib.mkOption {
-                          description = "Whether to install the package in user profile";
-                          default = false;
-                          type = lib.types.bool;
+    schema = {
+      host = {
+        includes = [
+          den.aspects.development.policies.secretspec-host-dispatch
+        ];
+        imports = [
+          {
+            options = {
+              development = lib.mkOption {
+                type = lib.types.submodule {
+                  options = {
+                    secretspec = lib.mkOption {
+                      description = "Secretspec setting enable";
+                      default = {};
+                      type = lib.types.submodule {
+                        options = {
+                          enable = lib.mkOption {
+                            description = "Whether to enable secretspec on this host.";
+                            default = false;
+                            type = lib.types.bool;
+                          };
+                          isGlobal = lib.mkOption {
+                            description = "Whether to install the package in user profile";
+                            default = false;
+                            type = lib.types.bool;
+                          };
                         };
                       };
                     };
@@ -38,19 +40,26 @@
                 };
               };
             };
-          };
-        }
+          }
+        ];
+      };
+      user.includes = [
+        den.aspects.development.policies.secretspec-user-dispatch
       ];
     };
 
     aspects.development = {
       # Dispatch policy
-      policies.secretspec-config-dispatch = {host, ...}:
-        lib.optionals
-        (host.development.enable && host.development.secretspec.enable)
-        [
-          (den.lib.policy.include den.aspects.development._.secretspec)
-        ];
+      policies = {
+        secretspec-host-dispatch = {host, ...}:
+          lib.optional
+          (host.development.enable && host.development.secretspec.enable)
+          (den.lib.policy.include den.aspects.development._.secretspec);
+        secretspec-user-dispatch = {host, ...}:
+          lib.optional
+          (host.development.enable && host.development.secretspec.enable)
+          (den.lib.policy.include den.aspects.development._.secretspec._.to-users);
+      };
 
       provides.secretspec = {
         name = "development/secretspec";

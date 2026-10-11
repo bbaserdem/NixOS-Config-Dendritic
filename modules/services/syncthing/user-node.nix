@@ -138,6 +138,10 @@
                       lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
                       };
                   };
+                  # Delay syncthing activation; keys depend on sops
+                  systemd.user.services.syncthing.Unit.After = [
+                    "sops-nix.service"
+                  ];
                 }
               )
               {

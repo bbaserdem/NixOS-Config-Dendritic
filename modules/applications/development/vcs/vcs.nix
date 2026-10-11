@@ -6,40 +6,42 @@
   ...
 }: {
   den = {
-    schema.host = {
-      includes = [
-        den.aspects.development.policies.vcs-dispatch
-      ];
-      options = {
-        development = lib.mkOption {
-          type = lib.types.submodule {
-            options = {
-              vcs = lib.mkOption {
-                description = "VCS configuration";
-                default = {};
-                type = lib.types.submodule {
-                  options = {
-                    enable = lib.mkOption {
-                      description = "Whether to enable VCS tooling on this host.";
-                      default = true;
-                      type = lib.types.bool;
-                    };
-                    tools = lib.mkOption {
-                      description = "Which VCS'es to install";
-                      default = ["git" "jujutsu"];
-                      type = lib.types.listOf (lib.types.enum [
-                        "git"
-                        "jujutsu"
-                      ]);
-                    };
-                    providers = lib.mkOption {
-                      description = "Which external forge integrations to do";
-                      default = [];
-                      type = lib.types.listOf (lib.types.enum [
-                        "github"
-                        "forgejo"
-                        "gitlab"
-                      ]);
+    schema = {
+      host = {
+        includes = [
+          den.aspects.development.policies.vcs-host-dispatch
+        ];
+        options = {
+          development = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                vcs = lib.mkOption {
+                  description = "VCS configuration";
+                  default = {};
+                  type = lib.types.submodule {
+                    options = {
+                      enable = lib.mkOption {
+                        description = "Whether to enable VCS tooling on this host.";
+                        default = true;
+                        type = lib.types.bool;
+                      };
+                      tools = lib.mkOption {
+                        description = "Which VCS'es to install";
+                        default = ["git" "jujutsu"];
+                        type = lib.types.listOf (lib.types.enum [
+                          "git"
+                          "jujutsu"
+                        ]);
+                      };
+                      providers = lib.mkOption {
+                        description = "Which external forge integrations to do";
+                        default = [];
+                        type = lib.types.listOf (lib.types.enum [
+                          "github"
+                          "forgejo"
+                          "gitlab"
+                        ]);
+                      };
                     };
                   };
                 };
@@ -48,30 +50,46 @@
           };
         };
       };
+      user.includes = [
+        den.aspects.development.policies.vcs-user-dispatch
+      ];
     };
 
     aspects.development = {
       # Policy for enables
-      policies.vcs-dispatch = {host, ...}:
-        lib.optionals
-        host.development.vcs.enable
-        (
-          [
-            (den.lib.policy.include den.aspects.development._.vcs)
-          ]
-          ++ (
-            builtins.map
-            (n: (den.lib.policy.include den.aspects.development._.vcs._.${n}))
-            host.development.vcs.tools
-          )
-        );
+      policies = {
+        vcs-host-dispatch = {host, ...}:
+          lib.optionals
+          host.development.vcs.enable
+          (
+            [
+              (den.lib.policy.include den.aspects.development._.vcs)
+              (den.lib.policy.include den.aspects.development._.vcs._.platforms)
+            ]
+            ++ (
+              builtins.map
+              (n: (den.lib.policy.include den.aspects.development._.vcs._.${n}))
+              host.development.vcs.tools
+            )
+          );
+        vcs-user-dispatch = {host, ...}:
+          lib.optionals
+          host.development.vcs.enable
+          (
+            [
+              (den.lib.policy.include den.aspects.development._.vcs._.to-users)
+              (den.lib.policy.include den.aspects.development._.vcs._.platforms._.to-users)
+            ]
+            ++ (
+              builtins.map
+              (n: (den.lib.policy.include den.aspects.development._.vcs._.${n}._.to-users))
+              host.development.vcs.tools
+            )
+          );
+      };
 
       provides.vcs = {
         name = "development/vcs";
-        # Auto-fetch platform providers
-        includes = [
-          den.aspects.development._.vcs._.platforms
-        ];
         # User dispatch for common tooling
         provides.to-users = {
           host,

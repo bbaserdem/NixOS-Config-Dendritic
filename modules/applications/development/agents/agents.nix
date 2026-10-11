@@ -26,7 +26,7 @@
       # Host-schema
       host = {
         includes = [
-          den.aspects.development.policies.agents-dispatch
+          den.aspects.development.policies.agents-host-dispatch
         ];
         options = {
           development = lib.mkOption {
@@ -65,6 +65,9 @@
       };
       # User specific options
       user = {
+        includes = [
+          den.aspects.development.policies.agents-user-dispatch
+        ];
         options = {
           agents = lib.mkOption {
             type = lib.types.submodule {
@@ -112,20 +115,36 @@
 
     # Aspect config
     aspects.development = {
-      policies.agents-dispatch = {host, ...}:
-        lib.optionals
-        (host.development.enable && host.development.agents.enable)
-        (
-          [
-            (den.lib.policy.include den.aspects.development._.agents)
-          ]
-          ++ (
-            # Also include all requested harnesses
-            builtins.map
-            (n: (den.lib.policy.include den.aspects.development._.agents._.${n}))
-            host.development.agents.harnesses
-          )
-        );
+      policies = {
+        agents-host-dispatch = {host, ...}:
+          lib.optionals
+          (host.development.enable && host.development.agents.enable)
+          (
+            [
+              (den.lib.policy.include den.aspects.development._.agents)
+            ]
+            ++ (
+              # Also include all requested harnesses
+              builtins.map
+              (n: (den.lib.policy.include den.aspects.development._.agents._.${n}))
+              host.development.agents.harnesses
+            )
+          );
+        agents-user-dispatch = {host, ...}:
+          lib.optionals
+          (host.development.enable && host.development.agents.enable)
+          (
+            [
+              (den.lib.policy.include den.aspects.development._.agents._.to-users)
+            ]
+            ++ (
+              # Also include all requested harnesses
+              builtins.map
+              (n: (den.lib.policy.include den.aspects.development._.agents._.${n}._.to-users))
+              host.development.agents.harnesses
+            )
+          );
+      };
 
       provides.agents = {
         name = "development/agents";

@@ -6,25 +6,27 @@
   ...
 }: {
   den = {
-    schema.host = {
-      includes = [
-        den.aspects.development.policies.direnv-host-dispatch
-      ];
-      imports = [
-        {
-          options = {
-            development = lib.mkOption {
-              type = lib.types.submodule {
-                options = {
-                  direnv = lib.mkOption {
-                    description = "Direnv settings";
-                    default = {};
-                    type = lib.types.submodule {
-                      options = {
-                        enable = lib.mkOption {
-                          description = "Whether to enable direnv on this host.";
-                          default = true;
-                          type = lib.types.bool;
+    schema = {
+      host = {
+        includes = [
+          den.aspects.development.policies.direnv-host-dispatch
+        ];
+        imports = [
+          {
+            options = {
+              development = lib.mkOption {
+                type = lib.types.submodule {
+                  options = {
+                    direnv = lib.mkOption {
+                      description = "Direnv settings";
+                      default = {};
+                      type = lib.types.submodule {
+                        options = {
+                          enable = lib.mkOption {
+                            description = "Whether to enable direnv on this host.";
+                            default = true;
+                            type = lib.types.bool;
+                          };
                         };
                       };
                     };
@@ -32,20 +34,28 @@
                 };
               };
             };
-          };
-        }
+          }
+        ];
+      };
+      user.includes = [
+        den.aspects.development.policies.direnv-user-dispatch
       ];
     };
 
     # Aspect
     aspects.development = {
       # Policy dispatch
-      policies.direnv-host-dispatch = {host, ...}:
-        lib.optionals
-        (host.development.enable && host.development.direnv.enable)
-        [
-          (den.lib.policy.include den.aspects.development._.direnv)
-        ];
+      policies = {
+        direnv-host-dispatch = {host, ...}:
+          lib.optional
+          (host.development.enable && host.development.direnv.enable)
+          (den.lib.policy.include den.aspects.development._.direnv);
+        direnv-user-dispatch = {host, ...}:
+          lib.optional
+          (host.development.enable && host.development.direnv.enable)
+          (den.lib.policy.include den.aspects.development._.direnv._.to-users);
+      };
+
       provides.direnv = {
         name = "development/direnv";
         provides.to-users = {
