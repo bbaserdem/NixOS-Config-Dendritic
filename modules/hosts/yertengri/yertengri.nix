@@ -95,6 +95,7 @@
       # Dev environment
       development = {
         enable = true;
+        languages = ["python" "lean"];
         containerization = {
           enable = true;
           backend = "podman";

@@ -205,6 +205,7 @@
             (
               pkgs.voxtype-onnx.override
               {
+                # This override is redundant on nixpkgs.config.cudaSupport = true
                 onnxruntime = pkgs.onnxruntime.override {cudaSupport = true;};
               }
             ).overrideAttrs (old: {

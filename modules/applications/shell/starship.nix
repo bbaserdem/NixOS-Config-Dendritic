@@ -64,7 +64,7 @@
           ];
           settings = {
             follow_symlinks = true;
-            format = "$os$shell$all";
+            format = "$shell$all";
             # Shell icons; though I think I prefer not having this
             shell = {
               disabled = true;
@@ -99,7 +99,7 @@
               disabled = false;
             };
             os = {
-              disabled = false;
+              disabled = true; # Prefer this to be off actually
             };
             sudo = {
               disabled = false;

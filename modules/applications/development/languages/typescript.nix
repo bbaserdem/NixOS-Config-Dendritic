@@ -1,16 +1,9 @@
 # Configuring typescript
-{
-  inputs,
-  den,
-  ...
-}: {
+{inputs, ...}: {
   # Aspect config
   den = {
     aspects.development = {
       provides.languages = {
-        includes = [
-          den.aspects.development._.languages._.typescript
-        ];
         provides.typescript = {
           name = "development/languages/typescript";
           provides.to-users = {

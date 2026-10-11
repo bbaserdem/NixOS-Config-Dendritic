@@ -1,16 +1,9 @@
 # Configuring elan, lean package manager
-{
-  inputs,
-  den,
-  ...
-}: {
+{inputs, ...}: {
   # Aspect config
   den = {
     aspects.development = {
       provides.languages = {
-        includes = [
-          den.aspects.development._.languages._.lean
-        ];
         provides.lean = {
           name = "development/languages/lean";
           provides.to-users = {

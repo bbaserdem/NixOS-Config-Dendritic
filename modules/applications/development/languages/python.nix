@@ -1,16 +1,9 @@
 # Configuring python
-{
-  inputs,
-  den,
-  ...
-}: {
+{inputs, ...}: {
   # Aspect config
   den = {
     aspects.development = {
       provides.languages = {
-        includes = [
-          den.aspects.development._.languages._.python
-        ];
         provides.python = {
           name = "development/languages/python";
           provides.to-users = {
