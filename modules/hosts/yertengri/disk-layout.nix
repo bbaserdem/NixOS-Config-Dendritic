@@ -225,6 +225,7 @@
                     format = "ext4";
                     extraArgs = ["-L" "Yertengri_Extra"];
                     mountpoint = "/mnt/extra";
+                    mountOptions = ["nofail"];
                   };
                 };
               };
