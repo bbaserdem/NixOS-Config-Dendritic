@@ -158,10 +158,10 @@
         };
 
         # Set the vim mode as the sudo editor
-        environment.variables = {
-          SUDO_EDITOR = lib.getExe config.wrappers.neovim.wrapper;
-          SOPS_EDITOR = lib.getExe config.wrappers.neovim.wrapper;
-        };
+        environment.variables =
+          lib.genAttrs
+          ["VISUAL" "EDITOR" "SUDO_EDITOR" "SOPS_EDITOR"]
+          (_: lib.getExe config.wrappers.neovim.wrapper);
       };
     };
 
@@ -198,6 +198,12 @@
           # Enable neovide in case it's here
           hosts.neovide.nvim-host.enable = true;
         };
+
+        # Configure as default editor as well
+        home.sessionVariables =
+          lib.genAttrs
+          ["VISUAL" "EDITOR"]
+          (_: lib.getExe config.wrappers.neovim.wrapper);
       };
     };
   };
