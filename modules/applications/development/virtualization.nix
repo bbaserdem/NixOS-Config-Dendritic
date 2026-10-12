@@ -46,6 +46,7 @@
                             type = lib.types.nullOr (lib.types.enum [
                               "libvirt"
                               "utm"
+                              "virtualbuddy"
                             ]);
                           };
                           windows = lib.mkOption {
@@ -134,85 +135,98 @@
         name = "development/virtualization";
 
         # Libvirt for hypervisor management
-        provides.libvirt = {
-          name = "development/virtualization/libvirt";
-          nixos = {...}: {
-            imports = [
-              inputs.self.modules.nixos.virtualization-libvirt
-            ];
-          };
-          darwin = {...}: {
-            imports = [
-              inputs.self.modules.darwin.virtualization-libvirt
-            ];
-          };
-          # Standalone also gets homeManager module
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.virtualization-libvirt
-            ];
-          };
-          # User setup for users that opted in
-          provides.user-setup = {
-            host,
-            user,
-          }: {
-            name = "development/virtualization/libvirt/user-setup(${user.userName}@${host.name})";
-            # Gets the libvirtd module; deduped on homeManager hosts by module key
+        provides = {
+          libvirt = {
+            name = "development/virtualization/libvirt";
+            nixos = {...}: {
+              imports = [
+                inputs.self.modules.nixos.virtualization-libvirt
+              ];
+            };
+            darwin = {...}: {
+              imports = [
+                inputs.self.modules.darwin.virtualization-libvirt
+              ];
+            };
+            # Standalone also gets homeManager module
             homeManager = {...}: {
               imports = [
                 inputs.self.modules.homeManager.virtualization-libvirt
               ];
             };
-            # Gets assigned user groups
-            user = {
-              lib,
-              osConfig,
-              ...
-            }:
-              lib.optionalAttrs (host.class == "nixos") {
-                extraGroups =
-                  [
-                    "libvirtd"
-                    "libvirtd-qemu"
-                  ]
-                  |> builtins.filter (n: lib.hasAttrByPath ["users" "groups" n] osConfig);
+            # User setup for users that opted in
+            provides.user-setup = {
+              host,
+              user,
+            }: {
+              name = "development/virtualization/libvirt/user-setup(${user.userName}@${host.name})";
+              # Gets the libvirtd module; deduped on homeManager hosts by module key
+              homeManager = {...}: {
+                imports = [
+                  inputs.self.modules.homeManager.virtualization-libvirt
+                ];
               };
+              # Gets assigned user groups
+              user = {
+                lib,
+                osConfig,
+                ...
+              }:
+                lib.optionalAttrs (host.class == "nixos") {
+                  extraGroups =
+                    [
+                      "libvirtd"
+                      "libvirtd-qemu"
+                    ]
+                    |> builtins.filter (n: lib.hasAttrByPath ["users" "groups" n] osConfig);
+                };
+            };
           };
-        };
 
-        # UTM for hypervisor
-        provides.utm = {
-          name = "development/virtualization/utm";
-          # No system-wide setup
-          # User setup for users that opted in
-          provides.user-setup = {
-            host,
-            user,
-          }: {
-            name = "development/virtualization/utm/user-setup(${user.userName}@${host.name})";
-            # UTM module home-manager only
-            homeManager = {...}: {
+          # UTM for hypervisor
+          utm = {
+            name = "development/virtualization/utm";
+            # No system-wide setup
+            # User setup for users that opted in
+            provides.user-setup = {
+              host,
+              user,
+            }: {
+              name = "development/virtualization/utm(${user.userName}@${host.name})";
+              # UTM module home-manager only
+              homeManager = {...}: {
+                imports = [
+                  inputs.self.modules.homeManager.virtualization-utm
+                ];
+              };
+            };
+          };
+
+          # Virtualbuddy for virtualizing macos on macos
+          virtualbuddy = {
+            name = "development/virtualization/virtualbuddy";
+            # From homebrew; install to main OS
+            darwin = {...}: {
               imports = [
-                inputs.self.modules.homeManager.virtualization-utm
+                inputs.self.modules.darwin.virtualization-virtualbuddy
               ];
             };
           };
-        };
 
-        # The windows driver aspect
-        provides.windows = {
-          name = "development/virtualization/windows";
-          # Install to os
-          os = {...}: {
-            imports = [
-              inputs.self.modules.generic.virtualization-windows
-            ];
-          };
-          homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.virtualization-windows
-            ];
+          # The windows driver aspect
+          windows = {
+            name = "development/virtualization/windows";
+            # Install to os
+            os = {...}: {
+              imports = [
+                inputs.self.modules.generic.virtualization-windows
+              ];
+            };
+            homeManager = {...}: {
+              imports = [
+                inputs.self.modules.homeManager.virtualization-windows
+              ];
+            };
           };
         };
       };
@@ -288,6 +302,15 @@
         home.packages = with pkgs; [
           utm
         ];
+      };
+    };
+
+    # Virtualbuddy for darwin
+    darwin.virtualization-virtualbuddy = {...}: {
+      key = "virtualization-virtualbuddy#darwin";
+      config = {
+        # Install via brew; only available there
+        homebrew.casks = ["virtualbuddy"];
       };
     };
 

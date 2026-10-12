@@ -135,11 +135,16 @@ sudo disko-install \
 
 ## Install NixOS remotely using `nixos-anywhere` {: #nixos-anywhere}
 
-`kayra` and `mergen` are the live environments that allow remote access to hardware.
-First step is getting the drive that can boot into it;
-discussed in [the previous section](#disko-install).
+`nixos-anywhere` is my recommendad way to run installs.
+The source machine needs to have nix, and will be probably running the build.
+The target machine only needs to have ssh access.
 
-Then a layout of the steps are;
+`kayra` and `mergen` are live environments that have ssh access pre-configured,
+so they are easy to target with other hosts in this flake.
+But any target reachable via ssh should work.
+First step is getting the system operational, as discussed in the [the previous section](#disko-install).
+
+Steps are;
 
 1. Boot into live environment, and connect to internet.
 2. Prepare controller machine environment
@@ -150,52 +155,46 @@ Then a layout of the steps are;
 Should be pretty straightforward for this step.
 This is done on the host machine; this has to happen here.
 
-### Prepare controller machine environment
+### Source environment
 
-This should more or less be set up at the user `wolframite`.
-For machines not already setup with this user; this would basically be;
+These are needed on the source machine;
 
-- Local clone the flake repo
-- Grab the ssh private key to the liveiso
-- Load the encrypted keyvault with `gocryptfs`
-
-> [!IMPORTANT]
-> From now on, the workflow assumes you are inside the flake directory,
-> and the keyvault is opened to `_crypt`
-> Adjust accordingly.
+- Flake is up to date, and present.
+- SSH access to the target machine must be available.
+- Needed files to be dispatched (ssh keys, luks keyfiles) must be available.
 
 ### Install Remotely
 
-The command to issue in the dispatcher system is;
+Example command I issue is the following;
 
 ```
 nixos-anywhere \
-    --flake .#<hostname> \
-    --target-host "<liveiso>" \
+    --flake .#yertengri \
+    --target-host kayra \
     --build-on auto
     --phases kexec.disko,install \
     --disko-mode disko \
     --no-disko-deps \
-    --extra-files "_crypt/Systems/<hostname>" \
-    --disk-encryption-keys "/tmp/<HostName>_<Disk>.key" "_crypt/LUKS/<HostName>_<Disk>.key"
+    --extra-files "_crypt/Systems/yertengri" \
+    --disk-encryption-keys "/tmp/Yertengri.key" "/tmp/Yertengri.key" \
+    --disk-encryption-keys "/tmp/Yertengri_Linux.key" "_crypt/Systems/yertengri/etc/cryptsetup-keys.d/Yertengri_Linux.key" \
+    --disk-encryption-keys "/tmp/Yertengri_Extra.key" "_crypt/Systems/yertengri/etc/cryptsetup-keys.d/Yertengri_Extra.key" \
+    --disk-encryption-keys "/tmp/Yertengri_Swap.key" "_crypt/Systems/yertengri/etc/cryptsetup-keys.d/Yertengri_Swap.key" \
+    --disk-encryption-keys "/tmp/Yertengri_Data.key" "_crypt/Systems/yertengri/etc/cryptsetup-keys.d/Yertengri_Data.key"
 
 ```
 
-> [!IMPORTANT]
-> The `--disk-encryption-keys` flag needs to issued multiple times for each
-> key file disko expects.
+- `target-host` is the target machine's ssh address; if you can ssh with `ssh <address>` that's good.
+- `extra-files` gets sent over, and ssh keys are needed for both host and user sops activation.
+  They should have permissions set properly, otherwise it causes issues with activation.
+- `disk-encryption-keys` are sent to the host machine for disko to run.
+  Everything disko needs, it needs to be sent over and they need to be specified one by one.
 
 > [!TIP]
-> For getting the ssh key, the public.asc in repo assets can be used to register
-> the GPG keys from yubikey, which should allow decrypting the private ssh
-> key from the SOPS files.
-> This will need to use `--target-host root@<liveiso>.local -i <private-key>`
-> instead of the `--target-host <liveiso>` stanza.
+> If disko already ran on the target machine, can change the flag to just `--disko-mode mount`
 
 > [!TIP]
-> If disko already ran, can change the flag to `--disko-mode mount`
-
-> [!TIP]
+> `--build-on` flag can be tuned, doesn't need to be left at auto.
 > `--build-on remote` builds the system on the live-usb, useful to skip cross-compilation.
 > `--build-on local` builds the system on the local machine, might be nice to specify.
 
@@ -222,6 +221,6 @@ Insert yubikey, and run `gpg --card-status` as user for the GPG keys.
 
 ### User Setup
 
-If applicable, following steps will onboard a user to user the computer;
+If applicable, following steps will onboard a user to use the computer;
 
 - Log in to Mozilla Sync

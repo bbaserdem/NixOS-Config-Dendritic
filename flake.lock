@@ -834,6 +834,22 @@
         "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1791734076,
+        "narHash": "sha256-i5qk1kLiit98rRbh1AXmWBNT9QXC/y4l5Wk/u5EdpDQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "7fd4004d0511991fff3a0524856a9be09e28c5f0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nmd": {
       "inputs": {
         "nixpkgs": [
@@ -927,6 +943,24 @@
       },
       "parent": []
     },
+    "pared": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1791666975,
+        "narHash": "sha256-0wBzJXs0gNb1NKujAWFZMwdsHu/fr6bv6ZG6YoLqv8Q=",
+        "owner": "4evy",
+        "repo": "pared",
+        "rev": "d135233e5855fe850546e038cb67ad6439458a61",
+        "type": "github"
+      },
+      "original": {
+        "owner": "4evy",
+        "repo": "pared",
+        "type": "github"
+      }
+    },
     "pkgs-by-name": {
       "locked": {
         "lastModified": 1789628227,
@@ -994,6 +1028,7 @@
         "noctalia": "noctalia",
         "nur": "nur",
         "packages": "packages",
+        "pared": "pared",
         "pkgs-by-name": "pkgs-by-name",
         "plasma-manager": "plasma-manager",
         "sops-nix": "sops-nix",

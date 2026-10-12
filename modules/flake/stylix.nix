@@ -8,7 +8,10 @@
   config = {
     # Stylix is system-wide theming tool
     flake-file.inputs = {
-      stylix.url = "github:nix-community/stylix/release-${config.nixpkgs.version}";
+      stylix = {
+        url = "github:nix-community/stylix/release-${config.nixpkgs.version}";
+        inputs.base16.follows = "base16";
+      };
       # External tooling used to generate for stylix overrides
       base16.url = "github:SenchoPens/base16.nix";
       tinted-terminal = {

@@ -1,16 +1,21 @@
 # Od-ata system configuration
-{inputs, ...}: {
-  flake.modules.nixos.od-ata = {...}: {
-    # System configuration
-
-    # Load modules that configure the system
-    imports = with inputs.self.modules.nixos; [
-      wolframite
-    ];
-
-    # Allow ssh-ing into the system user
-    users.users.wolframite = {
-      openssh.authorizedKeys.keyFiles = [(inputs.self + /assets/od-ata_ssh.pub)];
+{...}: {
+  den = {
+    hosts.od-ata = {
+      primaryUser = "wolframite";
+      # Users
+      users.wolframite = {
+        classes = [
+          "admin"
+          "homeManager"
+          "user"
+        ];
+        syncthing = {
+          enable = true;
+          id = "SURUPHR-XMRJVSZ-4E2BL6S-KEAX4C4-LOMYYI4-KSPWQEZ-75ZQDS4-O4EIBA6";
+        };
+        usbAccess = true;
+      };
     };
   };
 }
