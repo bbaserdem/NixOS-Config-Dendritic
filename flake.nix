@@ -9,11 +9,17 @@
     };
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-      inputs.home-manager.follows = "home-manager";
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
     den = {
       url = "github:denful/den";
+    };
+    den-diagram = {
+      url = "github:denful/den-diagram";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
       url = "github:nix-community/disko";
@@ -65,8 +71,10 @@
     };
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
     neovim-plugin-e-ink-nvim = {
       url = "github:alexxGmZ/e-ink.nvim";
@@ -82,8 +90,10 @@
     };
     nix-on-droid = {
       url = "github:nix-community/nix-on-droid/master";
-      inputs.home-manager.follows = "home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
     nixcord = {
       url = "github:4evy/nixcord";
@@ -113,8 +123,10 @@
     };
     nur = {
       url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
     packages = {
       url = "path:./packages";
@@ -139,15 +151,19 @@
     };
     steam-config-nix = {
       url = "github:different-name/steam-config-nix";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
     stylix = {
       url = "github:nix-community/stylix/release-26.05";
-      inputs.base16.follows = "base16";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nur.follows = "nur";
+      inputs = {
+        base16.follows = "base16";
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
+        nur.follows = "nur";
+      };
     };
     tinted-terminal = {
       url = "github:tinted-theming/tinted-terminal";
