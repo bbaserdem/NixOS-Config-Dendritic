@@ -27,16 +27,14 @@ in {
                 .direnv/
                 result
 
-                // Env stuff should be synced
-                !.env
-
                 // Single workspace related ignores
 
                 // SuperBuilders
                 // -- Get the base level shared config and tooling
                 !/SuperBuilders/.envrc
                 !/SuperBuilders/claude-settings.json
-                !/SuperBuilders/opencode-models.jpy
+                !/SuperBuilders/credentials.json
+                !/SuperBuilders/opencode-models.py
                 !/SuperBuilders/opencode.json*
                 !/SuperBuilders/Passwords.kdbx
                 !/SuperBuilders/secretspect.toml

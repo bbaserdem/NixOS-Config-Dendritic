@@ -193,23 +193,36 @@
                   // - Node:    ${user.syncthing.label}
                   // - Folder:  global-share
 
-                  // Do not ignore any extra stignore files
+                  // Do not ignore any extra stignore files; these get synced
                   /.stignore.hm-backup
                   !/.stignore.*
                   // Host-specific ignore file (created empty if missing)
                   #include .stignore.${host.name}.${user.userName}
 
-                  // No thumbnails
-                  .thumbnails
-                  .thumbnails/**
-
-                  // No VCS
+                  // No VCS stuff ever
                   (?d).git
                   (?d).gitmodules
                   (?d).jj
 
-                  // OS Junk
+                  // OS related
+
+                  // Nix and dev tooling that might appear around
+                  (?i)*.lock
+                  .direnv
+                  result
+
+                  // Files that I use for different things around
+                  (?i)keep
+                  (?i).keep
+                  (?i).nomedia
+                  (?i).*ignore
+
+                  // Trash-cli actions move files here
                   .Trash-*
+                  // No thumbnails
+                  .thumbnails
+                  .thumbnails/**
+                  // MacOS stuff
                   (?d).DS_Store
                   .localized
                 '';

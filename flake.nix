@@ -47,6 +47,10 @@
     import-tree = {
       url = "github:denful/import-tree";
     };
+    laminix = {
+      url = "github:jackboykin/laminix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
       inputs = {
@@ -140,8 +144,10 @@
     };
     steam-config-nix = {
       url = "github:different-name/steam-config-nix";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
     stylix = {
       url = "github:nix-community/stylix/release-26.05";

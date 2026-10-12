@@ -30,6 +30,11 @@
               "+AllTargets"
               + ",-CSSPreferColorScheme"
               + ",-JSDateTimeUTC";
+            # Relaxing clean on shutdown settings to be less aggressive
+            "privacy.sanitize.sanitizeOnShutdown" = true;
+            "privacy.clearOnShutdown_v2.cookiesAndStorage" = false;
+            "privacy.clearOnShutdown.cookies" = false;
+            "privacy.clearOnShutdown.sessions" = false;
             # Default to system theme for dark/light mode
             "layout.css.prefers-color-scheme.content-override" = 2;
           };

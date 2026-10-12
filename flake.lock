@@ -445,6 +445,26 @@
         "type": "github"
       }
     },
+    "laminix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790743022,
+        "narHash": "sha256-/pizjELZ6XTil7SfmNCrNH5qanSGUcykHMefRl6qWtY=",
+        "owner": "jackboykin",
+        "repo": "laminix",
+        "rev": "9582d9b262dbb9c709d748b1b760c76f54d3c68b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jackboykin",
+        "repo": "laminix",
+        "type": "github"
+      }
+    },
     "llm-agents": {
       "inputs": {
         "bun2nix": "bun2nix",
@@ -958,6 +978,7 @@
         "home-manager-unstable": "home-manager-unstable",
         "hyprdynamicmonitors": "hyprdynamicmonitors",
         "import-tree": "import-tree",
+        "laminix": "laminix",
         "llm-agents": "llm-agents",
         "multios-usb": "multios-usb",
         "neovim-nightly-overlay": "neovim-nightly-overlay",

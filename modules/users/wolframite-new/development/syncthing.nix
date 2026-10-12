@@ -24,9 +24,9 @@ in {
               !*.xls
               !*.xlsx
 
-              // Do not get any repos
-              /Programming
-              /Programming/**
+              // Ignore repos
+              /_Code
+              /_Code/**
               /SystemConfigFlake
               /SystemConfigFlake/**
             '';

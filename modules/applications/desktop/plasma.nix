@@ -9,6 +9,11 @@
         home-manager.follows = "home-manager";
       };
     };
+    # Fix for slow plasma; https://github.com/NixOS/nixpkgs/issues/126590
+    # TODO: Track this, remove this if fixed
+    laminix = {
+      url = "github:jackboykin/laminix";
+    };
   };
 
   den = {
@@ -16,10 +21,38 @@
       provides.plasma = {
         name = "desktop/plasma";
         # OS level dispatch
-        nixos = {...}: {
+        nixos = {
+          options,
+          lib,
+          ...
+        }: {
           imports = [
             inputs.self.modules.nixos.plasma-settings
+            (inputs.laminix.nixosModules.default or {})
           ];
+          config = lib.optionalAttrs (options.environment ? laminix) {
+            environment.laminix = {
+              enable = true;
+              plasma = "full";
+            };
+            # Laminix and fcitx5 are causing issues; this overlay should fix it
+            nixpkgs.overlays = [
+              (_: prev: {
+                qt6Packages = prev.qt6Packages.overrideScope (
+                  _: qtPrev: {
+                    fcitx5-with-addons = qtPrev.fcitx5-with-addons.overrideAttrs (old: {
+                      buildCommand =
+                        old.buildCommand
+                        + ''
+                          target="$(readlink -f "$out/bin/.fcitx5-wrapped")"
+                          cp --remove-destination "$target" "$out/bin/.fcitx5-wrapped"
+                        '';
+                    });
+                  }
+                );
+              })
+            ];
+          };
         };
         # User config
         provides.to-users = {

@@ -36,8 +36,8 @@
         # Tell mpd to use the decoder plugin
         mpd.extraConfig = lib.mkOrder 1100 ''
           decoder {
-              plugin = "fluidsynth"
-              soundfont = "${config.services.fluidsynth.soundFont or ""}"
+              plugin "fluidsynth"
+              soundfont "${config.services.fluidsynth.soundFont or ""}"
           }
         '';
       };

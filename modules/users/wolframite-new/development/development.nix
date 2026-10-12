@@ -29,8 +29,8 @@
                 [
                   (
                     if (user.mediaDirs ? projects)
-                    then "${user.homeDirectory}/${user.mediaDirs.projects.location}/Code"
-                    else "~/Projects/Code"
+                    then "${user.homeDirectory}/${user.mediaDirs.projects.location}/_Code"
+                    else "~/Projects/_Code"
                   )
                 ]
                 ++ (
