@@ -27,7 +27,31 @@
         # Needed for DRM
         EncryptedMediaExtensions = {
           Enabled = true;
-          Locked = false;
+          Locked = true;
+        };
+
+        # Block notification request windows
+        Permissions.Notifications = {
+          BlockNewRequests = true;
+          Locked = true;
+        };
+
+        Preferences = {
+          # Auto-enable nix installed extensions
+          "extensions.autoDisableScopes" = {
+            Value = 0;
+            Status = "locked";
+          };
+          # Disable accessibility features
+          "accessibility.force_disabled" = {
+            Value = 1;
+            Status = "locked";
+          };
+          # Disable desktop notification feature
+          "permissions.default.desktop-notification" = {
+            Value = 2;
+            Status = "locked";
+          };
         };
 
         # Block every ai feature

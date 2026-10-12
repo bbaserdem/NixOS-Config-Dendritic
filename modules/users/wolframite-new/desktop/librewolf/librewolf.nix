@@ -17,9 +17,21 @@
             # Enable mozilla sync
             "identity.fxaccounts.enabled" = true;
             # DRM enable
+            "media.eme.enabled" = true;
             "media.gmp-manager.updateEnabled" = true;
             "media.gmp-widevinecdm.enabled" = true;
             "media.gmp-widevinecdm.autoupdate" = true;
+            # Replace RFP with FPP in regular browsing
+            "privacy.resistFingerprinting" = false;
+            "privacy.resistFingerprinting.pbmode" = true;
+            "privacy.fingerprintingProtection" = true;
+            "privacy.fingerprintingProtection.pbmode" = false;
+            "privacy.fingerprintingProtection.overrides" =
+              "+AllTargets"
+              + ",-CSSPreferColorScheme"
+              + ",-JSDateTimeUTC";
+            # Default to system theme for dark/light mode
+            "layout.css.prefers-color-scheme.content-override" = 2;
           };
           nativeMessagingHosts = with pkgs; [
             tridactyl-native

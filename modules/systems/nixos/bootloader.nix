@@ -174,7 +174,7 @@
                     (
                       # If stylix is overriden, or unavailable, use config theme
                       lib.mkIf (!(
-                        (host.boot.grub.stylix)
+                        host.boot.grub.stylix
                         && (lib.hasAttrByPath ["stylix"] options)
                       )) {
                         boot.loader.grub.theme = pkgs.sleek-grub-theme.override {
@@ -185,16 +185,12 @@
                   ];
                 };
                 # Enable grub theming if required conditions are met
-                stylix =
-                  lib.mkIf (
-                    (host.class == "nixos")
-                    && (host.boot.grub.stylix or false)
-                  ) {
-                    targets.grub = {
-                      enable = true;
-                      useWallpaper = true;
-                    };
+                stylix = lib.mkIf (host.boot.grub.stylix or false) {
+                  targets.grub = {
+                    enable = true;
+                    useWallpaper = true;
                   };
+                };
               };
 
               # Limine implementation
@@ -212,7 +208,7 @@
                     };
                   };
                 };
-                stylix = {
+                stylix = lib.mkIf (host.boot.limine.stylix or false) {
                   targets.limine = {
                     enable = true;
                     colors.enable = true;

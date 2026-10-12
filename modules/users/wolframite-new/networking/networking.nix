@@ -16,17 +16,9 @@
         user,
       }: {
         name = "wolframite/networking(${user.userName}@${host.name})";
-        homeManager = {
-          pkgs,
-          lib,
-          options,
-          config,
-          ...
-        }: {
+        homeManager = {lib, ...}: {
           # Modules to load
           imports = with inputs.self.modules.homeManager; [
-            wolframite-firefox
-            wolframite-librewolf
             wolframite-discord
           ];
           # Several configuration options

@@ -24,6 +24,8 @@
             wolframite-language
             wolframite-kitty
             wolframite-ghostty
+            wolframite-firefox
+            wolframite-librewolf
           ];
           # Several configuration options
           config =
