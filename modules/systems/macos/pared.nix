@@ -8,8 +8,7 @@
   flake-file = {
     inputs.pared = {
       url = "github:4evy/pared";
-      # inputs.nixpkgs follows = "nixpkgs-unstable";
-      inputs.nixpkgs.autoFollow = false;
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 

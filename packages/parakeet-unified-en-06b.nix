@@ -38,7 +38,7 @@ in
     installPhase = ''
       runHook preInstall
 
-      modelDir="$out/share/${modelName}"
+      modelDir="$out/share/parakeet/${modelName}"
       mkdir -p "$modelDir"
 
       ln -s ${encoder}      "$modelDir/encoder.onnx"

@@ -20,8 +20,9 @@
       };
       desktop.defaultSession = "plasma";
     };
+
     # Aspect
-    aspects.yertengri = {
+    aspects.yel-ana = {
       stylix = {pkgs, ...}: {
         # Pick the base16 scheme for this computer
         polarity = "dark";

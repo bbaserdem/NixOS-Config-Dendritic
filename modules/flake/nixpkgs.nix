@@ -18,12 +18,18 @@ in {
       # Nix User Repository
       nur = {
         url = "github:nix-community/NUR";
-        inputs.nixpkgs.follows = "nixpkgs-unstable";
+        inputs = {
+          flake-parts.follows = "flake-parts";
+          nixpkgs.follows = "nixpkgs-unstable";
+        };
       };
       # Chaotic Nyx : bleeding bleeding edge
       chaotic = {
         url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-        inputs.nixpkgs.follows = "nixpkgs-unstable";
+        inputs = {
+          nixpkgs.follows = "nixpkgs-unstable";
+          home-manager.follows = "home-manager";
+        };
       };
 
       # System utilities, here for easy version upgrades

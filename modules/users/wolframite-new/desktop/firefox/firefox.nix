@@ -26,8 +26,6 @@
               "tr"
             ];
             nativeMessagingHosts = with pkgs; [
-              gnome-browser-connector
-              kdePackages.plasma-browser-integration
               pywalfox-native # Patched to work with custom overlay
             ];
           };

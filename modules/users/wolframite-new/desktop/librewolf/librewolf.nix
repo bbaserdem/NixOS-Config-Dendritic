@@ -44,7 +44,7 @@
         };
       }
       (
-        lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+        lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
           programs.librewolf = {
             settings = {
               # Use geoclue as location provider
@@ -54,8 +54,6 @@
             # Needs patched; but fetcher gets unpatched; can't use this
             # languagePacks = [ "en-US" "tr" ];
             nativeMessagingHosts = with pkgs; [
-              gnome-browser-connector
-              kdePackages.plasma-browser-integration
               pywalfox-native
             ];
           };

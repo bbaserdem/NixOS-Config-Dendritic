@@ -37,6 +37,7 @@
                             default = null;
                             type = lib.types.nullOr (lib.types.enum [
                               "parakeet-cuda"
+                              "whisper-vulkan"
                             ]);
                           };
                           # TODO: formalize the frontend
@@ -86,10 +87,10 @@
               ]
               ++ (
                 lib.optional
-                (host.desktop.stt.voxtype.backend == "parakeet-cuda")
+                (host.desktop.stt.voxtype.backend != null)
                 (
                   den.lib.policy.include
-                  den.aspects.desktop._.stt._.voxtype._.parakeet-cuda
+                  den.aspects.desktop._.stt._.voxtype._.${host.desktop.stt.voxtype.backend}
                 )
               )
             );
@@ -107,6 +108,19 @@
                 ];
               };
             };
+            # Variant; whisper with additional turkish transcription
+            whisper-vulkan = {
+              user,
+              host,
+            }: {
+              name = "desktop/stt/voxtype/whisper-vulkan(${user.userName}@${host.name})";
+              homeManager = {...}: {
+                imports = [
+                  inputs.self.modules.homeManager.voxtype-whisper-vulkan
+                ];
+              };
+            };
+
             # Generic user setup
             user-setup = {
               user,
@@ -193,8 +207,9 @@
           # Settings for this mode
           settings = {
             engine = "parakeet";
+            hotkey.mode = "toggle";
             parakeet = {
-              model = "${pkgs.local.parakeet-unified-en-06b}/share/parakeet-unified-en-0.6b";
+              model = "${pkgs.local.parakeet-unified-en-06b}/share/parakeet/parakeet-unified-en-0.6b";
               streaming = true;
               # Keep model loaded TODO: test if this causes issues
               on_demand_loading = false;
@@ -239,6 +254,39 @@
           #     cudnn
           #   ]);
           # };
+        };
+      };
+    };
+    voxtype-whisper-vulkan = {pkgs, ...}: {
+      key = "voxtype-whisper#homeManager";
+      config = {
+        services.voxtype = {
+          # The model to load
+          loadModels = [];
+          # Settings for this mode
+          settings = {
+            engine = "whisper";
+            hotkey.mode = "toggle";
+            whisper = {
+              mode = "local";
+              model = "${pkgs.local.whisper-model-large-v3-turbo}/share/whisper/ggml-large-v3-turbo.bin";
+              language = ["en" "tr"];
+              translate = false;
+              on_demand_loading = false;
+              streaming = true;
+            };
+            streaming = {
+              interval_secs = 0.8;
+              max_buffer_secs = 29.0;
+              min_speech_rms = 0.005;
+              min_audio_secs = 1.0;
+              partial_min_words = 1;
+              type_partials = true;
+              revision_mode = false;
+            };
+          };
+          # The voxtype package; needs 1.1.0 which is in unstable
+          package = pkgs.unstable.voxtype-vulkan;
         };
       };
     };

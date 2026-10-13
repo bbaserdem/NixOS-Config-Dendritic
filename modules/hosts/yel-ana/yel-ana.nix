@@ -22,8 +22,8 @@
 
       # Boot settings
       boot = {
-        configurationLimit = 10;
-        loader = "grub";
+        configurationLimit = 5;
+        loader = "limine";
       };
 
       # Shell settings
@@ -46,11 +46,10 @@
         ];
         terminal = "kitty";
         stt = {
-          enable = false;
+          enable = true;
           voxtype = {
             enable = true;
-            # TODO: This
-            # backend = "parakeet-cuda";
+            backend = "whisper-vulkan";
           };
         };
       };

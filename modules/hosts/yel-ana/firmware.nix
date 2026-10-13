@@ -35,6 +35,8 @@
 
         # Framework specific audio enhancement
         hardware.framework.laptop13.audioEnhancement.enable = true;
+        # Explicitly disable fingerprnt daemon; fw module mkDefault enables it.
+        services.fprintd.enable = false;
 
         # Boot params
         boot = {
@@ -66,7 +68,7 @@
             lib,
             ...
           }: {
-            boot.kernelPackages = lib.mkOverride 900 pkgs.linuxPackages_latest;
+            boot.kernelPackages = lib.mkOverride 90 pkgs.linuxPackages_latest;
           };
         };
 

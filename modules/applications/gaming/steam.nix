@@ -8,7 +8,13 @@
 }: {
   # Flake inputs for declarative steam config management
   flake-file.inputs = {
-    steam-config-nix.url = "github:different-name/steam-config-nix";
+    steam-config-nix = {
+      url = "github:different-name/steam-config-nix";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
+    };
   };
 
   # Den wiring for steam
@@ -281,6 +287,7 @@
           # Enable steam
           programs.steam = {
             enable = true;
+            package = pkgs.unstable.steam;
             extest.enable = true; # For steam on wayland
             dedicatedServer.openFirewall = true;
             protontricks = {

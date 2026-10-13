@@ -10,7 +10,12 @@
     flake-file.inputs = {
       stylix = {
         url = "github:nix-community/stylix/release-${config.nixpkgs.version}";
-        inputs.base16.follows = "base16";
+        inputs = {
+          base16.follows = "base16";
+          flake-parts.follows = "flake-parts";
+          nixpkgs.follows = "nixpkgs";
+          nur.follows = "nur";
+        };
       };
       # External tooling used to generate for stylix overrides
       base16.url = "github:SenchoPens/base16.nix";

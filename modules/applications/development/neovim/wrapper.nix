@@ -7,7 +7,10 @@
     # Nightly build
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
     };
   };
 

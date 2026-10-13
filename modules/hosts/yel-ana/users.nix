@@ -11,8 +11,6 @@
           "homeManager"
           "user"
           "games"
-          "containerization"
-          "virtualization"
         ];
         syncthing = {
           enable = true;

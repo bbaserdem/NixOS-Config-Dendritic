@@ -16,13 +16,6 @@
   config = let
     cfgMonitorList = config.localConfig.hyprland.monitors;
   in {
-    flake-file.inputs = {
-      hyprdynamicmonitors = {
-        url = "github:fiffeek/hyprdynamicmonitors";
-        inputs.nixpkgs.follows = "nixpkgs-unstable";
-      };
-    };
-
     flake.modules.homeManager.hyprland = {
       lib,
       pkgs,
@@ -34,14 +27,14 @@
       confName = "hyprconfigs";
     in {
       imports = [
-        inputs.hyprdynamicmonitors.homeManagerModules.default
+        # inputs.hyprdynamicmonitors.homeManagerModules.default
       ];
       config = lib.mkMerge [
         (
           lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
             # Include us in binary list
             home.packages = [
-              inputs.hyprdynamicmonitors.packages.${pkgs.stdenv.hostPlatform.system}.default
+              # inputs.hyprdynamicmonitors.packages.${pkgs.stdenv.hostPlatform.system}.default
             ];
 
             # Enable hyprdynamicmonitors in hyprland

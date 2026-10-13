@@ -13,6 +13,7 @@
     # TODO: Track this, remove this if fixed
     laminix = {
       url = "github:jackboykin/laminix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
@@ -125,9 +126,13 @@
       imports = [
         inputs.plasma-manager.homeModules.plasma-manager
       ];
-      config =
-        lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-        };
+      config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+        # Inject native messaging hosts to browsers that can be configured
+        programs =
+          lib.genAttrs
+          ["firefox" "librewolf" "chromium"]
+          (_: {nativeMessagingHosts = [pkgs.kdePackages.plasma-browser-integration];});
+      };
     };
   };
 

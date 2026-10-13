@@ -26,16 +26,14 @@
   imports = [
     (inputs.flake-parts.flakeModules.modules or {})
     (inputs.flake-file.flakeModules.dendritic or {})
-    (inputs.flake-file.flakeModules.auto-follow or {})
+    # Doesn't allow mixing with my definitions; so disabled
+    # (inputs.flake-file.flakeModules.auto-follow or {})
   ];
 
   config = {
     # Dendritic pattern sourcing
     flake-file.inputs = {
-      flake-parts = {
-        url = "github:hercules-ci/flake-parts";
-        inputs.nixpkgs-lib.follows = "nixpkgs";
-      };
+      flake-parts.url = "github:hercules-ci/flake-parts";
       flake-file.url = "github:denful/flake-file";
       import-tree.url = "github:denful/import-tree";
     };

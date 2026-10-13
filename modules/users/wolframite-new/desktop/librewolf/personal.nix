@@ -1,5 +1,46 @@
 # Configuring librewolf preferences for profile: personal
-{...}: {
+{den, ...}: {
+  # Den machinery to dispatch start pages
+  den = {
+    aspects.wolframite = {
+      includes = [
+        den.aspects.wolframite._.librewolf-personal
+      ];
+      provides.librewolf-personal = {
+        host,
+        user,
+      }: {
+        name = "wolframite/librewolf-personal(${user.userName}@${host.name})";
+        homeManager = {
+          lib,
+          options,
+          ...
+        }: {
+          config = lib.optionalAttrs ((options.local or {}) ? librewolf) {
+            local.librewolf.profiles.personal.settings = let
+              pages =
+                []
+                ++ (
+                  lib.optional
+                  (host.networking.local.enable && user.syncthing.enable)
+                  "http://syncthing.localhost/${user.userName}"
+                )
+                ++ (
+                  lib.optional
+                  (host.networking.local.enable && host.networking.local.docs)
+                  "http://system-docs.localhost"
+                );
+            in (lib.mkIf (pages != []) {
+              "browser.startup.page" = 1;
+              "browser.startup.homepage" = lib.concatStringsSep "|" pages;
+            });
+          };
+        };
+      };
+    };
+  };
+
+  # Module
   flake.modules.homeManager.wolframite-librewolf = {
     lib,
     options,

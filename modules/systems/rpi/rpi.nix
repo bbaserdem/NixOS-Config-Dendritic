@@ -1,8 +1,11 @@
 # Raspberry Pi + nixos
-{inputs, ...}: {
+{...}: {
   flake-file = {
     inputs = {
-      nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
+      nixos-raspberrypi = {
+        url = "github:nvmd/nixos-raspberrypi/main";
+        inputs.nixpkgs.follows = "nixpkgs";
+      };
     };
   };
 }

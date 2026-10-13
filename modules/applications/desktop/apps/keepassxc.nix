@@ -21,42 +21,56 @@
   };
 
   # Module
-  flake.modules.homeManager.keepassxc-settings = {pkgs, ...}: {
+  flake.modules.homeManager.keepassxc-settings = {
+    pkgs,
+    lib,
+    config,
+    ...
+  }: {
     key = "keepassxc-settings#homeManager";
     config = {
-      programs.keepassxc = {
-        enable = true;
-        # Common settings
-        settings = {
-          General = {
-            ConfigVersion = 2;
-            MinimizeAfterUnlock = false;
+      programs =
+        {
+          keepassxc = {
+            enable = true;
+            autostart = true;
+            # Common settings
+            settings = {
+              General = {
+                ConfigVersion = 2;
+                MinimizeAfterUnlock = false;
+              };
+              Browser = {
+                Enabled = true;
+                CustomProxyLocation = false;
+                UpdateBinaryPath = false;
+                AlwaysAllowAccess = true;
+                AlwaysAllowUpdate = true;
+              };
+              GUI = {
+                AdvancedSettings = true;
+                ColorPasswords = true;
+                CompactMode = true;
+                HidePasswords = true;
+                MinimizeOnClose = true;
+                MinimizeOnStartup = true;
+                MinimizeToTray = true;
+                ShowTrayIcon = true;
+                TrayIconAppearance = "colorful";
+              };
+              PasswordGenerator = {
+                AdditionalChars = "";
+                ExcludedChars = "";
+              };
+              SSHAgent.Enabled = true;
+            };
           };
-          Browser = {
-            Enabled = true;
-            CustomProxyLocation = false;
-            UpdateBinaryPath = false;
-            AlwaysAllowAccess = true;
-            AlwaysAllowUpdate = true;
-          };
-          GUI = {
-            AdvancedSettings = true;
-            ColorPasswords = true;
-            CompactMode = true;
-            HidePasswords = true;
-            MinimizeOnClose = true;
-            MinimizeOnStartup = true;
-            MinimizeToTray = true;
-            ShowTrayIcon = true;
-            TrayIconAppearance = "colorful";
-          };
-          PasswordGenerator = {
-            AdditionalChars = "";
-            ExcludedChars = "";
-          };
-          SSHAgent.Enabled = true;
-        };
-      };
+        }
+        // (
+          lib.genAttrs
+          ["firefox" "librewolf" "chromium"]
+          (_: {nativeMessagingHosts = [config.programs.keepassxc.package];})
+        );
       # CLI tooling as well
       home.packages = with pkgs; [
         kpcli

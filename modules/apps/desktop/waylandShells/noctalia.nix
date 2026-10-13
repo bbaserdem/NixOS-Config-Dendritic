@@ -1,12 +1,5 @@
 # Noctalia, desktop shell
 {inputs, ...}: {
-  flake-file.inputs = {
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-  };
-
   flake.modules.homeManager.waylandShell = {
     lib,
     pkgs,
@@ -16,7 +9,7 @@
   }: {
     # Import the hm module from the flake
     imports = [
-      inputs.noctalia.homeModules.default
+      # inputs.noctalia.homeModules.default
     ];
 
     config = lib.optionalAttrs (lib.hasAttrByPath ["programs" "noctalia-shell"] options) (

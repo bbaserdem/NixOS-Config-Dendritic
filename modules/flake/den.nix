@@ -10,7 +10,10 @@
     # Den sourcing
     flake-file.inputs = {
       den.url = "github:denful/den";
-      den-diagram.url = "github:denful/den-diagram";
+      den-diagram = {
+        url = "github:denful/den-diagram";
+        inputs.nixpkgs.follows = "nixpkgs";
+      };
     };
   };
 }

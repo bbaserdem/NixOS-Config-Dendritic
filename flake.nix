@@ -4,9 +4,7 @@
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
 
   inputs = {
-    base16 = {
-      url = "github:SenchoPens/base16.nix";
-    };
+    base16.url = "github:SenchoPens/base16.nix";
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
       inputs = {
@@ -14,9 +12,7 @@
         nixpkgs.follows = "nixpkgs-unstable";
       };
     };
-    den = {
-      url = "github:denful/den";
-    };
+    den.url = "github:denful/den";
     den-diagram = {
       url = "github:denful/den-diagram";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,9 +21,7 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flake-file = {
-      url = "github:denful/flake-file";
-    };
+    flake-file.url = "github:denful/flake-file";
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
@@ -44,16 +38,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    hyprdynamicmonitors = {
-      url = "github:fiffeek/hyprdynamicmonitors";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-    import-tree = {
-      url = "github:denful/import-tree";
-    };
+    import-tree.url = "github:denful/import-tree";
     laminix = {
       url = "github:jackboykin/laminix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
@@ -101,26 +89,16 @@
         home-manager.follows = "home-manager";
         nix-darwin.follows = "nix-darwin";
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-nixcord.follows = "nixpkgs";
+        nixpkgs-packages.follows = "nixpkgs-unstable";
       };
     };
     nixos-raspberrypi = {
       url = "github:nvmd/nixos-raspberrypi/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs = {
-      url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.zst";
-    };
-    nixpkgs-darwin = {
-      url = "https://channels.nixos.org/nixpkgs-26.05-darwin/nixexprs.tar.zst";
-    };
-    nixpkgs-unstable = {
-      url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
-    };
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
+    nixpkgs.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.zst";
+    nixpkgs-darwin.url = "https://channels.nixos.org/nixpkgs-26.05-darwin/nixexprs.tar.zst";
+    nixpkgs-unstable.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     nur = {
       url = "github:nix-community/NUR";
       inputs = {
@@ -134,10 +112,9 @@
     };
     pared = {
       url = "github:4evy/pared";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    pkgs-by-name = {
-      url = "github:drupol/pkgs-by-name-for-flake-parts";
-    };
+    pkgs-by-name.url = "github:drupol/pkgs-by-name-for-flake-parts";
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
       inputs = {
@@ -153,7 +130,7 @@
       url = "github:different-name/steam-config-nix";
       inputs = {
         flake-parts.follows = "flake-parts";
-        nixpkgs.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-unstable";
       };
     };
     stylix = {
@@ -174,7 +151,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     wrappers = {
-      url = "github:BirdeeHub/nix-wrapper-modules";
+      url = "github:nix-community/nix-wrapper-modules";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
