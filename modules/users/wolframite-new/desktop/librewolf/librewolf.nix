@@ -46,6 +46,10 @@
       (
         lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
           programs.librewolf = {
+            settings = {
+              # Use geoclue as location provider
+              "geo.provider.use_geoclue" = true;
+            };
             # Darwin doesn't use wrapper, language packs only available in linux
             # Needs patched; but fetcher gets unpatched; can't use this
             # languagePacks = [ "en-US" "tr" ];

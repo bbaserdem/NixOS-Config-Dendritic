@@ -15,6 +15,7 @@
     aspects.od-ata = {
       stylix = {pkgs, ...}: {
         # Pick the base16 scheme for this computer
+        polarity = "dark";
         base16Scheme = "${pkgs.base16-schemes}/share/themes/darkviolet.yaml";
         # Default wallpaper for this computer
         image = "${pkgs.pantheon.elementary-wallpapers}/share/backgrounds/odin-dark.jpg";

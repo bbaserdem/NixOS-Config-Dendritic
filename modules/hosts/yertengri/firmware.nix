@@ -9,7 +9,7 @@
     aspects.yertengri = {
       nixos = {...}: {
         imports = [
-          inputs.den.modules.nixos.yertengri-firmware
+          inputs.self.modules.nixos.yertengri-firmware
         ];
       };
     };

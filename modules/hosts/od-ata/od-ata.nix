@@ -14,7 +14,7 @@
 
       # Functionality is minimal
       sops.enable = true;
-      audio.enable = false;
+      audio.enable = true;
 
       # Nix settings
       nix = {
@@ -36,7 +36,10 @@
       # Features
       desktop = {
         enable = true;
-        geolocation.enable = false;
+        geolocation = {
+          enable = true;
+          backend = "manual";
+        };
         uinput.enable = false;
         webBrowsers = [
           "librewolf"
