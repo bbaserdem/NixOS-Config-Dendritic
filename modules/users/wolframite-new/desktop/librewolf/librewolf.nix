@@ -28,7 +28,7 @@
             "privacy.fingerprintingProtection.pbmode" = false;
             "privacy.fingerprintingProtection.overrides" =
               "+AllTargets"
-              + ",-CSSPreferColorScheme"
+              + ",-CSSPrefersColorScheme"
               + ",-JSDateTimeUTC";
             # Relaxing clean on shutdown settings to be less aggressive
             "privacy.sanitize.sanitizeOnShutdown" = true;

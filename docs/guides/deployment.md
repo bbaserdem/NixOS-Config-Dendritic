@@ -176,6 +176,8 @@ nixos-anywhere \
     --disko-mode disko \
     --no-disko-deps \
     --extra-files "_crypt/Systems/yertengri" \
+    --chown '/home/ben-abuyah' '1000:100' \
+    --chown '/home/wolframite' '1001:100' \
     --disk-encryption-keys "/tmp/Yertengri.key" "/tmp/Yertengri.key" \
     --disk-encryption-keys "/tmp/Yertengri_Linux.key" "_crypt/Systems/yertengri/etc/cryptsetup-keys.d/Yertengri_Linux.key" \
     --disk-encryption-keys "/tmp/Yertengri_Extra.key" "_crypt/Systems/yertengri/etc/cryptsetup-keys.d/Yertengri_Extra.key" \
