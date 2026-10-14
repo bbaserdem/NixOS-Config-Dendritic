@@ -25,7 +25,7 @@
       # Boot settings
       boot = {
         configurationLimit = 10;
-        loader = "grub";
+        loader = "limine";
       };
 
       # Shell settings
