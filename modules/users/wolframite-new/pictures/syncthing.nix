@@ -18,6 +18,10 @@ in {
               // Apple bullshit
               /Photos Library.photoslibrary
               /Photos Library.photoslibrary/**
+
+              // Digicam trash folder
+              .dtrash
+              .dtrash/**
             '';
           };
         };
