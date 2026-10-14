@@ -99,12 +99,17 @@
             ];
           };
           stylix = {
-            targets.fcitx5 = {
-              enable = true;
-              colors.enable = true;
-              fonts.enable = true;
+            pkgs,
+            lib,
+            ...
+          }:
+            lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+              targets.fcitx5 = {
+                enable = true;
+                colors.enable = true;
+                fonts.enable = true;
+              };
             };
-          };
         };
       };
 

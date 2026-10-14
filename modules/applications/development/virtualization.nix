@@ -51,7 +51,7 @@
                           };
                           windows = lib.mkOption {
                             description = "Whether to install windows guest drivers.";
-                            default = true;
+                            default = false;
                             type = lib.types.bool;
                           };
                         };

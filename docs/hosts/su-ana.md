@@ -19,6 +19,7 @@ First, every mac needs to be imperatively setup and log into their apple account
 The user account info and hostname must match this flake, but otherwise
 it's pretty straightforward.
 
+- Dispatch secrets to appropriate places; system and user.
 - Install `nix`, either via `lix` or official `nix`.
   Official nix mainlined the DeterminateSystems installer, so should be usable.
 - Install `homebrew`; as nix can't install it.
@@ -35,7 +36,7 @@ Right now, work requires the following software not integrable to nix deployment
 
 ### Nix-Darwin
 
-It should take one activation; the command to run should be;
+It should only take one activation for initial dispatch; the command to run should be;
 
 ```
 sudo nix run nix-darwin/nix-darwin-26.05#darwin-rebuild -- switch
@@ -47,9 +48,16 @@ Could also try this;
 nix run nix-community/nh -- darwin switch 'git+https://codeberg.org/baserdemb/SystemConfigFlake.git'
 ```
 
+Will need to reboot probably.
+
 ### Post Setup
 
 Things should work outside the box; syncthing allows for file sharing so it should be fine.
+List of things to quickly go through are;
+
+- YubiKey initialization.
+- KeePassXC db unlock, and browser integration.
+- Login to mozilla sync, google chrome etc.
 
 ## Quirks
 

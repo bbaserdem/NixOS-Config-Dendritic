@@ -41,8 +41,8 @@ in {
         erlik = {enable = false;};
         yertengri = {enable = true;};
         od-ata = {enable = true;};
-        # yel-ana = {enable = true;};
-        # su-ana = {enable = true;};
+        yel-ana = {enable = true;};
+        su-ana = {enable = true;};
       }
       |> lib.mapAttrs (_: v: {users.wolframite.mediaDirs.${dirName}.sync = v;});
   };

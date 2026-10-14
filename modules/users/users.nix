@@ -53,6 +53,7 @@
           # Administrator privileges to user
           den.aspects.system.policies.user-admin-dispatch
           den.aspects.system.policies.user-nix-trust-dispatch
+          den.aspects.system.policies.user-macos-config-dispatch
           # User aspect base
           den.aspects.user
         ];
@@ -87,6 +88,14 @@
             lib.optional
             (user.nixTrusted || (host.primaryUser == user.userName))
             (den.lib.policy.include den.aspects.system._.nix-role);
+          user-macos-config-dispatch = {
+            user,
+            host,
+            ...
+          }:
+            lib.optional
+            ((host.class == "darwin") || (host.primaryUser == user.userName))
+            (den.lib.policy.include den.aspects.${user.userName}._.macos);
         };
         # We provide our own user definition battery;
         # We want den metadata, not present in define-user battery

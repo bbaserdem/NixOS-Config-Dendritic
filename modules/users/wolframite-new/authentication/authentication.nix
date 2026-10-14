@@ -41,13 +41,6 @@
                 ];
               };
             }
-            ( # Mac pinentry
-              lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin) {
-                services.gpg-agent = {
-                  pinentry.package = pkgs.pinentry_mac;
-                };
-              }
-            )
           ];
         };
       };

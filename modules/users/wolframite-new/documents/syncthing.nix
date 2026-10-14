@@ -72,15 +72,16 @@ in {
         };
         yertengri = {enable = true;};
         od-ata = {enable = true;};
-        # yel-ana = {enable = true;};
-        # su-ana = {
-        #   enable = true;
-        #   ignore.text = ''
-        #     // Ignore all non-work related passwords
-        #     !/Vaults/Work.kdbx
-        #     /Vaults/**
-        #   '';
-        # };
+        yel-ana = {enable = true;};
+        # TODO: Figure out how to do this subset
+        su-ana = {
+          enable = false;
+          ignore.text = ''
+            // Don't take in non-work related things
+            !/Vaults/Work.kdbx
+            /Vaults/**
+          '';
+        };
       }
       |> lib.mapAttrs (_: v: {users.wolframite.mediaDirs.${dirName}.sync = v;});
   };

@@ -47,7 +47,7 @@
           lib,
           ...
         }:
-          lib.mkIf (host.class == "nixos") stylixConf;
+          lib.optionalAttrs (host.class == "nixos") stylixConf;
         # User dispatch
         provides.to-users = {
           user,
@@ -65,7 +65,7 @@
             lib,
             ...
           }:
-            lib.mkIf pkgs.stdenv.hostPlatform.isLinux stylixConf;
+            lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux stylixConf;
         };
       };
     };

@@ -29,11 +29,16 @@
             ];
           };
           stylix = {
-            targets.gtk = {
-              enable = true;
-              flatpakSupport.enable = true;
+            pkgs,
+            lib,
+            ...
+          }:
+            lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+              targets.gtk = {
+                enable = true;
+                flatpakSupport.enable = true;
+              };
             };
-          };
         };
       };
 
@@ -49,15 +54,20 @@
               inputs.self.modules.homeManager.desktop-qt
             ];
           };
-          stylix = {...}: {
-            targets.qt = {
-              # Soft default to true; plasma inclusion will set this false
-              # (Stylix qt breaks plasma)
-              enable = true;
-              platform = "qtct";
-              standardDialogs = "default";
+          stylix = {
+            pkgs,
+            lib,
+            ...
+          }:
+            lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+              targets.qt = {
+                # Soft default to true; plasma inclusion will set this false
+                # (Stylix qt breaks plasma)
+                enable = true;
+                platform = "qtct";
+                standardDialogs = "default";
+              };
             };
-          };
         };
       };
     };

@@ -2,7 +2,6 @@
 {
   inputs,
   den,
-  lib,
   ...
 }: {
   den = {
@@ -12,7 +11,6 @@
         darwin = {...}: {
           imports = [
             inputs.self.modules.darwin.macos-defaults
-            # TODO: Migrate to a wolframite specific module
             inputs.self.modules.darwin.macos-behavior
           ];
         };
@@ -63,7 +61,7 @@
         )
       ];
     };
-    # TODO: These settings should be migrated to a wolframite specific module
+    # These are sane default settings
     macos-behavior = {...}: {
       key = "macos-behavior#darwin";
       config = {
@@ -77,10 +75,8 @@
             NSGlobalDomain = {
               AppleShowAllExtensions = true;
               ApplePressAndHoldEnabled = false;
-
               # 120, 90, 60, 30, 12, 6, 2
               KeyRepeat = 2;
-
               # 120, 94, 68, 35, 25, 15
               InitialKeyRepeat = 15;
             };
@@ -91,16 +87,6 @@
               DisableConsoleAccess = false;
               GuestEnabled = false;
             };
-            menuExtraClock = {
-              Show24Hour = true;
-            };
-            screencapture = {
-              # location = "";
-              type = "png";
-            };
-          };
-          keyboard = {
-            enableKeyMapping = true;
           };
         };
       };

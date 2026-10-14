@@ -33,7 +33,7 @@
         {
           keepassxc = {
             enable = true;
-            autostart = true;
+            autostart = pkgs.stdenv.hostPlatform.isLinux;
             # Common settings
             settings = {
               General = {

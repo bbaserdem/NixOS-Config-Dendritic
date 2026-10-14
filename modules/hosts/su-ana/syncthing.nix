@@ -1,4 +1,0 @@
-# Su-ana syncthing config
-{inputs, ...}: {
-  localConfig.syncthing.hosts."su-ana".id = "AWRTUF4-MXSTBEU-C6MBBL6-3OXH3AM-OW3SR4K-CQKFXVA-GXHB3YU-X3EBEAH";
-}

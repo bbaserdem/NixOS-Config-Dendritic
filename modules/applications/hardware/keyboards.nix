@@ -117,11 +117,13 @@
     homeManager.qmk-settings = {pkgs, ...}: {
       key = "qmk-settings#homeManager";
       config = {
-        home.packages = with pkgs; [
-          qmk
-          qmk_hid
-          keymapviz
-        ];
+        home.packages = with pkgs; ([
+            qmk
+            keymapviz
+          ]
+          ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            qmk_hid
+          ]));
       };
     };
   };
