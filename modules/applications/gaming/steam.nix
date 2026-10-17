@@ -302,9 +302,15 @@
             remotePlay = {
               openFirewall = lib.mkDefault false;
             };
-            # Provide proton
-            extraCompatPackages = with pkgs; [
+            # Provide proton ourselves; works really good
+            extraCompatPackages = with pkgs.unstable; [
               proton-ge-bin # Community proton
+            ];
+            # Provide gamemode so we can do gamemode with it
+            extraPackages = [
+              # TODO: This should be provided by config.programs.gamemode.packages
+              # Upstream hardcodes this; should submit a patch to the nixos module
+              pkgs.gamemode
             ];
           };
         };

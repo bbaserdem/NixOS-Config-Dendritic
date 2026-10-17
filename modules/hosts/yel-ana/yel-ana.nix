@@ -42,6 +42,7 @@
         fileBrowser = "dolphin";
         webBrowsers = [
           "librewolf"
+          "firefox"
           "chromium"
         ];
         terminal = "kitty";

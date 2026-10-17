@@ -136,13 +136,10 @@
       ...
     }: {
       key = "gaming-settings#homeManager";
+      # This is stub for now; lutris is externalized
       config = lib.mkMerge [
-        ( # Lutris is Linux only
+        ( # Linux only
           lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
-            # Enable lutris, only in linux
-            programs.lutris = {
-              enable = true;
-            };
           }
         )
       ];
