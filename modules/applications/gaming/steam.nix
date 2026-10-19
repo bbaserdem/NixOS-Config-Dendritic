@@ -12,7 +12,15 @@
       url = "github:different-name/steam-config-nix";
       inputs = {
         flake-parts.follows = "flake-parts";
-        nixpkgs.follows = "nixpkgs-unstable";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+    # TODO: There is a bug with non-deterministic hash of bun
+    # Locking this for now; but when this is fixed this should be undone
+    millennium = {
+      url = "github:SteamClientHomebrew/Millennium/fb75bf7629562474a7a4cc06a03bb827de28a601?dir=packages/nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
       };
     };
   };
@@ -47,6 +55,11 @@
                         options = {
                           enable = lib.mkOption {
                             description = "Enable steam on this host";
+                            default = false;
+                            type = lib.types.bool;
+                          };
+                          millennium = lib.mkOption {
+                            description = "Enable Millennium launcher for modding steam client";
                             default = false;
                             type = lib.types.bool;
                           };
@@ -165,11 +178,25 @@
         # Host-specific configuration
         provides.host-setup = {host}: {
           name = "gaming/steam/host-setup(@${host.name})";
-          nixos = {...}: {
+          nixos = {
+            lib,
+            pkgs,
+            ...
+          }: {
             config = {
-              programs.steam = {
-                remotePlay.openFirewall = host.gaming.steam.remotePlay;
-              };
+              programs.steam = lib.mkMerge [
+                {
+                  remotePlay.openFirewall = host.gaming.steam.remotePlay;
+                }
+                (
+                  lib.mkIf
+                  (host.gaming.steam.millennium
+                    && (pkgs.stdenv.hostPlatform.system == "x86_64-linux"))
+                  {
+                    package = inputs.millennium.packages."${pkgs.stdenv.hostPlatform.system}".millennium-steam;
+                  }
+                )
+              ];
             };
           };
         };
@@ -287,7 +314,7 @@
           # Enable steam
           programs.steam = {
             enable = true;
-            package = pkgs.unstable.steam;
+            package = lib.mkDefault pkgs.steam;
             extest.enable = true; # For steam on wayland
             dedicatedServer.openFirewall = true;
             protontricks = {
@@ -303,8 +330,9 @@
               openFirewall = lib.mkDefault false;
             };
             # Provide proton ourselves; works really good
-            extraCompatPackages = with pkgs.unstable; [
+            extraCompatPackages = with pkgs; [
               proton-ge-bin # Community proton
+              steam-play-none # No linux runtime
             ];
             # Provide gamemode so we can do gamemode with it
             extraPackages = [
@@ -344,11 +372,31 @@
     };
 
     # In home-manager, we load the steam-config-nix module
-    homeManager.steam-settings = {...}: {
+    homeManager.steam-settings = {
+      pkgs,
+      options,
+      lib,
+      ...
+    }: {
       key = "steam-settings#homeManager";
+      # Import steam-config-nix
       imports = [
         (inputs.steam-config-nix.homeModules.default or {})
       ];
+      config =
+        lib.optionalAttrs
+        (lib.hasAttrByPath ["programs" "steam" "config"] options)
+        {
+          programs.steam.config = {
+            enable = true;
+            # Turn off steam to update config files on generation activation
+            onSteamRunning = "close";
+            # Default proton to use nixos' proton
+            defaultCompatTool = pkgs.proton-ge-bin;
+            # Create desktop entries by default
+            desktopEntries.enable = lib.mkDefault true;
+          };
+        };
     };
   };
 }

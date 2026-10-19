@@ -50,6 +50,10 @@
         nixpkgs.follows = "nixpkgs-unstable";
       };
     };
+    millennium = {
+      url = "github:SteamClientHomebrew/Millennium/fb75bf7629562474a7a4cc06a03bb827de28a601?dir=packages/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     multios-usb = {
       url = "github:Mexit/MultiOS-USB";
       inputs = {
@@ -126,7 +130,7 @@
       url = "github:different-name/steam-config-nix";
       inputs = {
         flake-parts.follows = "flake-parts";
-        nixpkgs.follows = "nixpkgs-unstable";
+        nixpkgs.follows = "nixpkgs";
       };
     };
     stylix = {

@@ -13,26 +13,36 @@
       (lib.hasAttrByPath ["programs" "steam" "config"] options)
       {
         programs.steam.config = {
-          # Turn off steam to update config files on generation activation
-          onSteamRunning = "close";
-          # Default proton: use nixos' proton
-          defaultCompatTool = pkgs.proton-ge-bin;
-          # Create desktop entries by default
-          desktopEntries.enable = true;
-
-          # Game settings
+          # Game specific settings
           apps = {
             # Binding of isaac
-            "000000" = {
+            "250900" = {
               name = "Binding of Isaac";
-              # TODO: Do this properly
-              files.game.patch."config.ini" = {
+              wrappers = ["gamemoderun"];
+              # Options.ini defaults
+              files.prefix.patch."drive_c/users/steamuser/My Documents/My Games/Binding of Isaac Repentance+/options.ini" = {
                 format = "ini";
                 content = {
-                  # TODO: Enable mouse and debug console
-                  Video.Fullscreen = 1;
+                  Options = {
+                    # Too dark by default;
+                    Gamma = 1.5000;
+                    # The HUD
+                    FoundHUD = 1;
+                    # UI sugar
+                    ChargeBars = 1;
+                    BulletVisibility = 1;
+                    # Enable mouse control
+                    MouseControl = 1;
+                    # Console
+                    EnableDebugConsole = 1;
+                  };
                 };
               };
+            };
+            # Slay the Spire 2
+            "2868840" = {
+              name = "Slay the Spire 2";
+              wrappers = ["gamemoderun"];
             };
           };
         };

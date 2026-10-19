@@ -116,6 +116,21 @@
         protonPackages = with pkgs; [
           proton-ge-bin
         ];
+        winePackages = [
+          pkgs.wineWow64Packages.stagingFull
+        ];
+        defaultWinePackage = pkgs.wineWow64Packages.stagingFull;
+        extraPackages = [
+          pkgs.winetricks
+        ];
+        # Runners
+        runners = {
+          wine = {
+            settings = {
+              runner.system_winetricks = true;
+            };
+          };
+        };
       };
     };
   };

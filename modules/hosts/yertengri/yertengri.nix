@@ -137,6 +137,7 @@
         enable = true;
         steam = {
           enable = true;
+          millennium = true;
           share = true;
           remotePlay = true;
           gamescope = true;

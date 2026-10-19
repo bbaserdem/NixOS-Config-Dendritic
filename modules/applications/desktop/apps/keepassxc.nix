@@ -62,6 +62,9 @@
                 AdditionalChars = "";
                 ExcludedChars = "";
               };
+              Security = {
+                IconDownloadFallback = true;
+              };
               SSHAgent.Enabled = true;
             };
           };
