@@ -343,28 +343,11 @@
       };
     };
 
-    # In home-manager, we set lutris steam to nixos's steam
-    homeManager.steam-settings = {
-      pkgs,
-      lib,
-      ...
-    } @ args: {
+    # In home-manager, we load the steam-config-nix module
+    homeManager.steam-settings = {...}: {
       key = "steam-settings#homeManager";
       imports = [
         (inputs.steam-config-nix.homeModules.default or {})
-      ];
-      config = lib.mkMerge [
-        (
-          lib.optionalAttrs (lib.hasAttrByPath ["osConfig"] args) (
-            lib.mkIf (
-              pkgs.stdenv.hostPlatform.isLinux
-              && args.osConfig.programs.steam.enable
-              && (args.osConfig.programs.steam.package != null)
-            ) {
-              programs.lutris.steamPackage = args.osConfig.programs.steam.package;
-            }
-          )
-        )
       ];
     };
   };

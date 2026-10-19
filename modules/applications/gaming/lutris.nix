@@ -86,7 +86,11 @@
             config = lib.mkMerge [
               ( # Set lutris' steam package to nixos steam package if possible
                 lib.optionalAttrs
-                (host.gaming.steam.enable && (host.class == "nixos"))
+                (
+                  (args ? osConfig)
+                  && host.gaming.steam.enable
+                  && (host.class == "nixos")
+                )
                 {
                   programs.lutris.steamPackage = args.osConfig.programs.steam.package;
                 }
