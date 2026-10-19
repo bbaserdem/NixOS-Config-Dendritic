@@ -1,12 +1,45 @@
 # DevShell for python development for ML projects
 # Only available in Linux, GPU's are not supported in Darwin anyway
-# This is built from the time when I worked with geospatial, prob redundant
+# TODO: Clean this to not have geospatial stuff; only cuda.
 {...}: {
   perSystem = {
     pkgs,
     lib,
     ...
-  }: {
+  }: let
+    cudaPkgs = with pkgs.cudaPackages; [
+      cudatoolkit
+      cudnn
+      cuda_cudart
+      libcutensor
+      libcublas
+      libcurand
+      libcusparse
+    ];
+    # Complete XCB and X11 libraries needed by Qt5 XCB plugin
+    x11Pkgs = with pkgs; [
+      libx11
+      libxi
+      libxrender
+      libxext
+      libxfixes
+      libxcursor
+      libxcomposite
+      libxdamage
+      libxinerama
+      libxau
+      libxdmcp
+      libxcb
+      libxcb-util
+      libxcb-image
+      libxcb-keysyms
+      libxcb-render-util
+      libxcb-wm
+      libxkbcommon
+    ];
+    # GCC to use
+    gccPkg = pkgs.gcc13;
+  in {
     devShells.cuda = pkgs.mkShell ({
         packages = with pkgs;
           [
@@ -30,64 +63,42 @@
             ffmpeg
             postgresql
           ]
-          ++ (lib.optionals (pkgs.stdenv.hostPlatform.isLinux) (with pkgs; [
-            # Sandboxing for agents
-            bubblewrap
-            # CUDA support
-            cudaPackages.cudatoolkit
-            cudaPackages.cudnn
-            cudaPackages.cuda_cudart
-            cudaPackages.cutensor
-            cudaPackages.libcublas
-            cudaPackages.libcurand
-            cudaPackages.libcusparse
-            gcc13
-            # OpenCV and computer vision
-            opencv4
-            # PyArrow dependencies
-            arrow-cpp
-            # Build tools and compilers
-            pkg-config
-            cmake
-            ninja
-            gcc
-            # Additional system libraries
-            zlib
-            libjpeg
-            libpng
-            libtiff
-            eigen
-            # Essential GUI dependencies only (minimal set for PyQt5)
-            glib
-            glibc
-            libGL
-            libxcb
-            xcbutilxrm
-            libxkbcommon
-            fontconfig
-            freetype
-            dbus
-            # Complete XCB and X11 libraries needed by Qt5 XCB plugin
-            xorg.libX11
-            xorg.libXi
-            xorg.libXrender
-            xorg.libXext
-            xorg.libXrandr
-            xorg.libXfixes
-            xorg.libXcursor
-            xorg.libXcomposite
-            xorg.libXdamage
-            xorg.libXinerama
-            xorg.libXau
-            xorg.libXdmcp
-            xorg.xcbutil
-            xorg.xcbutilimage
-            xorg.xcbutilkeysyms
-            xorg.xcbutilrenderutil
-            xorg.xcbutilwm
-            tk
-            tcl
-          ]));
+          ++ (lib.optionals (pkgs.stdenv.hostPlatform.isLinux) (
+            cudaPkgs
+            ++ x11Pkgs
+            ++ [gccPkg]
+            ++ (with pkgs; [
+              # Sandboxing
+              bubblewrap
+              # OpenCV and computer vision
+              opencv4
+              # PyArrow dependencies
+              arrow-cpp
+              # Build tools and compilers
+              pkg-config
+              cmake
+              ninja
+              gcc
+              # Additional system libraries
+              zlib
+              libjpeg
+              libpng
+              libtiff
+              eigen
+              # Essential GUI dependencies only (minimal set for PyQt5)
+              glib
+              glibc
+              libGL
+              libxcb
+              xcbutilxrm
+              fontconfig
+              freetype
+              dbus
+              # Libraries needed by Qt5 XCB plugin
+              tk
+              tcl
+            ])
+          ));
         shellHook =
           ''
             # Setup Python via uv
@@ -120,8 +131,8 @@
         CUDA_ROOT = "${pkgs.cudaPackages.cudatoolkit}";
 
         # Set CC to GCC 13 to avoid the version mismatch error
-        CC = "${pkgs.gcc13}/bin/gcc";
-        CXX = "${pkgs.gcc13}/bin/g++";
+        CC = "${gccPkg}/bin/gcc";
+        CXX = "${gccPkg}/bin/g++";
 
         # Environment variables to help packages find system libraries
         GDAL_DATA = "${pkgs.gdal}/share/gdal";
@@ -137,47 +148,22 @@
         ARROW_HOME = "${pkgs.arrow-cpp}";
 
         # Library path including CUDA and essential GUI libraries
-        LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [
-          "/run/opengl-driver"
-          cudaPackages.cudatoolkit
-          cudaPackages.cudnn
-          cudaPackages.cutensor
-          cudaPackages.libcublas
-          cudaPackages.libcurand
-          cudaPackages.libcusparse
-
-          glib
-          glibc
-          libGL
-          libxcb
-          xcbutilxrm
-          libxkbcommon
-          fontconfig
-          freetype
-          dbus
-
-          xorg.libX11
-          xorg.libXi
-          xorg.libXrender
-          xorg.libXext
-          xorg.libXrandr
-          xorg.libXfixes
-          xorg.libXcursor
-          xorg.libXcomposite
-          xorg.libXdamage
-          xorg.libXinerama
-          xorg.libXau
-          xorg.libXdmcp
-          xorg.xcbutil
-          xorg.xcbutilimage
-          xorg.xcbutilkeysyms
-          xorg.xcbutilrenderutil
-          xorg.xcbutilwm
-          libxkbcommon
-
-          tk
-          tcl
-        ]);
+        LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (
+          ["/run/opengl-driver"]
+          ++ cudaPkgs
+          ++ x11Pkgs
+          ++ (with pkgs; [
+            glib
+            glibc
+            libGL
+            xcbutilxrm
+            fontconfig
+            freetype
+            dbus
+            tk
+            tcl
+          ])
+        );
 
         # Set LIBRARY_PATH to help the linker find the CUDA static libraries
         LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [

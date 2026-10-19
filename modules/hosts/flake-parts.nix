@@ -1,12 +1,10 @@
 # Host related flake-parts configuration
 {
-  inputs,
   lib,
   flake-parts-lib,
-  withSystem,
   ...
 }: {
-  # currently, there's no nix-darwin module for flake-parts,
+  # Currently, there's no nix-darwin module for flake-parts,
   # Manually add flake.darwinConfigurations as flake output
   options = {
     flake = flake-parts-lib.mkSubmoduleOptions {
@@ -14,98 +12,6 @@
         type = lib.types.lazyAttrsOf lib.types.raw;
         default = {};
       };
-    };
-  };
-
-  config = {
-    flake.modules = {
-      # Host related functionality creating system / home-manager configurations
-      # Default settings modules
-
-      # NixOS
-      nixos.default = {lib, ...}: {
-        system.stateVersion = lib.mkDefault "26.05";
-      };
-
-      # Darwin
-      darwin.default = {lib, ...}: {
-        system.stateVersion = lib.mkDefault 7;
-      };
-    };
-
-    factory = {
-      # System builders
-
-      # Nixos system builder, allows customizing the output name parameter
-      mkNixos = {
-        system,
-        name,
-        description,
-        ...
-      }: {
-        ${name} = inputs.nixpkgs.lib.nixosSystem {
-          modules = [
-            inputs.self.modules.generic.nixpkgs
-            inputs.self.modules.nixos.default
-            inputs.self.modules.nixos.nixos
-            inputs.self.modules.nixos.${name}
-            ({...}: {
-              nixpkgs.hostPlatform = lib.mkDefault system;
-              networking.hostName = "${name}";
-              hardware.bluetooth.settings.General.Name = description;
-            })
-          ];
-        };
-      };
-
-      # Nix-Darwin config builder
-      mkDarwin = {
-        system,
-        name,
-        description,
-        ...
-      }: {
-        ${name} = inputs.nix-darwin.lib.darwinSystem {
-          modules = [
-            inputs.self.modules.generic.nixpkgs
-            inputs.self.modules.darwin.default
-            inputs.self.modules.darwin.macos
-            inputs.self.modules.darwin.${name}
-            ({config, ...}: {
-              nixpkgs.hostPlatform = lib.mkDefault system;
-              networking = {
-                hostName = "${name}";
-                localHostName = config.networking.hostName;
-                computerName = description;
-              };
-            })
-          ];
-        };
-      };
-
-      # Standalone home-manager config builder
-      mkHome = {
-        system,
-        name,
-        user,
-        ...
-      }:
-        withSystem system ({pkgs, ...}: {
-          "${user}@${name}" = inputs.home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-            modules = [
-              inputs.self.modules.homeManager.default
-              inputs.self.modules.homeManager.hm
-              inputs.self.modules.homeManager.${name}
-              inputs.self.modules.homeManager.${user}
-              # Add the hostname to the homeManager standalone config
-              # Option defined in module/users/flake-parts.nix
-              ({...}: {
-                networking.hostName = name;
-              })
-            ];
-          };
-        });
     };
   };
 }

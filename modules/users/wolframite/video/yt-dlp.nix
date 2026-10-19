@@ -1,21 +1,11 @@
-# User config for yt-dlp
+# YT-DLP settings
 {...}: {
-  flake.modules.homeManager.wolframite = {
-    pkgs,
-    config,
-    ...
-  }: let
-    downloadDir =
-      if pkgs.stdenv.hostPlatform.isLinux
-      then "${config.xdg.userDirs.download}/Youtube-Dlp"
-      else "~/Downloads/Youtube-Dlp";
-  in {
-    programs.yt-dlp = {
-      settings = {
-        # Filesystem options
-        paths = "home:${downloadDir}";
+  flake.modules.homeManager.wolframite-ytdlp = {config, ...}: {
+    key = "wolframite-ytdlp#homeManager";
+    config = {
+      programs.yt-dlp.settings = {
+        paths = "home:${config.xdg.userDirs.download or "~/Downloads"}/Yt-Dlp";
         output = "%(title)s/%(title)s-%(resolution)s";
-        # Subtitle options
         sub-langs = "en.*,tr.*,tur.*";
       };
     };
