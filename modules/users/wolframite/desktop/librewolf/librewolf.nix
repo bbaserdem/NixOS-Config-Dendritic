@@ -37,6 +37,8 @@
             "privacy.clearOnShutdown.sessions" = false;
             # Default to system theme for dark/light mode
             "layout.css.prefers-color-scheme.content-override" = 2;
+            # System integration
+            "widget.use-xdg-desktop-portal.file-picker" = 1;
           };
           nativeMessagingHosts = with pkgs; [
             tridactyl-native
@@ -74,7 +76,7 @@
               work = {
                 id = 1;
                 containersForce = true;
-                stylix.themeOverride = "${pkgs.base16-schemes}/share/themes/digital-rain.yaml";
+                stylix.themeOverride = "${pkgs.base16-schemes}/share/themes/apathy.yaml";
               };
 
               explicit = {

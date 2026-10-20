@@ -126,6 +126,8 @@
               linux-cgroup = "single-instance";
             };
           };
+          # Set as default terminal
+          xdg.terminal-exec.settings.default = ["ghostty.desktop"];
         }
       )
       (

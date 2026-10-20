@@ -63,8 +63,9 @@
           name = "desktop/plasma(${user.userName}@${host.name})";
           # Home-manager module
           homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.plasma-settings
+            imports = with inputs.self.modules.homeManager; [
+              plasma-settings
+              plasma-defaults
             ];
           };
           # Stylix default config
@@ -93,24 +94,32 @@
       key = "plasma-settings#nixos";
       config = {
         # Enable plasma
-        services.desktopManager.plasma6 = {
-          enable = true;
+        services = {
+          desktopManager.plasma6 = {
+            enable = true;
+          };
+          # Disable accessibility feature
+          orca.enable = false;
         };
         # Disable plasma bloat
-        programs.kde-pim = {
-          enable = false;
+        programs = {
+          kde-pim.enable = false;
         };
 
-        # Manage default packages
+        # Manage default packages in plasma
         environment = {
-          # Exclude packages
+          # Exclude some defaults from plasma
           plasma6.excludePackages = with pkgs.kdePackages; [
             discover # Don't need software store
+            konsole # Don't want the terminal
+            khelpcenter # Don't need KDE documentation
+            kate # Don't need the text editor suite
+            ktexteditor
+            plasma-workspace-wallpapers # Don't need wallpapers
           ];
           # Include some plasma packages
           systemPackages = with pkgs.kdePackages; [
             marble # Maps
-            yakuake # Dropdown terminal
           ];
         };
       };
@@ -132,70 +141,6 @@
           lib.genAttrs
           ["firefox" "librewolf" "chromium"]
           (_: {nativeMessagingHosts = [pkgs.kdePackages.plasma-browser-integration];});
-      };
-    };
-  };
-
-  # Inject package in linux to dump plasma config;
-  perSystem = {
-    lib,
-    pkgs,
-    system,
-    ...
-  }: {
-    packages = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
-      plasmaDump = pkgs.writeShellApplication {
-        name = "plasmaDump";
-        runtimeInputs = [
-          inputs.plasma-manager.packages.${system}.rc2nix
-          pkgs.coreutils
-        ];
-
-        text = ''
-          set -euo pipefail
-
-          out_dir="$PWD"
-          rc2nix_args=()
-
-          while [ "$#" -gt 0 ]; do
-            case "$1" in
-              --output-dir)
-                if [ "$#" -lt 2 ] || [ -z "$2" ]; then
-                  printf 'error: --output-dir requires a directory\n' >&2
-                  exit 2
-                fi
-                out_dir="$2"
-                shift 2
-                ;;
-              --output-dir=*)
-                out_dir="''${1#--output-dir=}"
-                if [ -z "$out_dir" ]; then
-                  printf 'error: --output-dir cannot be empty\n' >&2
-                  exit 2
-                fi
-                shift
-                ;;
-              --)
-                shift
-                rc2nix_args+=("$@")
-                break
-                ;;
-              *)
-                rc2nix_args+=("$1")
-                shift
-                ;;
-            esac
-          done
-
-          mkdir -p "$out_dir"
-
-          timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
-          out="$out_dir/plasma-dump_$timestamp.nix"
-
-          rc2nix "''${rc2nix_args[@]}" > "$out"
-
-          printf 'Settings export created at: %s\n' "$(realpath "$out")"
-        '';
       };
     };
   };

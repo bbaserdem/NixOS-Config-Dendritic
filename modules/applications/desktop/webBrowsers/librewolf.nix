@@ -367,6 +367,22 @@
                   b = palette."${color}-rgb-b";
                 });
             };
+            mkLibreWolfProfileIcon = key: profile:
+              if profile.stylix.themeOverride == null
+              then "librewolf"
+              else let
+                palette =
+                  profile.stylix.themeOverride
+                  |> base16-lib.mkSchemeAttrs;
+              in "${pkgs.runCommandLocal "librewolf-${key}-icon.png" {
+                  nativeBuildInputs = [pkgs.imagemagick];
+                } ''
+                  magick \
+                    ${config.programs.librewolf.finalPackage}/share/icons/hicolor/128x128/apps/librewolf.png \
+                    -colorspace gray \
+                    +level-colors ${lib.escapeShellArg "#${palette.base00},#${palette.base05}"} \
+                    "$out"
+                ''}";
           in (
             lib.mkMerge [
               {
@@ -442,7 +458,7 @@
                           comment = "Launch LibreWolf with the ${p.name} profile";
                           exec = "${cmd} %U";
                           settings.StartupWMClass = id;
-                          icon = "librewolf";
+                          icon = mkLibreWolfProfileIcon key cfg.profiles.${key};
                           terminal = false;
                           startupNotify = true;
                           categories = [

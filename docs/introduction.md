@@ -6,15 +6,10 @@ Documentation includes this flake, how I use software etc.
 ## Todo List
 
 - [ ] Full den migration
-  - [x] Finish exporting `apps/` modules.
   - [x] Regularize den layout and usage across modules
   - [ ] Revisit environment variable dispatch; try to make it host-specific too
         (API keys in environment shouldn't really come from sops-nix; other methods!)
-  - [x] Switch `yel-ana` to den
   - [ ] Reinstall `su-ana` with den management
-  - [x] Install `od-ata`
-  - [x] Install `yertengri`
-  - [ ] Retire old flake-parts machinery
   - [ ] Set up new walks for `homeManager` class hosts, and standalone outputs.
   - [ ] Reorganize syncthing aspect so that certain behavior is isolated.
         (Mainly thinking about using nix-droid + home-manager to dispatch stignore;

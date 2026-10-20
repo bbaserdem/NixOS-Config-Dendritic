@@ -50,7 +50,7 @@ in {
           (den.lib.policy.include den.aspects.desktop._.${host.desktop.fileBrowser}._.to-users);
       };
 
-      # Filebrowsers; automated!
+      # Filebrowsers; automated dispatch
       provides =
         configuredFileBrowsers
         |> builtins.map (
@@ -94,9 +94,14 @@ in {
   }: {
     key = "dolphin-settings#homeManager";
     config = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
+      # Install dolphin
       home.packages = with pkgs; [
         kdePackages.dolphin
       ];
+      # Set dolphin as default
+      xdg.mimeApps.defaultApplications = {
+        "inode/directory" = ["org.kde.dolphin.desktop"];
+      };
     };
   };
 }

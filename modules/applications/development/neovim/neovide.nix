@@ -36,10 +36,10 @@
 
   # Home manager module to install full neovim module
   flake.modules.homeManager.neovim-neovide = {
-    lib,
-    config,
     pkgs,
+    config,
     options,
+    lib,
     ...
   }: {
     key = "neovim-neovide#homeManager";
@@ -52,6 +52,28 @@
           package = pkgs.unstable.neovide;
         };
       }
+      ( # Set neovide as the default text editor
+        lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+          xdg.mimeApps = let
+            mimeTypes =
+              lib.genAttrs
+              [
+                "application/json"
+                "application/toml"
+                "application/yaml"
+                "application/x-yaml"
+                "text/markdown"
+                "text/x-python"
+                "text/x-rust"
+              ]
+              (_: ["neovide.desktop"]);
+          in {
+            defaultApplicationPackages = [config.programs.neovide.package];
+            associations.added = mimeTypes;
+            defaultApplications = mimeTypes;
+          };
+        }
+      )
       (
         # Link to neovim wrapper editor if enabled; we are agnostic
         lib.optionalAttrs (lib.hasAttrByPath ["wrappers" "neovim"] options) {
