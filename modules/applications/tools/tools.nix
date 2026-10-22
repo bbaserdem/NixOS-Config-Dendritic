@@ -90,6 +90,7 @@
         findutils
         fastfetch
         hyfetch
+        fclones
       ])
       ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
         kmon # Kernel module checker

@@ -197,23 +197,45 @@
               limine = {host}: {
                 name = "system/nixos/bootloader/limine(@${host.name})";
                 # Configure systemd-boot for nixos
-                nixos = {...}: {
+                nixos = {
+                  lib,
+                  config,
+                  options,
+                  ...
+                }: {
                   imports = [
                     inputs.self.modules.nixos.nixos-limine
                   ];
-                  config = {
-                    # Host specific systemd-boot settings
-                    boot.loader.limine = {
-                      maxGenerations = host.boot.configurationLimit;
-                    };
-                  };
+                  config = lib.mkMerge [
+                    {
+                      # Host specific systemd-boot settings
+                      boot.loader.limine = {
+                        maxGenerations = host.boot.configurationLimit;
+                      };
+                    }
+                    ( # Tweaks to the stylix theme;
+                      lib.optionalAttrs
+                      ((options ? stylix) && (host.boot.limine.stylix or false))
+                      {
+                        boot.loader.limine = {
+                          style.graphicalTerminal = {
+                            # Make margins smallers
+                            margin = 192;
+                            marginGradient = 24;
+                            # Transparent background for the terminal
+                            background = lib.mkForce "a0${config.lib.stylix.colors.base00}";
+                          };
+                        };
+                      }
+                    )
+                  ];
                 };
                 stylix = lib.mkIf (host.boot.limine.stylix or false) {
                   targets.limine = {
                     enable = true;
-                    colors.enable = true;
                     image.enable = true;
                     imageScalingMode.enable = true;
+                    colors.enable = true;
                   };
                 };
               };

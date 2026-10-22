@@ -37,6 +37,13 @@ in {
               (?d)*.synctex.gz
               (?d)*.xdv
 
+              // Calibre; ignore runtime but sync everything else
+              /Books/metadata.db-journal
+              /Books/metadata.db-wal
+              /Books/metadata.db-shm
+              /Books/.caltrash
+              !/Books
+
               // Lots of apps deposit random files in Documents folder
               // We want to follow a whitelist approach for folders
               // For easy access documents; will be superceded by Paperless
