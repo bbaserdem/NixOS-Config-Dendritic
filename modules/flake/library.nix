@@ -62,6 +62,9 @@
   # Split dir shorthand
   splitDir = path: walkToDirRel "~/" "~/${path}";
 
+  # Recursively merge a list of attrset
+  recursiveMerge = l: builtins.foldl' lib.recursiveUpdate {} l;
+
   # Turn true/false into yes/no
   yesNo = b:
     if b
@@ -98,6 +101,7 @@
       walkToDir
       walkToDirRel
       splitDir
+      recursiveMerge
       yesNo
       den
       ;

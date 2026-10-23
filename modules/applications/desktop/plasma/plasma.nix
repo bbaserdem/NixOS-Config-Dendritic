@@ -129,19 +129,26 @@
     homeManager.plasma-settings = {
       lib,
       pkgs,
+      options,
       ...
     }: {
       key = "plasma-settings#homeManager";
       imports = [
         inputs.plasma-manager.homeModules.plasma-manager
       ];
-      config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-        # Inject native messaging hosts to browsers that can be configured
-        programs =
-          lib.genAttrs
-          ["firefox" "librewolf" "chromium"]
-          (_: {nativeMessagingHosts = [pkgs.kdePackages.plasma-browser-integration];});
-      };
+      config = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (lib.mkMerge [
+        {
+          # Inject native messaging hosts to browsers that can be configured
+          programs =
+            lib.genAttrs
+            ["firefox" "librewolf" "chromium" "floorp"]
+            (_: {nativeMessagingHosts = [pkgs.kdePackages.plasma-browser-integration];});
+        }
+        (
+          lib.optionalAttrs (options ? gecko) {
+          }
+        )
+      ]);
     };
   };
 }

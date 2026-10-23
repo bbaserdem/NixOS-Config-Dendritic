@@ -1,39 +1,73 @@
-# Configuring librewolf search engines
+# Configuring gecko search engines
 {config, ...}: {
-  flake.modules.homeManager.wolframite-librewolf = {
+  flake.modules.homeManager.wolframite-gecko = {
     lib,
     options,
     ...
   }: {
-    config = lib.optionalAttrs ((options.local or {}) ? librewolf) {
-      local.librewolf.global.search = {
+    key = "wolframite-gecko/search#homeManager";
+    config = lib.optionalAttrs (options ? gecko) {
+      gecko.search = {
         # Default to duck duck go, google is very AI now
-        default = "qwant";
+        default = "qwant-web";
         privateDefault = "google-web";
         force = true;
 
         order = [
-          "qwant"
-          "ddg"
-          "wikipedia"
-          "perplexity"
-          "google-web"
+          "qwant-web" #
+          "ddg" # Built-in for all variants
+          "google-web" # Custom non-google search
+          "ecosia-web"
+          "wikipedia" # Built-in for all variants
+          "perplexity" # Built-in for firefox; needs to be defined for librewolf
         ];
 
         # Search providers
         engines = {
-          # Qwant
-          qwant.metaData = {
-            alias = "@q";
-            hidden = false;
+          # Qwant search
+          qwant-web = {
+            name = "Qwant";
+            urls = [
+              {
+                template = "https://www.qwant.com/";
+                params = [
+                  {
+                    name = "q";
+                    value = "{searchTerms}";
+                  }
+                ];
+              }
+            ];
+            icon = "https://www.qwant.com/favicon.ico";
+            definedAliases = ["@q"];
           };
-          # Duck-duck-go
+          ecosia-web = {
+            name = "Ecosia";
+            urls = [
+              {
+                template = "https://www.ecosia.org/search";
+                params = [
+                  {
+                    name = "q";
+                    value = "{searchTerms}";
+                  }
+                ];
+              }
+            ];
+            icon = "https://www.ecosia.org/favicon.ico";
+            definedAliases = ["@ec"];
+          };
+          # Duck-duck-go; builtin available in all modules
           ddg.metaData = {
             alias = "@d";
             hidden = false;
           };
-          # Hide firefox internal google engine
-          google.metaData.hidden = true;
+          # Wikipedia; builtin in all modules
+          wikipedia.metaData = {
+            alias = "@w";
+            hidden = false;
+          };
+          # Google search; remove gemini
           google-web = {
             name = "Google Web";
             definedAliases = ["@g"];
@@ -52,11 +86,6 @@
                 ];
               }
             ];
-          };
-          # Wikipedia
-          wikipedia.metaData = {
-            alias = "@w";
-            hidden = false;
           };
           # Other search engines
           "Nix Packages ${config.nixpkgs.version}" = {
@@ -134,7 +163,7 @@
               }
             ];
             icon = "https://nixos.org/favicon.png";
-            definedAliases = ["@no"];
+            definedAliases = ["@nd"];
           };
           "Home Manager Options ${config.nixpkgs.version}" = {
             urls = [

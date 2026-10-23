@@ -29,6 +29,7 @@
             wolframite-language
             wolframite-kitty
             wolframite-ghostty
+            wolframite-gecko
             wolframite-firefox
             wolframite-librewolf
           ];

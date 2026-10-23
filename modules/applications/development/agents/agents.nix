@@ -192,11 +192,12 @@
       programs.mcp = {
         enable = true;
         servers = {
+          # TODO: Fastmcp is marked as broken; fails eval. Track and fix when avail.
           # Nixos MCP should be generally available
-          mcp-nixos = {
-            enabled = true;
-            command = "${pkgs.unstable.mcp-nixos}/bin/mcp-nixos";
-          };
+          # mcp-nixos = {
+          #   enabled = true;
+          #   command = "${pkgs.unstable.mcp-nixos}/bin/mcp-nixos";
+          # };
         };
       };
     };

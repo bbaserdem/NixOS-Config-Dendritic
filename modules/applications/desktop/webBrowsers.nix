@@ -81,8 +81,9 @@ in {
         }: {
           name = "desktop/webbrowser(${user.userName}@${host.name})";
           homeManager = {...}: {
-            imports = [
-              inputs.self.modules.homeManager.desktop-psd
+            imports = with inputs.self.modules.homeManager; [
+              desktop-psd
+              gecko-profiles
             ];
           };
         };

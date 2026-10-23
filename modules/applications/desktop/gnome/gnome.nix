@@ -174,7 +174,7 @@
             }
             // ( # Messaging hosts to browsers that I use
               lib.genAttrs
-              ["firefox" "librewolf" "chromium"]
+              ["firefox" "librewolf" "chromium" "floorp"]
               (_: {nativeMessagingHosts = [pkgs.gnome-browser-connector];})
             );
         };

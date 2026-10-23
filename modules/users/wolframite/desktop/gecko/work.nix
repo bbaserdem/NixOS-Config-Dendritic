@@ -1,24 +1,19 @@
-# Firefox work profile for batuhan
+# Work profile
 {...}: {
-  flake.modules.homeManager.wolframite-firefox = {
+  flake.modules.homeManager.wolframite-gecko = {
     lib,
     options,
     pkgs,
     ...
   }: {
+    key = "wolframite-gecko/work#homeManager";
     config =
       lib.optionalAttrs
-      ((options.local or {}) ? firefox)
+      (options ? gecko)
       {
-        local.firefox.profiles.work = {
+        gecko.profiles.work = {
           # Custom containers
           containers = {
-            superbuilders = {
-              name = "SuperBuilders";
-              id = 1;
-              icon = "briefcase";
-              color = "yellow";
-            };
           };
           extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
             catppuccin-web-file-icons

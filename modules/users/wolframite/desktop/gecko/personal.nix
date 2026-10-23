@@ -1,23 +1,24 @@
-# Configuring librewolf preferences for profile: personal
+# Configuring preferences for profile: personal
 {den, ...}: {
-  # Den machinery to dispatch start pages
+  # Den machinery for default profile;
+  # Starting pages are dependent on the host topology; do with den
   den = {
     aspects.wolframite = {
       includes = [
-        den.aspects.wolframite._.librewolf-personal
+        den.aspects.wolframite._.gecko-personal
       ];
-      provides.librewolf-personal = {
+      provides.gecko-personal = {
         host,
         user,
       }: {
-        name = "wolframite/librewolf-personal(${user.userName}@${host.name})";
+        name = "wolframite/gecko-personal(${user.userName}@${host.name})";
         homeManager = {
           lib,
           options,
           ...
         }: {
-          config = lib.optionalAttrs ((options.local or {}) ? librewolf) {
-            local.librewolf.profiles.personal.settings = let
+          config = lib.optionalAttrs (options ? gecko) {
+            gecko.profiles.personal.settings = let
               pages =
                 []
                 ++ (
@@ -41,17 +42,18 @@
   };
 
   # Module
-  flake.modules.homeManager.wolframite-librewolf = {
+  flake.modules.homeManager.wolframite-gecko = {
     lib,
     options,
     pkgs,
     ...
   }: {
+    key = "wolframite-gecko/personal#homeManager";
     config =
       lib.optionalAttrs
-      ((options.local or {}) ? librewolf)
+      (options ? gecko)
       {
-        local.librewolf.profiles.personal = {
+        gecko.profiles.personal = {
           # Customize containers
           containers = {
             shopping = {
