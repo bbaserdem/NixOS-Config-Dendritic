@@ -45,7 +45,9 @@ in {
                 magick \
                   ${config.programs.${browser}.finalPackage}/share/icons/hicolor/128x128/apps/${browser}.png \
                   -colorspace gray \
+                  -channel RGB \
                   +level-colors ${lib.escapeShellArg "#${palette.base00},#${palette.base05}"} \
+                  +channel \
                   "$out"
               ''
             }")

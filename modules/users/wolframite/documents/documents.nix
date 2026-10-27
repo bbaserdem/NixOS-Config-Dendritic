@@ -19,6 +19,7 @@
         name = "wolframite/documents(${user.userName}@${host.name})";
         homeManager = {...}: {
           imports = with inputs.self.modules.homeManager; [
+            wolframite-calibre
             wolframite-newsboat
             wolframite-obsidian
           ];

@@ -30,6 +30,7 @@
                     "gnome"
                     "plasma"
                     "hyprland"
+                    "mango"
                   ]);
                 };
               };
@@ -78,6 +79,11 @@
               (host.desktop.defaultSession == "plasma")
               (den.lib.policy.include den.aspects.desktop._.plasma)
             )
+            ++ (
+              lib.optional
+              (host.desktop.defaultSession == "mango")
+              (den.lib.policy.include den.aspects.desktop._.mango)
+            )
           );
         desktop-user-dispatch = {host, ...}:
           lib.optionals
@@ -97,18 +103,25 @@
               (host.desktop.defaultSession == "plasma")
               (den.lib.policy.include den.aspects.desktop._.plasma._.to-users)
             )
+            ++ (
+              lib.optional
+              (host.desktop.defaultSession == "mango")
+              (den.lib.policy.include den.aspects.desktop._.mango._.to-users)
+            )
           );
       };
 
       provides.defaults = {host}: {
         name = "desktop/defaults(@${host.name})";
-        # In nixos; declare the defaultSession
+        # In nixos; declare the defaultSession; but with uwsm if needed
         nixos = {...}: {
           config = lib.mkIf (host.desktop.defaultSession != null) {
             services.displayManager.defaultSession =
               # Custom parsing
               if host.desktop.defaultSession == "hyprland"
               then "hyprland-uwsm"
+              else if host.desktop.defaultSession == "mango"
+              then "mango-uwsm"
               else host.desktop.defaultSession;
           };
         };

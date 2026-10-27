@@ -5,84 +5,67 @@ Documentation includes this flake, how I use software etc.
 
 ## Todo List
 
-- [ ] Full den migration
-  - [ ] Revisit environment variable dispatch; try to make it host-specific too
-        (API keys in environment shouldn't really come from sops-nix; other methods!)
-  - [ ] Reinstall `su-ana` with den management
-  - [ ] Set up new walks for `homeManager` class hosts, and standalone outputs.
-  - [ ] Reorganize syncthing aspect so that certain behavior is isolated.
-        (Mainly thinking about using nix-droid + home-manager to dispatch stignore;
-        but not run syncthing.)
-- [ ] Redo kayra
-  - [ ] More compatible multi-usb setup
-  - [ ] ARM solutions as well
-  - [ ] Redo the environment with a bespoke `nixos` user.
-  - [ ] Disable power saving on the gnome account; shouldn't blank or sleep on it's own.
-  - [ ] Some unnecessary stuff needs cleanup; for example direnv should be removed.
-  - [ ] Keys and the boot isos being on one machine not working; can't deploy keys and liveboot.
-  - [ ] Split key usb into a different one with a good filesystem that supports ownership.
-        (Forget about MacOS; we can do it bespoke.)
-- [ ] New hardware
-  - [ ] Document, name, and see what I can do with the new BOOX.
-  - [ ] Redo qmk, integrate user overlay to flake maybe
-  - [ ] Document keyboards
-- [ ] MacOS alignment
-  - [ ] Karabiner-Elements to make keybinds identical to linux
-- [ ] Set up data organization
-  - [ ] Codify media management guidelines in docs
-  - [ ] Align syncthing with the guidelines
-  - [ ] Organize actual data in the format
-  - [ ] Picard config output
-- [ ] Organize `nix-droid`
-  - [ ] Revise and deploy syncthing node to phone.
-  - [ ] Define usecases and what's needed
-  - [ ] Write den machinery for android
-  - [ ] Deploy to erlik
-- [ ] New software
-  - [-] Either configure, or retire, aria download manager for firefox
-  - [x] Switch to librewolf?
-  - [ ] Refactor the firefox/librewolf module to be one gecko module.
-  - [ ] Migrate passwords from pass to keepassxc
-  - [ ] Nixos container for vpn locked torrent server
-  - [ ] Home-assistant setup around the local network.
-  - [ ] Paperless-ngx server on local network
-  - [ ] Firefly-iii server on local network
-  - [ ] Set up live usb setup.
-  - [ ] Set up picture organization workflow
-  - [ ] Set up video organization
-  - [ ] Set up internet organization (bookmarks etc)
-  - [ ] Set up plasma declerative management
-  - [ ] Set up gnome declerative management
-  - [ ] Set up serving local llm models.
-- [ ] Media server
-  - [ ] Move and formalize archive syncthing folder from each host to one source.
-  - [ ] Set up jellyfin for accessing media over local network.
-  - [ ] Build the arr app stack for metadata management
-- [ ] Networking
-  - [ ] Set up pihole for `od-ata` or the rp5.
-  - [ ] Set up firewalld
-  - [ ] Local network with services
-  - [ ] Set up `deploy-rs` for flake deployment across network to devices
-- [ ] Gaming
-  - [ ] Learn more about lutris and gaming related things.
-  - [ ] Troubleshoot and get gamemode working with steam & lutris.
-  - [ ] Declaratively configure games that wolframite uses.
-- [ ] Ricing and desktop
-  - [ ] Codify commonly used apps
-  - [ ] Firefox static splash pages.
-  - [ ] Setup mangowc with noctalia and other stuff; and document
-  - [ ] Create list of all services that need to be set up with mangowc
-    - noctalia for shell integration
-    - wallet implementation for desktop-integrated secret management
-    - kanshi for hotswap monitor management
-    - integrate noctalia and power management for proper behavior
-    - options for app launcher and menu
-  - [ ] Harden environments to be frame-buffer friendly?
+### Current tasks
 
-Things delayed until upstream adoption that I won't manually do right now
+- Od ata syncronization
+- Book library reorg with AI
+- Sync the new BOOX and get it working
+- Reinstall su-ana
+- Create and setup ben-abuyah
+- QMK overhaul; redo and refresh
+- Documentation of keyboards in system-docs
+- Syncthing documentation redo and fix
+- Picard config should be finalized, exported and shipped with flake
+- For od-ata redo and recreate the vpn torrent container
+- Stop video synching to yertengri (running out of space)
+- Get mango and noctalia working and as a daily driver
+  - noctalia for shell integration
+  - wallet implementation for desktop-integrated secret management
+  - kanshi for hotswap monitor management
+  - integrate noctalia and power management for proper behavior
+  - options for app launcher and menu
+- Switch to firewalld across devices
+- Deploy-rs for local one-hit update all computers workflow
 
-- [ ] Firefox old vs new profile management
-- [ ] Syncthing declerative restapi from secrets
+### General task list
+
+- Data organization for media directories
+  - Organize documents and books
+  - Organize pictures
+  - Organize videos (-darr app stack)
+  - Organize bookmarks
+- Desktop
+  - Declarative plasma
+  - Declarative gnome
+- Kayra
+  - More compatible multi-usb setup
+  - ARM solutions as well
+  - Redo the environment with a bespoke `nixos` user.
+  - Disable power saving on the gnome account; shouldn't blank or sleep on it's own.
+  - Some unnecessary stuff needs cleanup; for example direnv should be removed.
+  - Keys and the boot isos being on one machine not working; can't deploy keys and liveboot.
+  - Split key usb into a different one with a good filesystem that supports ownership. (Forget about MacOS; we can do it bespoke.)
+- MacOS alignment
+  - Karabiner-Elements to make keybinds identical to linux
+- Services
+  - Home-assistant on od-ata
+  - Firefly-iii on od-ata
+  - paperless-ngx on od-ata
+  - Jellyfin on od-ata
+  - PiHole on raspberry pi
+- Ricing
+  - Splash static page for browser
+
+### Deferred
+
+- nix-droid for some management
+- syncthing ignore files dispatch for nix-droid
+- new den walks for homeManager class host
+- den should create standalone outputs too
+- Local llm server on yertengri
+- Framebuffer-friendly setup
+
+* Syncthing declerative restapi from secrets (waiting on upstream)
 
 ## Triage List
 

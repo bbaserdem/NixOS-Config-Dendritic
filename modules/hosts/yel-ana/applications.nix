@@ -13,6 +13,8 @@
         # Desktop apps
         desktop._.keepassxc
         desktop._.kdeconnect
+        desktop._.mango
+        desktop._.noctalia
         # Documents
         documents
         documents._.calibre

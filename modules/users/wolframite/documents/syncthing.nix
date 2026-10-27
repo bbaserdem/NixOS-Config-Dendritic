@@ -37,11 +37,12 @@ in {
               (?d)*.synctex.gz
               (?d)*.xdv
 
-              // Calibre; ignore runtime but sync everything else
-              /Books/metadata.db-journal
-              /Books/metadata.db-wal
-              /Books/metadata.db-shm
-              /Books/.caltrash
+              // Calibre; keep things in general but ignore sqlite runtime
+              (?d)/Books/metadata.{db-journal,db-wal,db-shm}
+              (?d)/Books/.calnotes/notes.{db-journal,db-wal,db-shm}
+              (?d)/Books/full-text-search.db
+              (?d)/Books/full-text-search.db-*
+              (?d)/Books/.caltrash
               !/Books
 
               // Lots of apps deposit random files in Documents folder
