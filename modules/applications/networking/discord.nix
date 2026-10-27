@@ -83,7 +83,8 @@
                 # Do want equicord
                 equicord = {
                   enable = true;
-                  package = pkgs.unstable.equicord;
+                  # TODO: Nixcord rebuilds it with bun, incompatible with nixpkgs
+                  # package = pkgs.unstable.equicord;
                 };
               };
 

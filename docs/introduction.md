@@ -6,7 +6,6 @@ Documentation includes this flake, how I use software etc.
 ## Todo List
 
 - [ ] Full den migration
-  - [x] Regularize den layout and usage across modules
   - [ ] Revisit environment variable dispatch; try to make it host-specific too
         (API keys in environment shouldn't really come from sops-nix; other methods!)
   - [ ] Reinstall `su-ana` with den management
@@ -24,11 +23,9 @@ Documentation includes this flake, how I use software etc.
   - [ ] Split key usb into a different one with a good filesystem that supports ownership.
         (Forget about MacOS; we can do it bespoke.)
 - [ ] New hardware
-  - [x] Better GPU goes in yertengri.
   - [ ] Document, name, and see what I can do with the new BOOX.
   - [ ] Redo qmk, integrate user overlay to flake maybe
   - [ ] Document keyboards
-  - [x] Monitor alignment as metadata; should be consumable through den
 - [ ] MacOS alignment
   - [ ] Karabiner-Elements to make keybinds identical to linux
 - [ ] Set up data organization
