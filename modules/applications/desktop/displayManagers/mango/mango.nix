@@ -34,15 +34,40 @@
         }: {
           name = "desktop/mango(${user.userName}@${host.name})";
           # Home-manager module
-          homeManager = {...}: {
+          homeManager = {
+            lib,
+            options,
+            ...
+          }: {
             imports = with inputs.self.modules.homeManager; [
               mango
               mango-clipboard
               mango-noctalia
+              mango-keybinds
+              mango-layout
+              mango-settings
+              mango-colors
+            ];
+            # Den-dependent config options
+            config = lib.mkMerge [
+              (
+                lib.optionalAttrs
+                (lib.hasAttrByPath ["programs" "noctalia" "settings"] options)
+                {
+                  programs.noctalia.settings = {
+                    shell.screenshot.filename_pattern = "${host.name}_%Y%m%d_%H%M%S";
+                  };
+                }
+              )
             ];
           };
-          # No stylix theming for mango; yet!
-          # stylix = {...}: { };
+          # No mango stylix target yet
+          stylix = {...}: {
+            targets = {
+              # TODO: Noctalia is 26.11 release feature; uncomment after updating
+              # noctalia.enable = true;
+            };
+          };
         };
       };
     };

@@ -291,9 +291,12 @@
             };
           };
 
-          # Add systemd condition to disable daemon launch on desktop
+          # Add systemd condition to disable daemon launch on desktops
           systemd.user.services.fcitx5-daemon.Unit.ConditionEnvironment = [
+            # Plasma wants to manage itself
             "!KDE_FULL_SESSION"
+            "!XDG_CURRENT_DESKTOP=mango"
+            #
           ];
         };
       };

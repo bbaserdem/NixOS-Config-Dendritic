@@ -38,6 +38,7 @@
 
 - [📱 Applications](software/applications.md)
   - [🫜 Beets](software/beets.md)
+  - [📚 Calibre](software/calibre.md)
   - [📝 Neovim](software/neovim.md)
   - [🪨 Obsidian](software/obsidian.md)
   - [🏴‍☠️ Torrenting & Usenet](software/piracy.md)

@@ -8,7 +8,6 @@ Documentation includes this flake, how I use software etc.
 ### Current tasks
 
 - Od ata syncronization
-- Book library reorg with AI
 - Sync the new BOOX and get it working
 - Reinstall su-ana
 - Create and setup ben-abuyah

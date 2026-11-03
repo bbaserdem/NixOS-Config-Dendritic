@@ -9,6 +9,8 @@ Documents are kept in the xdg compliant `~/Documents` folder.
 ## Books
 
 My books library is managed with `calibre`.
+
+There is a suggested reader as a server called
 Book reader suggested is `kavita`.
 
 ## Research

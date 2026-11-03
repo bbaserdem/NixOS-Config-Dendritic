@@ -34,13 +34,44 @@
         # System behavior
 
         # Framework specific audio enhancement
-        hardware.framework.laptop13.audioEnhancement.enable = true;
-        # Explicitly disable fingerprnt daemon; fw module mkDefault enables it.
+        # However tweak this because the output volume is set very low
+        hardware.framework.laptop13.audioEnhancement = {
+          enable = true;
+          # hideRawDevice = false;
+        };
+        services.pipewire.wireplumber.extraConfig."51-framework-audio-fix" = {
+          "monitor.alsa.rules" = [
+            {
+              # Remove the -23.25 dB default Wireplumber volume for the hardware
+              matches = [{"device.name" = "alsa_card.pci-0000_c1_00.6";}];
+              actions.update-props."device.routes.default-sink-volume" = 1.0;
+            }
+          ];
+          "stream.rules" = [
+            {
+              # Force DSP backend to 100%
+              matches = [
+                {
+                  "node.name" = "audio_effect.laptop-convolver";
+                  "media.class" = "Stream/Output/Audio";
+                }
+              ];
+              actions.update-props = {
+                "state.restore-props" = false;
+                "state.restore-target" = false;
+                "state.default-volume" = 1.0;
+              };
+            }
+          ];
+        };
+
+        # Explicitly disable fingerprnt daemon
+        # Need this because framework module uses mkDefault to enable it.
         services.fprintd.enable = false;
 
         # Boot params
         boot = {
-          # Avoid swap if we can
+          # Avoid swap if we can; we are laptop
           kernel.sysctl."vm.swappiness" = 0;
           # Virtualization kernel module, for cross comp
           kernelModules = ["kvm-amd"];
@@ -76,40 +107,9 @@
         hardware.fw-fanctrl = {
           enable = true;
           config = {
-            defaultStrategy = "medium";
-            strategyOnDischarging = "lazy";
-            strategies = {
-              "lazy" = {
-                fanSpeedUpdateFrequency = 5;
-                movingAverageInterval = 30;
-                speedCurve = [
-                  {
-                    temp = 0;
-                    speed = 15;
-                  }
-                  {
-                    temp = 50;
-                    speed = 15;
-                  }
-                  {
-                    temp = 65;
-                    speed = 25;
-                  }
-                  {
-                    temp = 70;
-                    speed = 35;
-                  }
-                  {
-                    temp = 75;
-                    speed = 50;
-                  }
-                  {
-                    temp = 85;
-                    speed = 100;
-                  }
-                ];
-              };
-            };
+            # Builtins: laziest | lazy | medium | agile | very-agile | deaf | aeolus
+            defaultStrategy = "lazy";
+            strategyOnDischarging = "laziest";
           };
         };
       };

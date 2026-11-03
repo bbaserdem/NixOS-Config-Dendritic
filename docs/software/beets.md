@@ -9,18 +9,18 @@ the beets usage is a bit more complex.
 A departure of the previous workflow; beets is set up such that
 **database files are not shared; and are local only**.
 
-This design decision was made because;
+This is because;
 
 - Historically, syncing database has been fragile and introduce
-sync conflicts constantly.
-- We will have different hosts with different library subsets
-all use beets, or not use beets at all.
+  sync conflicts constantly.
+- We might have different hosts with different library subsets
+  all use beets, or not use beets at all.
 - New workflow has library subsets, that may be present on hosts or not.
-Which makes one db intractible, and the other solution of
-compartmentalizing beets invocations between subdirectories is overcomplex.
-- I actually *don't* care about the database.
-The only concern I have about the db is to store my music metadata.
-Which, should be file encoded from the get-go anyway.
+  Which makes one db intractible, and the other solution of
+  compartmentalizing beets invocations between subdirectories is overcomplex.
+- I actually _don't_ care about the database.
+  The only concern I have about the db is to store my music metadata.
+  Which, should be file encoded from the get-go anyway.
 
 > No one tool is a perfect fit for my workflows.
 > The real reduction in maintenance burden comes not from reimplementing,
@@ -51,11 +51,11 @@ The config is split between various files;
 - `convert.nix`: Dispatch the file format conversion formalism.
 - `metadata.nix`: Functionality metadata manipulation.
 - `musicbrainz.nix`: Sets up settings for MB import and library export.
-(Credentials are supplied by `sops-nix`.)
+  (Credentials are supplied by `sops-nix`.)
 - `package.nix`: Package definition with overrides of custom packages.
 - `playlists.nix`: Configuration for smart playlist generation.
 - `convert.nix`: File conversion plugin settings.
-Links the local audio script (`audman`) to beets, so they are used for transcoding.
+  Links the local audio script (`audman`) to beets, so they are used for transcoding.
 
 ## Tags
 
@@ -66,7 +66,7 @@ to file tags.
 ### Collection
 
 `collection: <str>`, items with this get put into the specific subfolder.
-This is useful; as the library can be split into a smaller *core*
+This is useful; as the library can be split into a smaller _core_
 that can be synced around, but I end up not having to delete files.
 
 ### Lossy
@@ -88,25 +88,24 @@ or where I found the music.
 mainly for curating playlists.
 Currently used moods are;
 
-| Mood Name | Description |
-|:--- |:--- |
-| `instrumental` | Songs with no songs |
-| `microtonal` | Non-western music scales |
-| `affirmation` | Chill, zen philosophy, self-care coded songs. |
-| `heavy` | Heavier (metal, base, dubstep) songs |
-| `turkish` | Turkish songs |
-| `japanese` | Japanese songs |
-| `ambient` | Ambient, drone type songs |
-| `electronic` | Mainly electronically produced music |
-| `space` | Space related tracks |
-| `trippy` | Psychedelic tracks |
-| `gag` | Funny, lighthearted, self-aware tracks. |
-| `game` | Video game related music. |
-
+| Mood Name      | Description                                   |
+| :------------- | :-------------------------------------------- |
+| `instrumental` | Songs with no songs                           |
+| `microtonal`   | Non-western music scales                      |
+| `affirmation`  | Chill, zen philosophy, self-care coded songs. |
+| `heavy`        | Heavier (metal, base, dubstep) songs          |
+| `turkish`      | Turkish songs                                 |
+| `japanese`     | Japanese songs                                |
+| `ambient`      | Ambient, drone type songs                     |
+| `electronic`   | Mainly electronically produced music          |
+| `space`        | Space related tracks                          |
+| `trippy`       | Psychedelic tracks                            |
+| `gag`          | Funny, lighthearted, self-aware tracks.       |
+| `game`         | Video game related music.                     |
 
 ## Plugin
 
-I use my personal plugin `beets-wolframite` to manage several functionality.
+I use my personal plugin `beets-wolframite` to manage several functions.
 
 ### Fields
 

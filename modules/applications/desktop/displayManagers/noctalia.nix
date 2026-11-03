@@ -31,8 +31,13 @@
               noctalia
             ];
           };
-          # No stylix theming for mango; yet!
-          # stylix = {...}: { };
+          # Stylix theming integration
+          stylix = {
+            # TODO: This is 26.11 release feature; uncomment after updating
+            # targets.noctalia = {
+            #   enable = true;
+            # };
+          };
         };
       };
     };
