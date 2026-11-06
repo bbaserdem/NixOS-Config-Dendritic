@@ -4,6 +4,7 @@
   flake.modules.homeManager.mango-keybinds = {
     options,
     lib,
+    pkgs,
     ...
   }: {
     key = "mango-keybinds#homeManager";
@@ -12,6 +13,22 @@
       (lib.hasAttrByPath ["wayland" "windowManager" "mango"] options)
       {
         wayland.windowManager.mango.settings = {
+          # Inhibit power button
+          exec_once = [
+            (
+              "${pkgs.systemd}/bin/systemd-inhibit"
+              + " --what=handle-power-key"
+              + " --who=mango"
+              + " --why=Noctalia-power-menu"
+              + " --mode=block"
+              + " ${pkgs.coreutils}/bin/sleep infinity"
+            )
+          ];
+          # The xkb settings should use dvorak
+          xkb.rules = {
+            layout = "us";
+            variant = "dvorak-alt-intl";
+          };
           # Media keys (bindl for these so that they work universally)
           bindl = [
             "NONE,XF86AudioMute,spawn,noctalia msg volume-mute"
@@ -37,6 +54,8 @@
               # Control center and settings
               "SUPER+CTRL,Escape,spawn,noctalia msg panel-toggle control-center"
               "SUPER+CTRL+SHIFT,Escape,spawn,noctalia msg settings-toggle"
+              # Power setting
+              "NONE,XF86PowerOff,spawn,noctalia msg panel-toggle session"
               # Screen lock
               "SUPER,Escape,spawn,noctalia msg session lock"
               # Session menu
@@ -49,15 +68,18 @@
               "NONE,Print,spawn,noctalia msg screenshot-fullscreen pick"
               "CTRL,Print,spawn,noctalia msg screenshot-fullscreen all"
               "ALT,Print,spawn,noctalia msg screenshot-region"
+              # Wallpaper switch
+              "SUPER,c,spawn,noctalia msg wallpaper-random"
             ]
             # Other launchers
             ++ [
-              "SUPER,Return,spawn,kitty"
+              "SUPER,Return,spawn,runapp kitty"
             ]
             # Window management
             ++ [
               # Close window
-              "SUPER,q,killclient,"
+              "SUPER,q,smartkillclient,"
+              "SUPER+SHIFT,q,killclient,force"
               # Switch focus
               "SUPER,Tab,focusstack,next"
               "SUPER+SHIFT,Tab,focusstack,prev"
@@ -159,7 +181,7 @@
                 # Move to specific tag
                 "SUPER+SHIFT,${i},tag,${i},0"
                 # Move to specific tag, but don't switch there
-                "SUPER+SHIFT,${i},tagsilent,${i},0"
+                "SUPER+SHIFT+ALT,${i},tagsilent,${i},0"
               ])
             )
             # Desktop effects

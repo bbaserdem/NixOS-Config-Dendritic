@@ -286,6 +286,13 @@
                       DirectUnicodeMode."0" = "Control+Shift+U";
                     };
                   };
+
+                  # Hide non-kde diagnostics
+                  notifications = {
+                    sections = {
+                      HiddenNotifications."0" = "wayland-diagnose-other";
+                    };
+                  };
                 };
               };
             };
@@ -295,7 +302,6 @@
           systemd.user.services.fcitx5-daemon.Unit.ConditionEnvironment = [
             # Plasma wants to manage itself
             "!KDE_FULL_SESSION"
-            "!XDG_CURRENT_DESKTOP=mango"
             #
           ];
         };

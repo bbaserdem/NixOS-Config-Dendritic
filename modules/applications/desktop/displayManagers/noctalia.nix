@@ -1,13 +1,5 @@
 # Noctalia shell for desktops
 {inputs, ...}: {
-  # Flake inputs
-  flake-file.inputs = {
-    noctalia = {
-      url = "github:noctalia-dev/noctalia";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-  };
-
   # Den machinery; but shouldn't be needed
   den = {
     aspects.desktop = {

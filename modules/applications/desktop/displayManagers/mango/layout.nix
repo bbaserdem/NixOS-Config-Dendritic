@@ -41,10 +41,11 @@
           };
           # Scroller layout (niri-like)
           scroller = {
-            structs = 20;
-            focus_center = 1;
-            prefer_center = 0;
             prefer_overspread = 1;
+            focus_center = 0;
+            prefer_center = 0;
+            ignore_proportion_single = 0;
+            structs = 20;
             proportion_preset = "0.5,0.8,1.0";
             default = {
               proportion = 0.8;

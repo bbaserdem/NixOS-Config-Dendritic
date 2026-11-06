@@ -37,11 +37,11 @@
           homeManager = {
             lib,
             options,
+            monitors,
             ...
           }: {
             imports = with inputs.self.modules.homeManager; [
               mango
-              mango-clipboard
               mango-noctalia
               mango-keybinds
               mango-layout
@@ -54,8 +54,24 @@
                 lib.optionalAttrs
                 (lib.hasAttrByPath ["programs" "noctalia" "settings"] options)
                 {
-                  programs.noctalia.settings = {
+                  programs.noctalia.settings = let
+                    # Build all lock-screen layouts for all den-defined monitors
+                    layouts =
+                      builtins.map
+                      (monitor: import ./_lockscreen.nix {inherit lib monitor;})
+                      monitors;
+                  in {
+                    # Screenshot name
                     shell.screenshot.filename_pattern = "${host.name}_%Y%m%d_%H%M%S";
+                    # Lockscreen widgets;
+                    lockscreen_widgets = {
+                      widget_order = lib.concatMap (layout: layout.order) layouts;
+                      widget =
+                        lib.foldl'
+                        (widgets: layout: widgets // layout.widgets)
+                        {}
+                        layouts;
+                    };
                   };
                 }
               )
@@ -124,6 +140,10 @@
           # Do not use systemd session; uwsm handles it
           systemd.enable = lib.mkForce false;
         };
+        # Install runapp to UWSM launch stuff
+        home.packages = with pkgs; [
+          unstable.runapp
+        ];
       };
     };
   };

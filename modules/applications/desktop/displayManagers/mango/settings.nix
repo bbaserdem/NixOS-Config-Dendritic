@@ -14,7 +14,7 @@
         wayland.windowManager.mango.settings = {
           # Blur settings
           blur = 1;
-          blur_layer = 1;
+          blur_layer = 0;
           blur_optimized = 1;
           blur_params = {
             radius = 5;
@@ -34,14 +34,34 @@
             x = 0;
             y = 0;
           };
+          # Gaps
+          smart_gaps = 0;
+          no_border_when_single = 0;
+          gap = {
+            inner = {
+              horizontal = 5;
+              vertical = 5;
+            };
+            outer = {
+              horizontal = 10;
+              vertical = 10;
+            };
+          };
+          # Borders
+          border_px = 4;
+          # Scratchpad
+          scratchpad = {
+            width_ratio = 0.8;
+            height_ratio = 0.9;
+          };
           # Corner settings
           border_radius = 6;
           no_radius_when_single = 0;
           # Dimming overlay
           dim.enable = 1;
           # Animations
-          animatios = 1;
-          layer_animations = 1;
+          animations = 1;
+          layer_animations = 0;
           tag_animation_direction = 1;
           animation = {
             # Used types
@@ -75,6 +95,61 @@
           };
           zoom_initial_ratio = 0.4;
           zoom_end_ratio = 0.8;
+          # Hot area
+          enable_hotarea = 1;
+          hotarea = {
+            size = 10;
+            corner = 0;
+            disable_on_fullscreen = 1;
+          };
+          # Overview
+          overview = {
+            gap = {
+              inner = 5;
+              outer = 30;
+            };
+          };
+          overcircle = {
+            center_ratio = 0.5;
+          };
+          title.message.bar = {
+            height = 52;
+            gap = 20;
+          };
+          # Behavior
+          axis_bind_apply_timeout = 100;
+          focus_on_activate = 1;
+          idle_inhibit = {
+            ignore_visible = 0;
+            when_fullscreen = 0;
+          };
+          sloppy_focus = 1;
+          warp_cursor = 1;
+          focus_cross_monitor = 0;
+          focus_direction_only_zone_overlap = 1;
+          focus_cross_tag = 0;
+          enable_floating_snap = 0;
+          snap_distance = 30;
+          float_full_to_top = 0;
+          cursor_size = 24;
+          drag_tile_to_tile = 1;
+          drag_tile_small = 1;
+          # Input methods
+          repeat_rate = 25;
+          repeat_delay = 600;
+          numlock_on = 0;
+          disable_trackpad = 0;
+          tap_to_click = 1;
+          tap_and_drag = 1;
+          drag_lock = 1;
+          trackpad = {
+            natural_scrolling = 1;
+            disable_while_typing = 1;
+            left_handed = 0;
+            middle_button_emulation = 0;
+          };
+          swipe_min_threshold = 1;
+          mouse_natural_scrolling = 1;
         };
       };
   };
