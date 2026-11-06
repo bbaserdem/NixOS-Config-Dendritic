@@ -200,7 +200,7 @@
           mousebind = [
             # btn_left and btn_right can't bind none mod key
             "SUPER,btn_left,moveresize,curmove"
-            "NONE,btn_middle,togglemaximizescreen,0"
+            "SUPER,btn_middle,togglemaximizescreen,0"
             "SUPER,btn_right,moveresize,curresize"
           ];
           # Scroll-wheel keybinds

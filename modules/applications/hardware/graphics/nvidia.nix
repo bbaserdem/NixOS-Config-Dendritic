@@ -92,6 +92,7 @@
         # Driver
         hardware.nvidia = {
           modesetting.enable = true;
+          powerManagement.enable = true;
         };
         # For nixpkgs, add cuda binary cache; and enable cuda globally
         nixpkgs.config.cudaSupport = true;
