@@ -286,7 +286,11 @@
             };
           };
           # The voxtype package; needs 1.1.0 which is in unstable
-          package = pkgs.unstable.voxtype-vulkan;
+          # TODO: Upstream packaging issue; remove when fixed
+          # https://github.com/NixOS/nixpkgs/pull/585434
+          package = pkgs.unstable.voxtype-vulkan.overrideAttrs (old: {
+            buildInputs = (old.buildInputs or []) ++ [pkgs.unstable.sqlite];
+          });
         };
       };
     };

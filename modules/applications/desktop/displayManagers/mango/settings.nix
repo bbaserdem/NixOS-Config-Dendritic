@@ -26,7 +26,7 @@
           };
           # Shadow settings
           shadows = 1;
-          layer_shadows = 1;
+          layer_shadows = 0;
           shadow_only_floating = 0;
           shadows_size = 10;
           shadows_blur = 15;
