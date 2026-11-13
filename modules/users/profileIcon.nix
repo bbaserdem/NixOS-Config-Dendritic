@@ -68,80 +68,83 @@ in {
         user,
       }: {
         # Prevent collisions
-        name = "user/profile-icon(${user.userName}@${host.name})";
+        name = "user/profile-icon(${user.userName})";
 
         # Nixos module that decrypts and sets the icon
-        nixos = {
-          config,
-          lib,
-          options,
-          pkgs,
-          ...
-        }: let
-          secretName = "user-profile-${user.userName}";
-          iconPath = "/var/lib/AccountsService/icons/${user.userName}";
-          secretUnits =
-            lib.optionals
-            (config.sops.useSystemdActivation or false)
-            ["sops-install-secrets.service"];
-        in {
-          config = lib.optionalAttrs (options ? sops) {
-            # Check if file exists
-            assertions = [
-              {
-                assertion = builtins.pathExists user.profile.iconFile;
-                message = "Profile picture secret not found.";
-              }
-            ];
-            # Enable account daemon
-            services.accounts-daemon.enable = lib.mkDefault true;
+        provides.to-hosts = {
+          name = "user/profile-icon(${user.userName}@${host.name})";
+          nixos = {
+            config,
+            lib,
+            options,
+            pkgs,
+            ...
+          }: let
+            secretName = "user-profile-${user.userName}";
+            iconPath = "/var/lib/AccountsService/icons/${user.userName}";
+            secretUnits =
+              lib.optionals
+              (config.sops.useSystemdActivation or false)
+              ["sops-install-secrets.service"];
+          in {
+            config = lib.optionalAttrs (options ? sops) {
+              # Check if file exists
+              assertions = [
+                {
+                  assertion = builtins.pathExists user.profile.iconFile;
+                  message = "Profile picture secret not found.";
+                }
+              ];
+              # Enable account daemon
+              services.accounts-daemon.enable = lib.mkDefault true;
 
-            # Load the sops secret
-            sops.secrets.${secretName} = {
-              format = "binary";
-              sopsFile = user.profile.iconFile;
-              owner = "root";
-              group = "root";
-              mode = "0444";
-              path = iconPath;
-            };
-
-            # Create the systemd service to dispatch the account picture
-            systemd.services."accountsservice-avatar-${user.userName}" =
-              lib.mkIf
-              (config.services.accounts-daemon.enable)
-              {
-                description = "Set AccountsService profile picture for ${user.userName}";
-
-                wantedBy = ["graphical.target"];
-                before = ["display-manager.service"];
-                after = ["accounts-daemon.service"] ++ secretUnits;
-                requires = ["accounts-daemon.service"] ++ secretUnits;
-
-                restartTriggers = [
-                  config.sops.secrets.${secretName}.sopsFileHash
-                ];
-
-                serviceConfig = {
-                  Type = "oneshot";
-                  RemainAfterExit = true;
-                };
-
-                script = ''
-                  uid="$(
-                    ${pkgs.coreutils}/bin/id -u \
-                      ${lib.escapeShellArg user.userName}
-                  )"
-
-                  ${pkgs.dbus}/bin/dbus-send --system \
-                    --dest=org.freedesktop.Accounts \
-                    --type=method_call \
-                    --print-reply \
-                    "/org/freedesktop/Accounts/User$uid" \
-                    org.freedesktop.Accounts.User.SetIconFile \
-                    string:${lib.escapeShellArg iconPath}
-                '';
+              # Load the sops secret
+              sops.secrets.${secretName} = {
+                format = "binary";
+                sopsFile = user.profile.iconFile;
+                owner = "root";
+                group = "root";
+                mode = "0444";
+                path = iconPath;
               };
+
+              # Create the systemd service to dispatch the account picture
+              systemd.services."accountsservice-avatar-${user.userName}" =
+                lib.mkIf
+                (config.services.accounts-daemon.enable)
+                {
+                  description = "Set AccountsService profile picture for ${user.userName}";
+
+                  wantedBy = ["graphical.target"];
+                  before = ["display-manager.service"];
+                  after = ["accounts-daemon.service"] ++ secretUnits;
+                  requires = ["accounts-daemon.service"] ++ secretUnits;
+
+                  restartTriggers = [
+                    config.sops.secrets.${secretName}.sopsFileHash
+                  ];
+
+                  serviceConfig = {
+                    Type = "oneshot";
+                    RemainAfterExit = true;
+                  };
+
+                  script = ''
+                    uid="$(
+                      ${pkgs.coreutils}/bin/id -u \
+                        ${lib.escapeShellArg user.userName}
+                    )"
+
+                    ${pkgs.dbus}/bin/dbus-send --system \
+                      --dest=org.freedesktop.Accounts \
+                      --type=method_call \
+                      --print-reply \
+                      "/org/freedesktop/Accounts/User$uid" \
+                      org.freedesktop.Accounts.User.SetIconFile \
+                      string:${lib.escapeShellArg iconPath}
+                  '';
+                };
+            };
           };
         };
 

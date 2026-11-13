@@ -28,23 +28,26 @@
         host,
         user,
       }: {
-        name = "user/login-password(${user.userName}@${host.name})";
+        name = "user/login-password(${user.userName})";
         # Add password to nixos
-        nixos = {
-          lib,
-          options,
-          config,
-          ...
-        }: {
-          # Guard for existence of sops
-          config = lib.optionalAttrs (options ? sops) {
-            sops.secrets."password/${user.userName}" = {
-              sopsFile = inputs.self + /secrets/host/secrets.yaml;
-              neededForUsers = true;
+        provides.to-hosts = {
+          name = "user/login-password(${user.userName}@${host.name})";
+          nixos = {
+            lib,
+            options,
+            config,
+            ...
+          }: {
+            # Guard for existence of sops
+            config = lib.optionalAttrs (options ? sops) {
+              sops.secrets."password/${user.userName}" = {
+                sopsFile = inputs.self + /secrets/host/secrets.yaml;
+                neededForUsers = true;
+              };
+              # Deploy user password to config
+              users.users.${user.userName}.hashedPasswordFile =
+                config.sops.secrets."password/${user.userName}".path;
             };
-            # Deploy user password to config
-            users.users.${user.userName}.hashedPasswordFile =
-              config.sops.secrets."password/${user.userName}".path;
           };
         };
       };

@@ -7,70 +7,73 @@
         host,
         user,
       }: {
-        name = "wolframite/macos(${user.userName}@${host.name})";
-        darwin = {lib, ...}: {
-          imports = with inputs.self.modules.darwin; [
-            wolframite-macos-behavior
-          ];
-          config = {
-            # Dock config
-            # TODO: Add conditional switches to app presence
-            system.defaults.dock.persistent-apps = let
-              hmDir = "${user.homeDirectory}/Applications/Home Manager Apps";
-            in (
-              # System apps
-              [
-                {app = "/System/Applications/System Settings.app/";}
-                {app = "/System/Applications/Utilities/Activity Monitor.app/";}
-                {app = "${hmDir}/KeePassXC.app/";}
-              ]
-              # Work-only apps
-              ++ lib.optionals (host.name == "su-ana") [
-                {app = "/Applications/WorkSmart.app/";}
-                {app = "/Applications/Nessie.app/";}
-              ]
-              ++ [{spacer = {small = true;};}]
-              # Media
-              ++ [
-                {app = "/Applications/foobar2000.app/";}
-                {app = "/Applications/swmpc.app/";}
-                {app = "${hmDir}/VLC.app/";}
-                {app = "/Applications/OBS.app/";}
-              ]
-              ++ [{spacer = {small = true;};}]
-              # Documents
-              ++ [
-                {app = "${hmDir}/Obsidian.app/";}
-                {app = "${hmDir}/Zotero.app/";}
-                {app = "${hmDir}/Neovide.app/";}
-                {app = "/Applications/LibreOffice.app/";}
-              ]
-              ++ [{spacer = {small = true;};}]
-              # Web
-              ++ [
-                {app = "/System/Applications/Mail.app/";}
-                {app = "${hmDir}/Slack.app/";}
-                {app = "${hmDir}/zoom.us.app/";}
-                {app = "/Applications/Google Chrome.app/";}
-                {app = "${hmDir}/LibreWolf.app/";}
-                {app = "/Applications/legcord.app/";}
-                {spacer = {small = true;};}
-              ]
-              ++ [{spacer = {small = true;};}]
-              # Dev
-              ++ [
-                {app = "/Applications/GitHub Desktop.app/";}
-                {app = "/Applications/Ghostty.app/";}
-                {app = "${hmDir}/OrbStack.app/";}
-              ]
-              ++ [{spacer = {small = true;};}]
-              # AI
-              ++ [
-                {app = "/Applications/Claude.app/";}
-                {app = "/Applications/OpenCode.app/";}
-              ]
-              ++ [{spacer = {small = true;};}]
-            );
+        name = "wolframite/macos(${user.userName})";
+        provides.to-hosts = {
+          name = "wolframite/macos(${user.userName}@${host.name})";
+          darwin = {lib, ...}: {
+            imports = with inputs.self.modules.darwin; [
+              wolframite-macos-behavior
+            ];
+            config = {
+              # Dock config
+              # TODO: Add conditional switches to app presence
+              system.defaults.dock.persistent-apps = let
+                hmDir = "${user.homeDirectory}/Applications/Home Manager Apps";
+              in (
+                # System apps
+                [
+                  {app = "/System/Applications/System Settings.app/";}
+                  {app = "/System/Applications/Utilities/Activity Monitor.app/";}
+                  {app = "${hmDir}/KeePassXC.app/";}
+                ]
+                # Work-only apps
+                ++ lib.optionals (host.name == "su-ana") [
+                  {app = "/Applications/WorkSmart.app/";}
+                  {app = "/Applications/Nessie.app/";}
+                ]
+                ++ [{spacer = {small = true;};}]
+                # Media
+                ++ [
+                  {app = "/Applications/foobar2000.app/";}
+                  {app = "/Applications/swmpc.app/";}
+                  {app = "${hmDir}/VLC.app/";}
+                  {app = "/Applications/OBS.app/";}
+                ]
+                ++ [{spacer = {small = true;};}]
+                # Documents
+                ++ [
+                  {app = "${hmDir}/Obsidian.app/";}
+                  {app = "${hmDir}/Zotero.app/";}
+                  {app = "${hmDir}/Neovide.app/";}
+                  {app = "/Applications/LibreOffice.app/";}
+                ]
+                ++ [{spacer = {small = true;};}]
+                # Web
+                ++ [
+                  {app = "/System/Applications/Mail.app/";}
+                  {app = "${hmDir}/Slack.app/";}
+                  {app = "${hmDir}/zoom.us.app/";}
+                  {app = "/Applications/Google Chrome.app/";}
+                  {app = "${hmDir}/LibreWolf.app/";}
+                  {app = "/Applications/legcord.app/";}
+                  {spacer = {small = true;};}
+                ]
+                ++ [{spacer = {small = true;};}]
+                # Dev
+                ++ [
+                  {app = "/Applications/GitHub Desktop.app/";}
+                  {app = "/Applications/Ghostty.app/";}
+                  {app = "${hmDir}/OrbStack.app/";}
+                ]
+                ++ [{spacer = {small = true;};}]
+                # AI
+                ++ [
+                  {app = "/Applications/Claude.app/";}
+                  {app = "/Applications/OpenCode.app/";}
+                ]
+                ++ [{spacer = {small = true;};}]
+              );
+            };
           };
         };
       };

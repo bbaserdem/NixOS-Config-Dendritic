@@ -112,85 +112,88 @@
           ];
         };
 
-        # Personal share access
+        # Personal share access; dispatch to host scope
         provides.user-setup = {
           user,
           host,
         }: {
-          name = "networking/samba(${user.userName}@${host.name})";
-          nixos = {
-            lib,
-            options,
-            config,
-            ...
-          }: let
-            unitName = "samba-user-${user.userName}";
-            sharePath = "${user.homeDirectory}/${user.samba.location}";
-            shareName = "${user.userName}@${host.name}-public";
-          in {
-            config = lib.mkMerge [
-              ( # Samba password for the user; needs sops
-                lib.optionalAttrs (options ? sops) {
-                  # Fetch from sops
-                  sops.secrets."samba/${user.userName}" = {
-                    sopsFile = inputs.self + /secrets/host/secrets.yaml;
-                    mode = "0400";
-                    restartUnits = ["${unitName}.service"];
-                  };
-                  # Service to set up samba password for user
-
-                  # Set samba user password
-                  systemd.services.${unitName} = {
-                    description = "Provision Samba password for user:${user.userName}";
-                    wantedBy = ["multi-user.target"];
-                    after = ["samba-smbd.service"];
-                    requires = ["samba-smbd.service"];
-                    path = [config.services.samba.package];
-                    serviceConfig = {
-                      Type = "oneshot";
-                      RemainAfterExit = true;
-                      LoadCredential = [
-                        "samba-password:${config.sops.secrets."samba/${user.userName}".path}"
-                      ];
+          name = "networking/samba/user-setup(${user.userName})";
+          provides.to-hosts = {
+            name = "networking/samba/user-setup(${user.userName}@${host.name})";
+            nixos = {
+              lib,
+              options,
+              config,
+              ...
+            }: let
+              unitName = "samba-user-${user.userName}";
+              sharePath = "${user.homeDirectory}/${user.samba.location}";
+              shareName = "${user.userName}@${host.name}-public";
+            in {
+              config = lib.mkMerge [
+                ( # Samba password for the user; needs sops
+                  lib.optionalAttrs (options ? sops) {
+                    # Fetch from sops
+                    sops.secrets."samba/${user.userName}" = {
+                      sopsFile = inputs.self + /secrets/host/secrets.yaml;
+                      mode = "0400";
+                      restartUnits = ["${unitName}.service"];
                     };
-                    script = ''
-                      password="$(cat "$CREDENTIALS_DIRECTORY/samba-password")"
+                    # Service to set up samba password for user
 
-                      printf '%s\n%s\n' "$password" "$password" \
-                        | smbpasswd -s -a ${user.userName}
-                      smbpasswd -e ${user.userName}
-                    '';
-                  };
-                }
-              )
-              {
-                # Samba settings
-                services.samba.settings.${shareName} =
-                  {
-                    comment = "${user.userName}'s public share on ${host.name}";
-                    path = sharePath;
-                    # Searchability
-                    browseable = "yes";
-                    "guest ok" = flib.yesNo user.samba.guest;
-                    "read only" = flib.yesNo user.samba.readOnly;
-                    # Permissions
-                    "create mask" = "0664";
-                    "directory mask" = "0775";
-                    # User role
-                    "force user" = user.userName;
-                    "force group" = config.users.users.${user.userName}.group;
-                    # Allow/deny list
-                    "hosts allow" = host.networking.samba.allowedHosts;
-                    "hosts deny" = [
-                      "0.0.0.0/0"
-                      "::/0"
-                    ];
+                    # Set samba user password
+                    systemd.services.${unitName} = {
+                      description = "Provision Samba password for user:${user.userName}";
+                      wantedBy = ["multi-user.target"];
+                      after = ["samba-smbd.service"];
+                      requires = ["samba-smbd.service"];
+                      path = [config.services.samba.package];
+                      serviceConfig = {
+                        Type = "oneshot";
+                        RemainAfterExit = true;
+                        LoadCredential = [
+                          "samba-password:${config.sops.secrets."samba/${user.userName}".path}"
+                        ];
+                      };
+                      script = ''
+                        password="$(cat "$CREDENTIALS_DIRECTORY/samba-password")"
+
+                        printf '%s\n%s\n' "$password" "$password" \
+                          | smbpasswd -s -a ${user.userName}
+                        smbpasswd -e ${user.userName}
+                      '';
+                    };
                   }
-                  // (lib.optionalAttrs (!user.samba.guest) {
-                    "valid users" = user.userName;
-                  });
-              }
-            ];
+                )
+                {
+                  # Samba settings
+                  services.samba.settings.${shareName} =
+                    {
+                      comment = "${user.userName}'s public share on ${host.name}";
+                      path = sharePath;
+                      # Searchability
+                      browseable = "yes";
+                      "guest ok" = flib.yesNo user.samba.guest;
+                      "read only" = flib.yesNo user.samba.readOnly;
+                      # Permissions
+                      "create mask" = "0664";
+                      "directory mask" = "0775";
+                      # User role
+                      "force user" = user.userName;
+                      "force group" = config.users.users.${user.userName}.group;
+                      # Allow/deny list
+                      "hosts allow" = host.networking.samba.allowedHosts;
+                      "hosts deny" = [
+                        "0.0.0.0/0"
+                        "::/0"
+                      ];
+                    }
+                    // (lib.optionalAttrs (!user.samba.guest) {
+                      "valid users" = user.userName;
+                    });
+                }
+              ];
+            };
           };
         };
       };
