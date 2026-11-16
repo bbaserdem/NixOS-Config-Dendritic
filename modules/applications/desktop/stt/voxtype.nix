@@ -37,7 +37,8 @@
                             default = null;
                             type = lib.types.nullOr (lib.types.enum [
                               "parakeet-cuda"
-                              "whisper-vulkan"
+                              "whisper-vulkan-base"
+                              "whisper-vulkan-large"
                             ]);
                           };
                           # TODO: formalize the frontend
@@ -108,15 +109,27 @@
                 ];
               };
             };
-            # Variant; whisper with additional turkish transcription
-            whisper-vulkan = {
+            # Variant; high end whispr
+            whisper-vulkan-large = {
               user,
               host,
             }: {
-              name = "desktop/stt/voxtype/whisper-vulkan(${user.userName}@${host.name})";
+              name = "desktop/stt/voxtype/whisper-vulkan-large(${user.userName}@${host.name})";
               homeManager = {...}: {
                 imports = [
-                  inputs.self.modules.homeManager.voxtype-whisper-vulkan
+                  inputs.self.modules.homeManager.voxtype-whisper-vulkan-large
+                ];
+              };
+            };
+            # Variant; fast whisper
+            whisper-vulkan-base = {
+              user,
+              host,
+            }: {
+              name = "desktop/stt/voxtype/whisper-vulkan-base(${user.userName}@${host.name})";
+              homeManager = {...}: {
+                imports = [
+                  inputs.self.modules.homeManager.voxtype-whisper-vulkan-base
                 ];
               };
             };
@@ -257,9 +270,13 @@
         };
       };
     };
-    voxtype-whisper-vulkan = {pkgs, ...}: {
-      key = "voxtype-whisper#homeManager";
+    voxtype-whisper-vulkan-large = {pkgs, ...}: {
+      key = "voxtype-whisper-vulkan-large#homeManager";
       config = {
+        # Link data file
+        xdg.dataFile."voxtype/models/ggml-large-v3-turbo.bin".source =
+          pkgs.local.whisper-model-large-v3-turbo
+          + /share/whisper/ggml-large-v3-turbo.bin;
         services.voxtype = {
           # The model to load
           loadModels = [];
@@ -269,7 +286,7 @@
             hotkey.mode = "toggle";
             whisper = {
               mode = "local";
-              model = "${pkgs.local.whisper-model-large-v3-turbo}/share/whisper/ggml-large-v3-turbo.bin";
+              model = "large-v3-turbo";
               language = ["en" "tr"];
               translate = false;
               on_demand_loading = false;
@@ -283,6 +300,38 @@
               partial_min_words = 1;
               type_partials = true;
               revision_mode = false;
+            };
+          };
+          # The voxtype package; needs 1.1.0 which is in unstable
+          # TODO: Upstream packaging issue; remove when fixed
+          # https://github.com/NixOS/nixpkgs/pull/585434
+          package = pkgs.unstable.voxtype-vulkan.overrideAttrs (old: {
+            buildInputs = (old.buildInputs or []) ++ [pkgs.unstable.sqlite];
+          });
+        };
+      };
+    };
+    voxtype-whisper-vulkan-base = {pkgs, ...}: {
+      key = "voxtype-whisper-vulkan-base#homeManager";
+      config = {
+        # Link data file
+        xdg.dataFile."voxtype/models/ggml-base.en.bin".source =
+          pkgs.local.whisper-model-base-en
+          + /share/whisper/ggml-base.en.bin;
+        services.voxtype = {
+          # The model to load
+          loadModels = [];
+          # Settings for this mode
+          settings = {
+            engine = "whisper";
+            hotkey.mode = "toggle";
+            whisper = {
+              mode = "local";
+              model = "base.en";
+              language = ["en"];
+              translate = false;
+              on_demand_loading = false;
+              streaming = false;
             };
           };
           # The voxtype package; needs 1.1.0 which is in unstable

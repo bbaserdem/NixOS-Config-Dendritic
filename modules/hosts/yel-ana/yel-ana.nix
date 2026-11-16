@@ -50,7 +50,8 @@
           enable = true;
           voxtype = {
             enable = true;
-            backend = "whisper-vulkan";
+            backend = "whisper-vulkan-base";
+            frontend = null;
           };
         };
       };

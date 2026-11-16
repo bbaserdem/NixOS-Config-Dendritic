@@ -75,6 +75,64 @@
                   };
                 }
               )
+              ( # STT keybind and noctalia OSD for voxtype
+                lib.optionalAttrs
+                (
+                  user.stt.enable
+                  && host.desktop.stt.enable
+                  && host.desktop.stt.voxtype.enable
+                )
+                (
+                  lib.mkMerge [
+                    {
+                      wayland.windowManager.mango.settings = {
+                        bind = [
+                          # Tap toggles record
+                          "SUPER,semicolon,spawn,voxtype record toggle"
+                          "SUPER+SHIFT,semicolon,spawn,voxtype record cancel"
+                        ];
+                        # Press-hold records one speech
+                        # Use c flag for overridable to pass through mango val
+                        bindc = [
+                          "SUPER+ALT,semicolon,spawn,voxtype record start"
+                        ];
+                        bindrc = [
+                          "SUPER+ALT,semicolon,spawn,voxtype record stop"
+                        ];
+                      };
+                    }
+                    (
+                      lib.optionalAttrs
+                      (
+                        (lib.hasAttrByPath ["programs" "noctalia" "settings"] options)
+                        && (host.desktop.stt.voxtype.frontend == null)
+                      )
+                      {
+                        programs.noctalia.settings = {
+                          plugins.enabled = [
+                            "gabedunn/voxtype"
+                          ];
+                          plugin_settings."gabedunn/voxtype" = {
+                            osd_enabled = true;
+                            osd_position = "top_center";
+                            osd_layer = "overlay";
+                          };
+                          # Add to bar as well
+                          bar.default.end = lib.mkBefore [
+                            "voxtype"
+                          ];
+                          widget.voxtype = {
+                            type = "gabedunn/voxtype:status";
+                            show_alt = false;
+                            show_device = false;
+                            show_model = true;
+                          };
+                        };
+                      }
+                    )
+                  ]
+                )
+              )
             ];
           };
           # No mango stylix target yet

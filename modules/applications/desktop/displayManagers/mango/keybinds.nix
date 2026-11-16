@@ -24,11 +24,6 @@
               + " ${pkgs.coreutils}/bin/sleep infinity"
             )
           ];
-          # The xkb settings should use dvorak
-          xkb.rules = {
-            layout = "us";
-            variant = "dvorak-alt-intl";
-          };
           # Media keys (bindl for these so that they work universally)
           bindl = [
             "NONE,XF86AudioMute,spawn,noctalia msg volume-mute"
