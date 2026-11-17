@@ -76,7 +76,8 @@
           # Syncthing tray for linux only
           lib.mkIf (pkgs.stdenv.hostPlatform.isLinux) {
             services.syncthing.tray = {
-              enable = true;
+              # TODO: This is stubbed; but right now it fails to load so just disable
+              enable = false;
               package = pkgs.syncthingtray;
             };
           }
