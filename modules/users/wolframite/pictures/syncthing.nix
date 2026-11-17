@@ -32,7 +32,7 @@ in {
     hosts =
       {
         erlik = {
-          enable = true;
+          enable = false;
           ignore.text = ''
             // Ignore main photos and staging
             /Personal

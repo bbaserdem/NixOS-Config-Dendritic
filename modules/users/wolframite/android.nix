@@ -23,19 +23,45 @@ in {
             ignore = {
               external = lib.mkDefault false;
               text = ''
-                // Only allow several directories, disable everything else
+                // Ignore these directories very explicitly
+                /Android
+                /Android/**
+                /Music
+                /Music/**
+                /Documents
+                /Documents/**
+                              
+                // Whitelist some of use directories
+
+                // Basic android folders
                 !/Alarms
                 !/Alarms/**
                 !/Audiobooks
                 !/Audiobooks/**
                 !/Backups
                 !/Backups/**
-                !/DCIM
-                !/DCIM/**
                 !/Recordings
                 !/Recordings/**
                 !/Ringtones
                 !/Ringtones/**
+
+                // We keep phone downloads seperate from our system downloads
+                !/Download
+                !/Download/**
+
+                // Same with videos; video library != videos from phone
+                !/Movies
+                !/Movies/**
+                !/Videos
+                !/Videos/**
+
+                // Same with pictures; TODO: this will integrate later
+                !/Pictures
+                !/Pictures/**
+                !/DCIM
+                !/DCIM/**
+
+                // Ignore EVERYTHING ELSE, and ignore 
                 *
               '';
             };

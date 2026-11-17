@@ -74,7 +74,11 @@ in {
         erlik = {
           enable = true;
           ignore.text = ''
-            // Ignore everything not accounted for; for the time being
+            // Whitelist
+            // Passwords
+            !/Vaults/Personal.kdbx
+                      
+            // Ignore EVERYTHING ELSE
             *
           '';
         };

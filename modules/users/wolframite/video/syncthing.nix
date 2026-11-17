@@ -28,7 +28,7 @@ in {
     hosts =
       {
         erlik = {
-          enable = true;
+          enable = false;
           ignore.text = ''
             //
           '';
