@@ -33,7 +33,7 @@ in {
             //
           '';
         };
-        yertengri = {enable = true;};
+        yertengri = {enable = false;};
         od-ata = {enable = true;};
         yel-ana = {enable = true;};
         su-ana = {enable = false;};
